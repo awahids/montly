@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { format } from "date-fns";
 
 import { supabase } from "@/lib/supabase";
 import { useAppStore } from "@/lib/store";
@@ -49,6 +50,7 @@ export default function BudgetsPage() {
   } = useAppStore();
 
   const [year, setYear] = useState("all");
+  const [month, setMonth] = useState("all");
 
   useEffect(() => {
     if (!user) return;
@@ -87,8 +89,17 @@ export default function BudgetsPage() {
   }, [user, setBudgets, setTransactions, transactions.length, setLoading]);
 
   const years = Array.from(new Set(budgets.map((b) => b.month.slice(0, 4)))).sort();
+  const months = Array.from(
+    new Set(
+      budgets
+        .filter((b) => year === "all" || b.month.startsWith(year))
+        .map((b) => b.month.slice(5, 7))
+    )
+  ).sort();
   const filteredBudgets = budgets.filter(
-    (b) => year === "all" || b.month.startsWith(year)
+    (b) =>
+      (year === "all" || b.month.startsWith(year)) &&
+      (month === "all" || b.month.slice(5, 7) === month)
   );
 
   const renderBudgetCard = (budget: Budget) => {
@@ -156,8 +167,14 @@ export default function BudgetsPage() {
         </div>
       </div>
 
-      <div className="max-w-xs">
-        <Select value={year} onValueChange={setYear}>
+      <div className="flex gap-2 max-w-sm">
+        <Select
+          value={year}
+          onValueChange={(v) => {
+            setYear(v);
+            setMonth("all");
+          }}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Year" />
           </SelectTrigger>
@@ -166,6 +183,22 @@ export default function BudgetsPage() {
             {years.map((y) => (
               <SelectItem key={y} value={y}>
                 {y}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={month}
+          onValueChange={setMonth}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            {months.map((m) => (
+              <SelectItem key={m} value={m}>
+                {format(new Date(0, Number(m) - 1), "MMMM")}
               </SelectItem>
             ))}
           </SelectContent>
