@@ -2,33 +2,18 @@ import { supabase } from './supabase';
 import { User } from '@/types';
 
 export async function signUp(email: string, password: string, name: string) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
-      }
-    }
+  const res = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name })
   });
 
-  if (error) throw error;
-
-  if (data.user) {
-    // Create profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: data.user.id,
-        email: data.user.email!,
-        name,
-        default_currency: 'IDR'
-      });
-
-    if (profileError) throw profileError;
+  if (!res.ok) {
+    const { error } = await res.json();
+    throw new Error(error || 'Failed to sign up');
   }
 
-  return data;
+  return res.json();
 }
 
 export async function signIn(email: string, password: string) {
