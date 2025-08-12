@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const { date, type, accountId, fromAccountId, toAccountId, amount, categoryId, note, tags } = await req.json();
   const supabase = createServerClient();
