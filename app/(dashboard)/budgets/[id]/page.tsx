@@ -1,44 +1,49 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import * as Icons from "lucide-react";
+import React, { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import * as Icons from 'lucide-react';
 
-import { supabase } from "@/lib/supabase";
-import { useAppStore } from "@/lib/store";
-import { formatIDR } from "@/lib/currency";
-import { Budget, BudgetItem, Category, Transaction } from "@/types";
+import { createServerClient, supabase } from '@/lib/supabase';
+import { useAppStore } from '@/lib/store';
+import { formatIDR } from '@/lib/currency';
+import { Budget, BudgetItem, Category, Transaction } from '@/types';
 
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export async function generateStaticParams() {
-  return [];
+  const supabase = createServerClient();
+  const { data } = await supabase.from('budgets').select('id');
+  return data?.map(({ id }) => ({ id })) ?? [];
 }
 
-const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+const toCamel = (str: string) =>
+  str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
 function keysToCamel<T>(obj: any): T {
   if (Array.isArray(obj)) {
     return obj.map((v) => keysToCamel(v)) as any;
   }
-  if (obj && typeof obj === "object" && obj.constructor === Object) {
+  if (obj && typeof obj === 'object' && obj.constructor === Object) {
     const result: Record<string, any> = {};
     for (const [key, value] of Object.entries(obj)) {
       result[toCamel(key)] = keysToCamel(value);
@@ -71,8 +76,8 @@ export default function BudgetDetailPage({
   const [budget, setBudget] = useState<Budget | null>(null);
   const [items, setItems] = useState<BudgetItem[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [newCategoryId, setNewCategoryId] = useState("");
-  const [newAmount, setNewAmount] = useState("");
+  const [newCategoryId, setNewCategoryId] = useState<string>('');
+  const [newAmount, setNewAmount] = useState<string>('');
 
   useEffect(() => {
     if (!user) return;
@@ -83,62 +88,79 @@ export default function BudgetDetailPage({
         // Fetch budget
         if (!budgets.find((b) => b.id === params.id)) {
           const { data: budgetData } = await supabase
-            .from("budgets")
+            .from('budgets')
             .select(`*, items:budget_items(*, category:categories(*))`)
-            .eq("user_id", user.id)
-            .eq("id", params.id)
+            .eq('user_id', user.id)
+            .eq('id', params.id)
             .single();
           if (budgetData) {
             const fetchedBudget = keysToCamel<Budget>(budgetData);
             const existing = budgets.find((b) => b.id === fetchedBudget.id);
             const updatedBudgets = existing
-              ? budgets.map((b) => (b.id === fetchedBudget.id ? fetchedBudget : b))
+              ? budgets.map((b) =>
+                  b.id === fetchedBudget.id ? fetchedBudget : b
+                )
               : [...budgets, fetchedBudget];
             setBudgets(updatedBudgets);
             setBudget(fetchedBudget);
             setItems(fetchedBudget.items || []);
           }
         } else {
-          const existingBudget = budgets.find((b) => b.id === params.id) || null;
+          const existingBudget =
+            budgets.find((b) => b.id === params.id) || null;
           setBudget(existingBudget);
           setItems(existingBudget?.items || []);
         }
 
         if (!categories.length) {
           const { data: categoriesData } = await supabase
-            .from("categories")
-            .select("*")
-            .eq("user_id", user.id);
+            .from('categories')
+            .select('*')
+            .eq('user_id', user.id);
           if (categoriesData)
             setCategories(keysToCamel<Category[]>(categoriesData));
         }
 
         if (!transactions.length) {
           const { data: transactionsData } = await supabase
-            .from("transactions")
-            .select(`
+            .from('transactions')
+            .select(
+              `
               *,
               account:accounts(name, type),
               from_account:accounts!transactions_from_account_id_fkey(name, type),
               to_account:accounts!transactions_to_account_id_fkey(name, type),
               category:categories(name, color, icon)
-            `)
-            .eq("user_id", user.id);
+            `
+            )
+            .eq('user_id', user.id);
           if (transactionsData)
             setTransactions(keysToCamel<Transaction[]>(transactionsData));
         }
       } catch (error) {
-        console.error("Failed to fetch budget:", error);
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch budget:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [user, params.id, budgets, categories.length, transactions.length, setBudgets, setCategories, setTransactions, setLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    user,
+    params.id,
+    budgets,
+    categories.length,
+    transactions.length,
+    setBudgets,
+    setCategories,
+    setTransactions,
+    setLoading,
+  ]);
 
   const totalBudget = useMemo(
-    () => items.reduce((sum, item) => sum + item.amount, 0),
+    () => items.reduce((sum, item) => sum + (item.amount || 0), 0),
     [items]
   );
   const totalSpent = budget ? getMonthlySpending(budget.month) : 0;
@@ -146,17 +168,17 @@ export default function BudgetDetailPage({
   const availableCategories = useMemo(
     () =>
       categories.filter(
-        (c) =>
-          c.type === "expense" && !items.some((i) => i.categoryId === c.id)
+        (c) => c.type === 'expense' && !items.some((i) => i.categoryId === c.id)
       ),
     [categories, items]
   );
 
   const handleUpdateItem = async (itemId: string, amount: number) => {
+    if (isNaN(amount)) return;
     const { error } = await supabase
-      .from("budget_items")
+      .from('budget_items')
       .update({ amount })
-      .eq("id", itemId);
+      .eq('id', itemId);
     if (!error) {
       const updatedItems = items.map((i) =>
         i.id === itemId ? { ...i, amount } : i
@@ -172,9 +194,9 @@ export default function BudgetDetailPage({
 
   const handleRemoveItem = async (itemId: string) => {
     const { error } = await supabase
-      .from("budget_items")
+      .from('budget_items')
       .delete()
-      .eq("id", itemId);
+      .eq('id', itemId);
     if (!error) {
       const updatedItems = items.filter((i) => i.id !== itemId);
       setItems(updatedItems);
@@ -190,7 +212,7 @@ export default function BudgetDetailPage({
     const amount = parseFloat(newAmount);
     if (!newCategoryId || isNaN(amount) || !budget) return;
     const { data, error } = await supabase
-      .from("budget_items")
+      .from('budget_items')
       .insert({
         budget_id: budget.id,
         category_id: newCategoryId,
@@ -208,8 +230,8 @@ export default function BudgetDetailPage({
           b.id === budget.id ? { ...b, items: updatedItems } : b
         )
       );
-      setNewCategoryId("");
-      setNewAmount("");
+      setNewCategoryId('');
+      setNewAmount('');
     }
   };
 
@@ -224,20 +246,20 @@ export default function BudgetDetailPage({
           Back
         </Button>
         <Button onClick={() => setIsEditing((v) => !v)}>
-          {isEditing ? "Done" : "Edit"}
+          {isEditing ? 'Done' : 'Edit'}
         </Button>
       </div>
 
       <Card className="bg-muted/50">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            {budget.month}
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold">{budget.month}</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col">
             <span className="text-sm text-muted-foreground">Total Budget</span>
-            <span className="text-lg font-medium">{formatIDR(totalBudget)}</span>
+            <span className="text-lg font-medium">
+              {formatIDR(totalBudget)}
+            </span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-muted-foreground">Total Spent</span>
@@ -255,31 +277,32 @@ export default function BudgetDetailPage({
               <TableHead className="text-right">Budget</TableHead>
               <TableHead className="text-right">Spent</TableHead>
               <TableHead>Progress</TableHead>
-              {isEditing && <TableHead className="w-0" />}
+              {isEditing ? <TableHead className="w-0" /> : null}
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.map((item) => {
               const spent = getCategorySpending(item.categoryId, budget.month);
-              const progress = item.amount
-                ? (spent / item.amount) * 100
-                : 0;
+              const progress = item.amount ? (spent / item.amount) * 100 : 0;
               const Icon =
-                (Icons as any)[item.category?.icon as keyof typeof Icons] ||
-                Icons.Circle;
+                item.category &&
+                item.category.icon &&
+                (Icons as any)[item.category.icon as keyof typeof Icons]
+                  ? (Icons as any)[item.category.icon as keyof typeof Icons]
+                  : Icons.Circle;
               const indicatorColor =
                 progress < 70
-                  ? "bg-green-500"
+                  ? 'bg-green-500'
                   : progress <= 100
-                    ? "bg-orange-500"
-                    : "bg-red-500";
+                  ? 'bg-orange-500'
+                  : 'bg-red-500';
               return (
                 <TableRow key={item.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Icon
                         className="h-4 w-4"
-                        style={{ color: item.category?.color }}
+                        style={{ color: item.category?.color || undefined }}
                       />
                       <span>{item.category?.name}</span>
                     </div>
@@ -289,15 +312,16 @@ export default function BudgetDetailPage({
                       <Input
                         type="number"
                         value={item.amount}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
                           setItems((prev) =>
                             prev.map((i) =>
                               i.id === item.id
-                                ? { ...i, amount: parseFloat(e.target.value) }
+                                ? { ...i, amount: isNaN(val) ? 0 : val }
                                 : i
                             )
-                          )
-                        }
+                          );
+                        }}
                         onBlur={() => handleUpdateItem(item.id, item.amount)}
                         className="w-24 ml-auto"
                       />
@@ -314,7 +338,7 @@ export default function BudgetDetailPage({
                       indicatorClassName={indicatorColor}
                     />
                   </TableCell>
-                  {isEditing && (
+                  {isEditing ? (
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
@@ -324,11 +348,11 @@ export default function BudgetDetailPage({
                         Remove
                       </Button>
                     </TableCell>
-                  )}
+                  ) : null}
                 </TableRow>
               );
             })}
-            {isEditing && (
+            {isEditing ? (
               <TableRow>
                 <TableCell>
                   <Select
@@ -367,7 +391,7 @@ export default function BudgetDetailPage({
                   </Button>
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
           </TableBody>
         </Table>
       </div>
@@ -376,31 +400,32 @@ export default function BudgetDetailPage({
       <div className="space-y-4 md:hidden">
         {items.map((item) => {
           const spent = getCategorySpending(item.categoryId, budget.month);
-          const progress = item.amount
-            ? (spent / item.amount) * 100
-            : 0;
+          const progress = item.amount ? (spent / item.amount) * 100 : 0;
           const Icon =
-            (Icons as any)[item.category?.icon as keyof typeof Icons] ||
-            Icons.Circle;
+            item.category &&
+            item.category.icon &&
+            (Icons as any)[item.category.icon as keyof typeof Icons]
+              ? (Icons as any)[item.category.icon as keyof typeof Icons]
+              : Icons.Circle;
           const indicatorColor =
             progress < 70
-              ? "bg-green-500"
+              ? 'bg-green-500'
               : progress <= 100
-                ? "bg-orange-500"
-                : "bg-red-500";
+              ? 'bg-orange-500'
+              : 'bg-red-500';
           return (
             <Card key={item.id} className="bg-muted/50">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Icon
                     className="h-5 w-5"
-                    style={{ color: item.category?.color }}
+                    style={{ color: item.category?.color || undefined }}
                   />
                   <CardTitle className="text-sm">
                     {item.category?.name}
                   </CardTitle>
                 </div>
-                {isEditing && (
+                {isEditing ? (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -408,7 +433,7 @@ export default function BudgetDetailPage({
                   >
                     Remove
                   </Button>
-                )}
+                ) : null}
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -417,18 +442,19 @@ export default function BudgetDetailPage({
                     <Input
                       type="number"
                       value={item.amount}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
                         setItems((prev) =>
                           prev.map((i) =>
                             i.id === item.id
                               ? {
-                                ...i,
-                                amount: parseFloat(e.target.value),
-                              }
+                                  ...i,
+                                  amount: isNaN(val) ? 0 : val,
+                                }
                               : i
                           )
-                        )
-                      }
+                        );
+                      }}
                       onBlur={() => handleUpdateItem(item.id, item.amount)}
                       className="w-32 text-right"
                     />
@@ -448,7 +474,7 @@ export default function BudgetDetailPage({
             </Card>
           );
         })}
-        {isEditing && (
+        {isEditing ? (
           <Card className="bg-muted/50">
             <CardHeader>
               <CardTitle className="text-sm">Add Category</CardTitle>
@@ -481,9 +507,8 @@ export default function BudgetDetailPage({
               </Button>
             </CardContent>
           </Card>
-        )}
+        ) : null}
       </div>
     </div>
   );
 }
-
