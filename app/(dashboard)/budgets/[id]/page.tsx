@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import * as Icons from 'lucide-react';
 
-import { createServerClient, supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/lib/store';
 import { formatIDR } from '@/lib/currency';
 import { Budget, BudgetItem, Category, Transaction } from '@/types';
@@ -29,12 +29,6 @@ import {
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-
-export async function generateStaticParams() {
-  const supabase = createServerClient();
-  const { data } = await supabase.from('budgets').select('id');
-  return data?.map(({ id }) => ({ id })) ?? [];
-}
 
 const toCamel = (str: string) =>
   str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
