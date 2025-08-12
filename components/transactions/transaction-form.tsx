@@ -51,7 +51,8 @@ const formSchema = z.object({
   note: z.string().optional(),
 });
 
-export type TransactionFormValues = z.infer<typeof formSchema>;
+export type TransactionFormValues = z.output<typeof formSchema>;
+type TransactionFormInputs = z.input<typeof formSchema>;
 
 interface Props {
   open: boolean;
@@ -72,7 +73,7 @@ export function TransactionForm({
   onSubmit,
   onDelete,
 }: Props) {
-  const form = useForm<TransactionFormValues>({
+  const form = useForm<TransactionFormInputs, any, TransactionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date(),
