@@ -4,14 +4,16 @@ import { createServerClient } from '@/lib/supabase';
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
+  const type = searchParams.get('type');
   if (!userId) {
     return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
   }
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('user_id', userId);
+  let query = supabase.from('categories').select('*').eq('user_id', userId);
+  if (type) {
+    query = query.eq('type', type);
+  }
+  const { data, error } = await query;
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

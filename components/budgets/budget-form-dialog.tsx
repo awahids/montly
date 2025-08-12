@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { supabase } from '@/lib/supabase';
 import { Budget, Category } from '@/types';
 import {
   Dialog,
@@ -55,12 +54,11 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
   useEffect(() => {
     if (!open || categories.length || !user) return;
     const fetchCategories = async () => {
-      const { data } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('type', 'expense');
-      if (data) setCategories(keysToCamel<Category[]>(data));
+      const res = await fetch(`/api/categories?userId=${user.id}&type=expense`);
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(keysToCamel<Category[]>(data));
+      }
     };
     fetchCategories();
   }, [open, categories.length, user, setCategories]);
