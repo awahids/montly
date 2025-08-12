@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { BudgetDetailDialog } from "@/components/budgets/budget-detail-dialog";
 
 const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
@@ -51,6 +52,7 @@ export default function BudgetsPage() {
 
   const [year, setYear] = useState("all");
   const [month, setMonth] = useState("all");
+  const [selectedBudgetId, setSelectedBudgetId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -126,11 +128,14 @@ export default function BudgetsPage() {
       >
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>{budget.month}</CardTitle>
-          <Link href={`/budgets/${budget.id}`}>
-            <Button variant="outline" size="sm" className="transition-transform hover:scale-105">
-              View
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSelectedBudgetId(budget.id)}
+            className="transition-transform hover:scale-105"
+          >
+            View
+          </Button>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -219,6 +224,13 @@ export default function BudgetsPage() {
           <Plus className="h-6 w-6" />
         </Button>
       </Link>
+      <BudgetDetailDialog
+        budgetId={selectedBudgetId}
+        open={selectedBudgetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedBudgetId(null);
+        }}
+      />
     </div>
   );
 }
