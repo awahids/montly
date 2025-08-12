@@ -32,7 +32,7 @@ const accountSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.enum(['bank', 'ewallet', 'cash']),
   currency: z.string().min(1, 'Currency is required'),
-  openingBalance: z.coerce.number(),
+  openingBalance: z.number(),
   archived: z.boolean().optional(),
 });
 
