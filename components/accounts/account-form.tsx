@@ -46,7 +46,7 @@ export function AccountForm({ account }: AccountFormProps) {
   const router = useRouter();
   const { user, accounts, setAccounts } = useAppStore();
 
-  const form = useForm<AccountFormValues>({
+  const form = useForm<z.input<typeof accountSchema>, any, AccountFormValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
       name: account?.name ?? '',
