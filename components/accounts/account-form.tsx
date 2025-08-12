@@ -32,7 +32,7 @@ const accountSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.enum(['bank', 'ewallet', 'cash']),
   currency: z.string().min(1, 'Currency is required'),
-  openingBalance: z.coerce.number(),
+  openingBalance: z.number(),
   archived: z.boolean().optional(),
 });
 
@@ -46,7 +46,7 @@ export function AccountForm({ account }: AccountFormProps) {
   const router = useRouter();
   const { user, accounts, setAccounts } = useAppStore();
 
-  const form = useForm<z.input<typeof accountSchema>, any, AccountFormValues>({
+  const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
       name: account?.name ?? '',
@@ -169,7 +169,12 @@ export function AccountForm({ account }: AccountFormProps) {
             <FormItem>
               <FormLabel>Opening Balance</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value ?? 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
