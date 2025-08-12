@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 
@@ -21,6 +20,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { BudgetDetailDialog } from "@/components/budgets/budget-detail-dialog";
+import { BudgetFormDialog } from "@/components/budgets/budget-form-dialog";
 
 const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
@@ -53,6 +53,7 @@ export default function BudgetsPage() {
   const [year, setYear] = useState("all");
   const [month, setMonth] = useState("all");
   const [selectedBudgetId, setSelectedBudgetId] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -164,11 +165,12 @@ export default function BudgetsPage() {
           <p className="text-muted-foreground">Manage your budgets.</p>
         </div>
         <div className="hidden md:block">
-          <Link href="/budgets/new">
-            <Button className="transition-transform hover:scale-105">
-              Add Budget
-            </Button>
-          </Link>
+          <Button
+            onClick={() => setIsAdding(true)}
+            className="transition-transform hover:scale-105"
+          >
+            Add Budget
+          </Button>
         </div>
       </div>
 
@@ -214,16 +216,12 @@ export default function BudgetsPage() {
         {filteredBudgets.map((b) => renderBudgetCard(b))}
       </div>
 
-      <Link
-        href="/budgets/new"
-        className="md:hidden fixed bottom-6 right-6"
+      <Button
+        onClick={() => setIsAdding(true)}
+        className="md:hidden fixed bottom-6 right-6 h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105"
       >
-        <Button
-          className="h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105"
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
-      </Link>
+        <Plus className="h-6 w-6" />
+      </Button>
       <BudgetDetailDialog
         budgetId={selectedBudgetId}
         open={selectedBudgetId !== null}
@@ -231,6 +229,7 @@ export default function BudgetsPage() {
           if (!open) setSelectedBudgetId(null);
         }}
       />
+      <BudgetFormDialog open={isAdding} onOpenChange={setIsAdding} />
     </div>
   );
 }
