@@ -42,7 +42,19 @@ function keysToCamel<T>(obj: any): T {
 }
 
 export default function DashboardPage() {
-  const { user, accounts, transactions, budgets, setAccounts, setTransactions, setBudgets, setCategories, loading, setLoading } = useAppStore();
+  const {
+    user,
+    accounts,
+    categories,
+    transactions,
+    budgets,
+    setAccounts,
+    setTransactions,
+    setBudgets,
+    setCategories,
+    loading,
+    setLoading,
+  } = useAppStore();
   const [kpis, setKpis] = useState<DashboardKPIs>({
     totalBalance: 0,
     monthlyBudget: 0,
@@ -271,13 +283,17 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <DashboardCharts 
+      <DashboardCharts
         transactions={transactions}
         categorySpends={categorySpends}
       />
 
       {/* Recent Transactions */}
-      <RecentTransactions transactions={transactions.slice(0, 10)} />
+      <RecentTransactions
+        transactions={transactions}
+        accounts={accounts}
+        categories={categories}
+      />
     </div>
   );
 }
