@@ -40,9 +40,10 @@ type AccountFormValues = z.infer<typeof accountSchema>;
 
 interface AccountFormProps {
   account?: Account;
+  onSuccess?: () => void;
 }
 
-export function AccountForm({ account }: AccountFormProps) {
+export function AccountForm({ account, onSuccess }: AccountFormProps) {
   const router = useRouter();
   const { user, accounts, setAccounts } = useAppStore();
 
@@ -104,7 +105,11 @@ export function AccountForm({ account }: AccountFormProps) {
         setAccounts([...accounts, newAccount]);
         toast.success('Account created');
       }
-      router.push('/accounts');
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/accounts');
+      }
     } catch (err) {
       console.error('Failed to save account:', err);
       toast.error('Failed to save account');

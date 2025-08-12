@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import {
   Building2,
   Smartphone,
@@ -22,6 +21,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { AccountForm } from '@/components/accounts/account-form';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,6 +83,9 @@ export default function AccountsPage() {
     getCurrentBalance,
   } = useAppStore();
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+
   useEffect(() => {
     if (!user) return;
 
@@ -130,11 +139,15 @@ export default function AccountsPage() {
           <p className="text-muted-foreground">View and manage your accounts.</p>
         </div>
         <div className="hidden md:block">
-          <Link href="/accounts/new">
-            <Button className="transition-transform hover:scale-105">
-              Add Account
-            </Button>
-          </Link>
+          <Button
+            onClick={() => {
+              setEditingAccount(null);
+              setDialogOpen(true);
+            }}
+            className="transition-transform hover:scale-105"
+          >
+            Add Account
+          </Button>
         </div>
       </div>
 
@@ -162,8 +175,13 @@ export default function AccountsPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link href={`/accounts/${account.id}/edit`}>Edit</Link>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditingAccount(account);
+                        setDialogOpen(true);
+                      }}
+                    >
+                      Edit
                     </DropdownMenuItem>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -206,11 +224,28 @@ export default function AccountsPage() {
         })}
       </div>
 
-      <Link href="/accounts/new" className="md:hidden fixed bottom-6 right-6">
-        <Button className="h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105">
-          <Plus className="h-6 w-6" />
-        </Button>
-      </Link>
+      <Button
+        onClick={() => {
+          setEditingAccount(null);
+          setDialogOpen(true);
+        }}
+        className="md:hidden fixed bottom-6 right-6 h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingAccount ? 'Edit Account' : 'Add Account'}
+            </DialogTitle>
+          </DialogHeader>
+          <AccountForm
+            account={editingAccount || undefined}
+            onSuccess={() => setDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
