@@ -27,7 +27,7 @@ export function RecentTransactions({ transactions }: Props) {
 
   const getTransactionDescription = (transaction: Transaction) => {
     if (transaction.type === 'transfer') {
-      return `Transfer from ${transaction.from_account?.name} to ${transaction.to_account?.name}`;
+      return `Transfer from ${transaction.fromAccount?.name} to ${transaction.toAccount?.name}`;
     }
     return transaction.note || transaction.category?.name || 'No description';
   };
