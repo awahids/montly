@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { CategoryFormDialog } from '@/components/categories/category-form-dialog';
 
 const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
@@ -49,6 +50,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
   const [month, setMonth] = useState<string>(() => new Date().toISOString().slice(0, 7));
   const [items, setItems] = useState<ItemInput[]>([{ categoryId: '', amount: '' }]);
   const [submitting, setSubmitting] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
 
   useEffect(() => {
     if (!open || categories.length || !user) return;
@@ -142,6 +144,9 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
           <Button type="button" variant="secondary" onClick={addItem}>
             Add Item
           </Button>
+          <Button type="button" variant="outline" onClick={() => setShowCategoryForm(true)}>
+            Add Category
+          </Button>
         </div>
         <DialogFooter>
           <Button onClick={handleSubmit} disabled={submitting}>
@@ -149,6 +154,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
           </Button>
         </DialogFooter>
       </DialogContent>
+      <CategoryFormDialog open={showCategoryForm} onOpenChange={setShowCategoryForm} />
     </Dialog>
   );
 }
