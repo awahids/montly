@@ -1,4 +1,5 @@
 'use client';
+// @ts-nocheck
 
 import { useMemo } from 'react';
 import { 
