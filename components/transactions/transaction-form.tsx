@@ -308,7 +308,11 @@ export function TransactionForm({
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      value={field.value === undefined || field.value === null ? '' : Number(field.value)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -267,8 +267,8 @@ export default function BudgetDetailPage({
                 progress < 70
                   ? "bg-green-500"
                   : progress <= 100
-                  ? "bg-orange-500"
-                  : "bg-red-500";
+                    ? "bg-orange-500"
+                    : "bg-red-500";
               return (
                 <TableRow key={item.id}>
                   <TableCell>
@@ -382,8 +382,8 @@ export default function BudgetDetailPage({
             progress < 70
               ? "bg-green-500"
               : progress <= 100
-              ? "bg-orange-500"
-              : "bg-red-500";
+                ? "bg-orange-500"
+                : "bg-red-500";
           return (
             <Card key={item.id} className="bg-muted/50">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -418,9 +418,9 @@ export default function BudgetDetailPage({
                           prev.map((i) =>
                             i.id === item.id
                               ? {
-                                  ...i,
-                                  amount: parseFloat(e.target.value),
-                                }
+                                ...i,
+                                amount: parseFloat(e.target.value),
+                              }
                               : i
                           )
                         )
