@@ -21,5 +21,15 @@ export function formatCurrency(amount: number, currency = 'IDR'): string {
 }
 
 export function parseIDR(value: string): number {
-  return parseFloat(value.replace(/[^\d.-]/g, '')) || 0;
+  // IDR values are commonly formatted with thousand separators (.) and
+  // often omit a decimal portion. The previous implementation simply
+  // stripped non digits except for dots, causing values like
+  // `Rp 1.234.567` to be interpreted as `1.234` instead of `1234567`.
+  // Remove thousand separators and convert any decimal comma to a dot
+  // before parsing.
+  const sanitized = value
+    .replace(/\./g, '')
+    .replace(/[^0-9,-]/g, '')
+    .replace(',', '.');
+  return parseFloat(sanitized) || 0;
 }
