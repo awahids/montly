@@ -34,15 +34,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import type { DateRange, SelectRangeEventHandler } from 'react-day-picker';
 
 import TransactionForm, {
   TransactionFormValues,
 } from '@/components/transactions/transaction-form';
-
-interface DateRange {
-  from?: Date;
-  to?: Date;
-}
 
 const toCamel = (str: string) =>
   str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -72,7 +68,14 @@ export default function TransactionsPage() {
     setTransactions,
   } = useAppStore();
 
-  const [dateRange, setDateRange] = useState<DateRange>({});
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: undefined,
+    to: undefined,
+  });
+
+  const handleDateRangeSelect: SelectRangeEventHandler = (range) => {
+    setDateRange(range ?? { from: undefined, to: undefined });
+  };
   const [accountFilter, setAccountFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -229,7 +232,7 @@ export default function TransactionsPage() {
             <Calendar
               mode="range"
               selected={dateRange}
-              onSelect={setDateRange}
+              onSelect={handleDateRangeSelect}
               numberOfMonths={2}
             />
           </PopoverContent>
