@@ -1,0 +1,28 @@
+import { NextResponse } from 'next/server';
+import { createServerClient } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
+
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
+  const { month } = await req.json();
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from('budgets')
+    .update({ month })
+    .eq('id', params.id)
+    .select('*, items:budget_items(*, category:categories(*))')
+    .single();
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+  return NextResponse.json(data);
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  const supabase = createServerClient();
+  const { error } = await supabase.from('budgets').delete().eq('id', params.id);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+  return NextResponse.json({ success: true });
+}
