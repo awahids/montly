@@ -4,18 +4,42 @@ import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { formatIDR } from '@/lib/currency';
-import { DashboardKPIs, CategorySpend } from '@/types';
+import {
+  DashboardKPIs,
+  CategorySpend,
+  Account,
+  Transaction,
+  Budget,
+  Category,
+} from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardCharts } from '@/components/dashboard/dashboard-charts';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { 
-  Wallet, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
   Calendar,
-  DollarSign 
+  DollarSign
 } from 'lucide-react';
+
+const toCamel = (str: string) =>
+  str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+function keysToCamel<T>(obj: any): T {
+  if (Array.isArray(obj)) {
+    return obj.map(v => keysToCamel(v)) as any;
+  }
+  if (obj && typeof obj === 'object' && obj.constructor === Object) {
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[toCamel(key)] = keysToCamel(value);
+    }
+    return result as T;
+  }
+  return obj as T;
+}
 
 export default function DashboardPage() {
   const { user, accounts, transactions, budgets, setAccounts, setTransactions, setBudgets, setCategories, loading, setLoading } = useAppStore();
@@ -64,14 +88,14 @@ export default function DashboardPage() {
           .eq('user_id', user.id)
           .gte('date', threeMonthsAgo.toISOString().split('T')[0])
           .order('date', { ascending: false });
-        
+
         // Fetch budgets (current month)
         const currentMonth = new Date().toISOString().slice(0, 7);
         const { data: budgetsData } = await supabase
           .from('budgets')
           .select(`
             *,
-            budget_items:budget_items(
+            items:budget_items(
               *,
               category:categories(*)
             )
@@ -79,10 +103,10 @@ export default function DashboardPage() {
           .eq('user_id', user.id)
           .eq('month', currentMonth);
 
-        if (accountsData) setAccounts(accountsData);
-        if (categoriesData) setCategories(categoriesData);
-        if (transactionsData) setTransactions(transactionsData);
-        if (budgetsData) setBudgets(budgetsData);
+        if (accountsData) setAccounts(keysToCamel<Account[]>(accountsData));
+        if (categoriesData) setCategories(keysToCamel<Category[]>(categoriesData));
+        if (transactionsData) setTransactions(keysToCamel<Transaction[]>(transactionsData));
+        if (budgetsData) setBudgets(keysToCamel<Budget[]>(budgetsData));
 
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
@@ -105,20 +129,22 @@ export default function DashboardPage() {
     // Total balance
     let totalBalance = 0;
     accounts.forEach(account => {
-      const accountTransactions = transactions.filter(t => 
-        t.account_id === account.id || t.from_account_id === account.id || t.to_account_id === account.id
+      const accountTransactions = transactions.filter(t =>
+        t.accountId === account.id ||
+        t.fromAccountId === account.id ||
+        t.toAccountId === account.id
       );
-      
-      let balance = account.opening_balance;
+
+      let balance = account.openingBalance;
       accountTransactions.forEach(t => {
-        if (t.type === 'income' && t.account_id === account.id) {
+        if (t.type === 'income' && t.accountId === account.id) {
           balance += t.amount;
-        } else if (t.type === 'expense' && t.account_id === account.id) {
+        } else if (t.type === 'expense' && t.accountId === account.id) {
           balance -= t.amount;
         } else if (t.type === 'transfer') {
-          if (t.from_account_id === account.id) {
+          if (t.fromAccountId === account.id) {
             balance -= t.amount;
-          } else if (t.to_account_id === account.id) {
+          } else if (t.toAccountId === account.id) {
             balance += t.amount;
           }
         }
@@ -128,7 +154,7 @@ export default function DashboardPage() {
 
     // Monthly budget and actual
     const currentBudget = budgets.find(b => b.month === currentMonth);
-    const monthlyBudget = currentBudget?.budget_items?.reduce((sum, item) => sum + item.amount, 0) || 0;
+    const monthlyBudget = currentBudget?.items?.reduce((sum, item) => sum + item.amount, 0) || 0;
     
     const monthlyActual = transactions
       .filter(t => t.type === 'expense' && t.date.startsWith(currentMonth))
@@ -153,18 +179,18 @@ export default function DashboardPage() {
     });
 
     // Category spending
-    if (currentBudget?.budget_items) {
-      const categorySpendData: CategorySpend[] = currentBudget.budget_items.map(item => {
+    if (currentBudget?.items) {
+      const categorySpendData: CategorySpend[] = currentBudget.items.map(item => {
         const actual = transactions
-          .filter(t => 
-            t.type === 'expense' && 
-            t.category_id === item.category_id && 
+          .filter(t =>
+            t.type === 'expense' &&
+            t.categoryId === item.categoryId &&
             t.date.startsWith(currentMonth)
           )
           .reduce((sum, t) => sum + t.amount, 0);
 
         return {
-          categoryId: item.category_id,
+          categoryId: item.categoryId,
           categoryName: item.category?.name || 'Unknown',
           amount: actual,
           budgeted: item.amount,
