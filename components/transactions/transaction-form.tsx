@@ -51,8 +51,8 @@ const formSchema = z.object({
   note: z.string().optional(),
 });
 
-export type TransactionFormValues = z.output<typeof formSchema>;
-type TransactionFormInputs = z.input<typeof formSchema>;
+// Use the inferred output type for consumers of the form
+export type TransactionFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
@@ -73,7 +73,10 @@ export function TransactionForm({
   onSubmit,
   onDelete,
 }: Props) {
-  const form = useForm<TransactionFormInputs, any, TransactionFormValues>({
+  // react-hook-form's resolver expects the schema's input type, while the
+  // submit handler uses the parsed output type. Specify both generics so the
+  // form works with Zod's coercion (e.g. `z.coerce.number()`).
+  const form = useForm<z.input<typeof formSchema>, any, TransactionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date(),
