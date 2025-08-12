@@ -19,12 +19,6 @@ function keysToCamel<T>(obj: any): T {
   return obj as T;
 }
 
-export async function generateStaticParams() {
-  const supabase = createServerClient();
-  const { data } = await supabase.from('accounts').select('id');
-  return data?.map(({ id }) => ({ id })) ?? [];
-}
-
 interface PageProps {
   params: { id: string };
 }
