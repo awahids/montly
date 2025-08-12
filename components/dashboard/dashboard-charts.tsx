@@ -2,27 +2,23 @@
 // @ts-nocheck
 
 import { useMemo } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  AreaChart, 
-  Area, 
-  BarChart, 
-  Bar, 
-  PieChart, 
-  Pie, 
+import {
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
   Cell,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Legend
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Transaction, CategorySpend } from '@/types';
 import { formatIDR } from '@/lib/currency';
-import { format, parseISO, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
 
 interface Props {
   transactions: Transaction[];
@@ -49,15 +45,6 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
     });
   }, [transactions]);
 
-  const categoryComparisonData = useMemo(() => {
-    return categorySpends.map(category => ({
-      name: category.categoryName,
-      budgeted: category.budgeted,
-      actual: category.amount,
-      color: category.color,
-    }));
-  }, [categorySpends]);
-
   const categoryPieData = useMemo(() => {
     return categorySpends
       .filter(c => c.amount > 0)
@@ -69,9 +56,9 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
   }, [categorySpends]);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 lg:grid-cols-2">
       {/* Daily Expenses Line Chart */}
-      <Card className="col-span-full lg:col-span-2">
+      <Card className="lg:col-span-1">
         <CardHeader>
           <CardTitle>Daily Expenses (Current Month)</CardTitle>
         </CardHeader>
@@ -106,7 +93,7 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
       </Card>
 
       {/* Category Pie Chart */}
-      <Card>
+      <Card className="lg:col-span-1">
         <CardHeader>
           <CardTitle>Expense by Category</CardTitle>
         </CardHeader>
@@ -135,37 +122,6 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
         </CardContent>
       </Card>
 
-      {/* Category Comparison Bar Chart */}
-      <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle>Budget vs Actual by Category</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryComparisonData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                />
-                <YAxis tickFormatter={(value) => formatIDR(value)} />
-                <Tooltip 
-                  formatter={(value: number, name: string) => [
-                    formatIDR(value), 
-                    name === 'budgeted' ? 'Budgeted' : 'Actual'
-                  ]}
-                />
-                <Legend />
-                <Bar dataKey="budgeted" fill="#10B981" name="Budgeted" />
-                <Bar dataKey="actual" fill="#3B82F6" name="Actual" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
