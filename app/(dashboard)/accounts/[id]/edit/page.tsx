@@ -23,6 +23,16 @@ interface PageProps {
   params: { id: string };
 }
 
+export async function generateStaticParams() {
+  try {
+    const supabase = createServerClient();
+    const { data } = await supabase.from('accounts').select('id');
+    return data?.map(({ id }) => ({ id })) ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function EditAccountPage({ params }: PageProps) {
   const supabase = createServerClient();
   const { data } = await supabase
@@ -47,4 +57,3 @@ export default async function EditAccountPage({ params }: PageProps) {
     </div>
   );
 }
-
