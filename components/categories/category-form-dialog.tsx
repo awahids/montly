@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import type { Category } from '@/types';
 
 const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
@@ -45,7 +46,7 @@ export function CategoryFormDialog({ open, onOpenChange, type = 'expense' }: Cat
     });
     if (res.ok) {
       const data = await res.json();
-      const newCategory = keysToCamel(data);
+      const newCategory: Category = keysToCamel<Category>(data);
       setCategories([...categories, newCategory]);
       onOpenChange(false);
       setName('');
