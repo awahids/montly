@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { useAppStore } from "@/lib/store";
 import { formatIDR } from "@/lib/currency";
 import { Budget, Transaction } from "@/types";
