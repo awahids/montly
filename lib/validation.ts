@@ -15,6 +15,13 @@ export const categorySchema = z.object({
   icon: z.string().optional(),
 });
 
+export const profileSchema = z.object({
+  name: z.string().min(1),
+  defaultCurrency: z.string().min(1),
+});
+
+export const profilePatchSchema = profileSchema.partial();
+
 const monthSchema = z
   .string()
   .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Invalid month format. Use YYYY-MM');
