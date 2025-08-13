@@ -1,5 +1,8 @@
 import { supabase } from './supabase';
+import { createServerClient } from './supabase/server';
+import { cookies } from 'next/headers';
 import { User } from '@/types';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 export async function signUp(email: string, password: string, name: string) {
   const res = await fetch('/api/auth/signup', {
@@ -50,4 +53,17 @@ export async function getCurrentUser(): Promise<User | null> {
     name: profile.name,
     defaultCurrency: profile.default_currency,
   };
+}
+
+export async function getUser(): Promise<SupabaseUser> {
+  const token = cookies().get('sb-access-token')?.value;
+  if (!token) {
+    throw new Error('Unauthorized');
+  }
+  const supabase = createServerClient();
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) {
+    throw new Error(error?.message ?? 'Unauthorized');
+  }
+  return data.user;
 }
