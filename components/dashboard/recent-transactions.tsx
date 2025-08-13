@@ -90,7 +90,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
   return (
     <Card>
       <Collapsible open={open} onOpenChange={setOpen} className="w-full">
-        <CardHeader className="space-y-2">
+        <CardHeader className="space-y-2 sticky top-0 z-10 bg-background">
           <div className="flex items-center justify-between">
             <CardTitle>Recent Transactions</CardTitle>
             <CollapsibleTrigger asChild>

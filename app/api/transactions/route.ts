@@ -1,56 +1,126 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/auth';
+import { transactionSchema } from '@/lib/validation';
+import { z } from 'zod';
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-  if (!userId) {
-    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
-  }
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('transactions')
-    .select(
-      `*,
-      account:accounts(name, type),
-      from_account:accounts!transactions_from_account_id_fkey(name, type),
-      to_account:accounts!transactions_to_account_id_fkey(name, type),
-      category:categories(name, color, icon)`
-    )
-    .eq('user_id', userId);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  try {
+    const user = await getUser();
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') ?? '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') ?? '20', 10);
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    const { data, error, count } = await supabase
+      .from('transactions')
+      .select(
+        `*,
+        account:accounts(name, type),
+        from_account:accounts!transactions_from_account_id_fkey(name, type),
+        to_account:accounts!transactions_to_account_id_fkey(name, type),
+        category:categories(name, color, icon)`,
+        { count: 'exact' }
+      )
+      .eq('user_id', user.id)
+      .range(from, to)
+      .order('date', { ascending: false });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json({ data, total: count ?? 0 });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 401 });
   }
-  return NextResponse.json(data);
+}
+
+async function ensureTransferBalance(
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string,
+  fromAccountId: string,
+  amount: number
+) {
+  const { data: account, error: accErr } = await supabase
+    .from('accounts')
+    .select('opening_balance')
+    .eq('id', fromAccountId)
+    .eq('user_id', userId)
+    .single();
+  if (accErr || !account) return accErr?.message || 'Account not found';
+  const { data: txs, error: txErr } = await supabase
+    .from('transactions')
+    .select('type, amount, account_id, from_account_id, to_account_id')
+    .eq('user_id', userId)
+    .or(
+      `account_id.eq.${fromAccountId},from_account_id.eq.${fromAccountId},to_account_id.eq.${fromAccountId}`
+    );
+  if (txErr) return txErr.message;
+  let balance = account.opening_balance;
+  txs?.forEach(t => {
+    if (t.type === 'income' && t.account_id === fromAccountId) balance += t.amount;
+    if (t.type === 'expense' && t.account_id === fromAccountId) balance -= t.amount;
+    if (t.type === 'transfer') {
+      if (t.from_account_id === fromAccountId) balance -= t.amount;
+      if (t.to_account_id === fromAccountId) balance += t.amount;
+    }
+  });
+  if (balance - amount < 0) return 'Insufficient funds';
+  return null;
 }
 
 export async function POST(req: Request) {
-  const { userId, date, type, accountId, fromAccountId, toAccountId, amount, categoryId, note, tags } = await req.json();
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('transactions')
-    .insert({
-      user_id: userId,
-      date,
-      type,
-      account_id: accountId,
-      from_account_id: fromAccountId,
-      to_account_id: toAccountId,
-      amount,
-      category_id: categoryId,
-      note,
-      tags,
-    })
-    .select(
-      `*,
-      account:accounts(name, type),
-      from_account:accounts!transactions_from_account_id_fkey(name, type),
-      to_account:accounts!transactions_to_account_id_fkey(name, type),
-      category:categories(name, color, icon)`
-    )
-    .single();
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  let body: z.infer<typeof transactionSchema>;
+  try {
+    body = transactionSchema.parse(await req.json());
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
   }
-  return NextResponse.json(data);
+  try {
+    const user = await getUser();
+    if (
+      process.env.DISALLOW_NEGATIVE_BALANCE === 'true' &&
+      body.type === 'transfer' &&
+      body.fromAccountId
+    ) {
+      const err = await ensureTransferBalance(
+        supabase,
+        user.id,
+        body.fromAccountId,
+        body.amount
+      );
+      if (err) {
+        return NextResponse.json({ error: err }, { status: 400 });
+      }
+    }
+    const { data, error } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        date: body.date,
+        type: body.type,
+        account_id: body.accountId,
+        from_account_id: body.fromAccountId,
+        to_account_id: body.toAccountId,
+        amount: body.amount,
+        category_id: body.categoryId,
+        note: body.note,
+        tags: body.tags,
+      })
+      .select(
+        `*,
+        account:accounts(name, type),
+        from_account:accounts!transactions_from_account_id_fkey(name, type),
+        to_account:accounts!transactions_to_account_id_fkey(name, type),
+        category:categories(name, color, icon)`
+      )
+      .single();
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json(data);
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 401 });
+  }
 }

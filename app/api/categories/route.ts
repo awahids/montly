@@ -1,39 +1,52 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/auth';
+import { categorySchema } from '@/lib/validation';
+import { z } from 'zod';
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-  if (!userId) {
-    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
-  }
+export async function GET() {
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('user_id', userId);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  try {
+    const user = await getUser();
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('user_id', user.id);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json(data);
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 401 });
   }
-  return NextResponse.json(data);
 }
 
 export async function POST(req: Request) {
-  const { userId, name, type, color, icon } = await req.json();
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('categories')
-    .insert({
-      user_id: userId,
-      name,
-      type,
-      color,
-      icon,
-    })
-    .select('*')
-    .single();
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  let body: z.infer<typeof categorySchema>;
+  try {
+    body = categorySchema.parse(await req.json());
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
   }
-  return NextResponse.json(data);
+  try {
+    const user = await getUser();
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({
+        user_id: user.id,
+        name: body.name,
+        type: body.type,
+        color: body.color,
+        icon: body.icon,
+      })
+      .select('*')
+      .single();
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json(data);
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 401 });
+  }
 }
