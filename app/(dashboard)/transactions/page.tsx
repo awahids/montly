@@ -142,7 +142,7 @@ export default function TransactionsPage() {
       category_id: values.categoryId,
       amount: values.amount,
       note: values.note,
-      tags: [],
+      tags: values.tags || [],
     };
     if (editing) {
       await supabase.from('transactions').update(payload).eq('id', editing.id);

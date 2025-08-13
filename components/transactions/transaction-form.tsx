@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -36,20 +36,57 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, X } from 'lucide-react';
+import { formatIDR, parseIDR } from '@/lib/currency';
 
-const formSchema = z.object({
-  date: z.date(),
-  type: z.enum(['expense', 'income', 'transfer']),
-  accountId: z.string().optional(),
-  fromAccountId: z.string().optional(),
-  toAccountId: z.string().optional(),
-  categoryId: z.string().optional(),
-  amount: z.coerce.number(),
-  note: z.string().optional(),
-});
+const formSchema = z
+  .object({
+    date: z.date(),
+    type: z.enum(['expense', 'income', 'transfer']),
+    accountId: z.string().optional(),
+    fromAccountId: z.string().optional(),
+    toAccountId: z.string().optional(),
+    categoryId: z.string().optional().nullable(),
+    amount: z.coerce.number().positive(),
+    note: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === 'expense' || data.type === 'income') {
+      if (!data.accountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['accountId'],
+          message: 'Account is required',
+        });
+      }
+    } else if (data.type === 'transfer') {
+      if (!data.fromAccountId || !data.toAccountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['fromAccountId'],
+          message: 'From and To accounts are required',
+        });
+      } else if (data.fromAccountId === data.toAccountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['toAccountId'],
+          message: 'Accounts must differ',
+        });
+      }
+      if (data.categoryId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['categoryId'],
+          message: 'Category not allowed for transfer',
+        });
+      }
+    }
+  });
 
 // Use the inferred output type for consumers of the form
 export type TransactionFormValues = z.infer<typeof formSchema>;
@@ -87,8 +124,11 @@ export function TransactionForm({
       categoryId: undefined,
       amount: 0,
       note: '',
+      tags: [],
     },
   });
+
+  const [tagInput, setTagInput] = useState('');
 
   useEffect(() => {
     if (transaction) {
@@ -101,6 +141,7 @@ export function TransactionForm({
         categoryId: transaction.categoryId,
         amount: transaction.amount,
         note: transaction.note || '',
+        tags: transaction.tags || [],
       });
     } else {
       form.reset({
@@ -108,6 +149,7 @@ export function TransactionForm({
         type: 'expense',
         amount: 0,
         note: '',
+        tags: [],
       });
     }
   }, [transaction, form]);
@@ -119,6 +161,7 @@ export function TransactionForm({
       type: 'expense',
       amount: 0,
       note: '',
+      tags: [],
     });
   };
 
@@ -131,7 +174,10 @@ export function TransactionForm({
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4 pb-20"
+          >
             <FormField
               control={form.control}
               name="date"
@@ -177,18 +223,16 @@ export function TransactionForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="expense">Expense</SelectItem>
-                      <SelectItem value="income">Income</SelectItem>
-                      <SelectItem value="transfer">Transfer</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <ToggleGroup
+                    type="single"
+                    value={field.value}
+                    onValueChange={(val) => val && field.onChange(val)}
+                    className="grid grid-cols-3"
+                  >
+                    <ToggleGroupItem value="expense">Expense</ToggleGroupItem>
+                    <ToggleGroupItem value="income">Income</ToggleGroupItem>
+                    <ToggleGroupItem value="transfer">Transfer</ToggleGroupItem>
+                  </ToggleGroup>
                   <FormMessage />
                 </FormItem>
               )}
@@ -309,9 +353,9 @@ export function TransactionForm({
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      {...field}
-                      value={field.value === undefined || field.value === null ? '' : Number(field.value)}
+                      inputMode="numeric"
+                      value={field.value ? formatIDR(field.value) : ''}
+                      onChange={(e) => field.onChange(parseIDR(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -333,7 +377,54 @@ export function TransactionForm({
               )}
             />
 
-            <DialogFooter>
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-wrap gap-2">
+                      {field.value?.map((tag, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {tag}
+                          <X
+                            className="h-3 w-3 cursor-pointer"
+                            onClick={() =>
+                              field.onChange(
+                                field.value.filter((_, i) => i !== idx)
+                              )
+                            }
+                          />
+                        </Badge>
+                      ))}
+                      <Input
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && tagInput.trim()) {
+                            e.preventDefault();
+                            const newTag = tagInput.trim();
+                            if (!field.value?.includes(newTag)) {
+                              field.onChange([...(field.value || []), newTag]);
+                            }
+                            setTagInput('');
+                          }
+                        }}
+                        className="flex-1 min-w-[120px]"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="sticky bottom-0 bg-background pt-4">
               {transaction && onDelete && (
                 <Button
                   type="button"
