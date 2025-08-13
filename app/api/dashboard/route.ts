@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { startOfMonth, TIMEZONE } from '@/lib/date';
+import type { Database } from '@/types/database';
 
 export const revalidate = 60;
 
@@ -75,12 +76,16 @@ export async function GET(req: Request) {
     }
 
     // budgets for month
+    type BudgetItem = Database['public']['Tables']['budget_items']['Row'] & {
+      category: Pick<Database['public']['Tables']['categories']['Row'], 'name'> | null;
+    };
+    type Budget = { id: string; items: BudgetItem[] };
     const { data: budgetData, error: budgetErr } = await supabase
       .from('budgets')
       .select('id, items:budget_items(amount, category_id, category:categories(name))')
       .eq('user_id', user.id)
       .eq('month', month)
-      .maybeSingle();
+      .maybeSingle<Budget>();
     if (budgetErr) {
       return NextResponse.json({ error: budgetErr.message }, { status: 400 });
     }

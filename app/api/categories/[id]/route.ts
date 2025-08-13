@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const supabase = createServerClient();
-  let body: z.infer<typeof categorySchema>;
+  let body: Partial<z.infer<typeof categorySchema>>;
   try {
     body = categorySchema.partial().parse(await req.json());
   } catch (e) {

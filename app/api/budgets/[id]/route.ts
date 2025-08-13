@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { budgetPatchSchema } from '@/lib/validation';
+import type { Database } from '@/types/database';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   const supabase = createServerClient();
   try {
     const user = await getUser();
+    type BudgetItem = Database['public']['Tables']['budget_items']['Row'] & {
+      category: Pick<
+        Database['public']['Tables']['categories']['Row'],
+        'id' | 'name' | 'color'
+      > | null;
+    };
+    type Budget = Database['public']['Tables']['budgets']['Row'] & {
+      items: BudgetItem[];
+    };
     const { data: budget, error } = await supabase
       .from('budgets')
       .select(
@@ -17,7 +27,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       )
       .eq('id', params.id)
       .eq('user_id', user.id)
-      .single();
+      .single<Budget>();
     if (error || !budget) {
       return NextResponse.json({ error: error?.message || 'Not found' }, { status: 404 });
     }

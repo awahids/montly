@@ -24,53 +24,53 @@ export async function getAccountBalances(
 
   const { data: incomes, error: incErr } = await supabase
     .from('transactions')
-    .select('account_id, sum(amount) amount', { group: 'account_id' })
+    .select('account_id, amount')
     .eq('user_id', userId)
     .in('account_id', uniqueIds)
     .eq('type', 'income');
   if (incErr) throw new Error(incErr.message);
   incomes?.forEach(row => {
-    const id = (row as any).account_id as string;
-    const amt = (row as any).amount as number;
+    const id = row.account_id as string;
+    const amt = row.amount as number;
     balances[id] = (balances[id] || 0) + amt;
   });
 
   const { data: expenses, error: expErr } = await supabase
     .from('transactions')
-    .select('account_id, sum(amount) amount', { group: 'account_id' })
+    .select('account_id, amount')
     .eq('user_id', userId)
     .in('account_id', uniqueIds)
     .eq('type', 'expense');
   if (expErr) throw new Error(expErr.message);
   expenses?.forEach(row => {
-    const id = (row as any).account_id as string;
-    const amt = (row as any).amount as number;
+    const id = row.account_id as string;
+    const amt = row.amount as number;
     balances[id] = (balances[id] || 0) - amt;
   });
 
   const { data: transferOut, error: outErr } = await supabase
     .from('transactions')
-    .select('from_account_id, sum(amount) amount', { group: 'from_account_id' })
+    .select('from_account_id, amount')
     .eq('user_id', userId)
     .in('from_account_id', uniqueIds)
     .eq('type', 'transfer');
   if (outErr) throw new Error(outErr.message);
   transferOut?.forEach(row => {
-    const id = (row as any).from_account_id as string;
-    const amt = (row as any).amount as number;
+    const id = row.from_account_id as string;
+    const amt = row.amount as number;
     balances[id] = (balances[id] || 0) - amt;
   });
 
   const { data: transferIn, error: inErr } = await supabase
     .from('transactions')
-    .select('to_account_id, sum(amount) amount', { group: 'to_account_id' })
+    .select('to_account_id, amount')
     .eq('user_id', userId)
     .in('to_account_id', uniqueIds)
     .eq('type', 'transfer');
   if (inErr) throw new Error(inErr.message);
   transferIn?.forEach(row => {
-    const id = (row as any).to_account_id as string;
-    const amt = (row as any).amount as number;
+    const id = row.to_account_id as string;
+    const amt = row.amount as number;
     balances[id] = (balances[id] || 0) + amt;
   });
 

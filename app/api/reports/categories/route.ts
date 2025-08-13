@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
+import type { Database } from '@/types/database';
 
 export const revalidate = 60;
 
@@ -32,6 +33,9 @@ export async function GET(req: Request) {
     const endDay = new Date(`${to}T00:00:00.000Z`);
     const end = new Date(Date.UTC(endDay.getUTCFullYear(), endDay.getUTCMonth(), endDay.getUTCDate() + 1));
 
+    type TxRow = Database['public']['Tables']['transactions']['Row'] & {
+      category: Pick<Database['public']['Tables']['categories']['Row'], 'name' | 'color'> | null;
+    };
     let query = supabase
       .from('transactions')
       .select('amount, category_id, category:categories(name, color)')
@@ -42,7 +46,7 @@ export async function GET(req: Request) {
     if (accountId) {
       query = query.eq('account_id', accountId);
     }
-    const { data, error } = await query;
+    const { data, error } = await query.returns<TxRow[]>();
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

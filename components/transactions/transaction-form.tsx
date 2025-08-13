@@ -245,7 +245,7 @@ export function TransactionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Account</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value ?? undefined}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select account" />
@@ -271,7 +271,7 @@ export function TransactionForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>From Account</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? undefined}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select account" />
@@ -295,7 +295,7 @@ export function TransactionForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>To Account</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? undefined}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select account" />
@@ -323,7 +323,7 @@ export function TransactionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value ?? undefined}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
@@ -354,7 +354,11 @@ export function TransactionForm({
                   <FormControl>
                     <Input
                       inputMode="numeric"
-                      value={field.value ? formatIDR(field.value) : ''}
+                      value={
+                        typeof field.value === 'number'
+                          ? formatIDR(field.value)
+                          : ''
+                      }
                       onChange={(e) => field.onChange(parseIDR(e.target.value))}
                     />
                   </FormControl>
@@ -396,7 +400,7 @@ export function TransactionForm({
                             className="h-3 w-3 cursor-pointer"
                             onClick={() =>
                               field.onChange(
-                                field.value.filter((_, i) => i !== idx)
+                                (field.value ?? []).filter((_, i) => i !== idx)
                               )
                             }
                           />

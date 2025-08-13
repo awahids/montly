@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
+import type { Database } from '@/types/database';
 
 export const revalidate = 60;
 
@@ -28,6 +29,13 @@ export async function GET(req: Request) {
     const start = new Date(Date.UTC(monthDate.getUTCFullYear(), monthDate.getUTCMonth(), 1));
     const end = new Date(Date.UTC(monthDate.getUTCFullYear(), monthDate.getUTCMonth() + 1, 1));
 
+    type BudgetItem = Database['public']['Tables']['budget_items']['Row'] & {
+      category: Pick<
+        Database['public']['Tables']['categories']['Row'],
+        'name' | 'color'
+      > | null;
+    };
+    type Budget = { id: string; items: BudgetItem[] };
     const { data: budgetData, error: budgetErr } = await supabase
       .from('budgets')
       .select(
@@ -35,7 +43,7 @@ export async function GET(req: Request) {
       )
       .eq('user_id', user.id)
       .eq('month', month)
-      .maybeSingle();
+      .maybeSingle<Budget>();
     if (budgetErr) {
       return NextResponse.json({ error: budgetErr.message }, { status: 400 });
     }

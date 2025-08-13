@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
+import type { Database } from '@/types/database';
 
 const querySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
@@ -28,6 +29,12 @@ export async function GET(req: Request) {
       );
     }
     const { from, to, type, accountId, categoryId } = parse.data;
+    type TxRow = Database['public']['Tables']['transactions']['Row'] & {
+      account: Pick<Database['public']['Tables']['accounts']['Row'], 'name'> | null;
+      from_account: Pick<Database['public']['Tables']['accounts']['Row'], 'name'> | null;
+      to_account: Pick<Database['public']['Tables']['accounts']['Row'], 'name'> | null;
+      category: Pick<Database['public']['Tables']['categories']['Row'], 'name'> | null;
+    };
     let query = supabase
       .from('transactions')
       .select(
@@ -63,7 +70,7 @@ export async function GET(req: Request) {
       query = query.eq('category_id', categoryId);
     }
 
-    const { data, error } = await query;
+    const { data, error } = await query.returns<TxRow[]>();
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
