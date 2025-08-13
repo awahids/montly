@@ -3,10 +3,14 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth';
 import { accountSchema } from '@/lib/validation';
 import { z } from 'zod';
+import { getAccountBalances } from '@/lib/balances';
 
 export const dynamic = 'force-dynamic';
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const supabase = createServerClient();
   let body: z.infer<typeof accountSchema>;
   try {
@@ -16,35 +20,55 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
   try {
     const user = await getUser();
+    const updates: Record<string, any> = {};
+    if (body.name !== undefined) updates.name = body.name;
+    if (body.type !== undefined) updates.type = body.type;
+    if (body.currency !== undefined) updates.currency = body.currency;
+    if (body.openingBalance !== undefined)
+      updates.opening_balance = body.openingBalance;
+    if (body.archived !== undefined) updates.archived = body.archived;
+
     const { data, error } = await supabase
       .from('accounts')
-      .update({
-        name: body.name,
-        type: body.type,
-        currency: body.currency,
-        opening_balance: body.opening_balance,
-        archived: body.archived,
-      })
+      .update(updates)
       .eq('id', params.id)
       .eq('user_id', user.id)
       .select('*')
       .single();
     if (error || !data) {
-      return NextResponse.json({ error: error?.message || 'Not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: error?.message || 'Not found' },
+        { status: 404 }
+      );
     }
-    return NextResponse.json(data);
+
+    const balances = await getAccountBalances(supabase, user.id, [data.id]);
+
+    return NextResponse.json({
+      id: data.id,
+      userId: data.user_id,
+      name: data.name,
+      type: data.type,
+      currency: data.currency,
+      openingBalance: data.opening_balance,
+      archived: data.archived,
+      currentBalance: balances[data.id] ?? data.opening_balance,
+    });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const supabase = createServerClient();
   try {
     const user = await getUser();
     const { error } = await supabase
       .from('accounts')
-      .delete()
+      .update({ archived: true })
       .eq('id', params.id)
       .eq('user_id', user.id);
     if (error) {

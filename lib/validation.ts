@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const accountSchema = z.object({
   name: z.string().min(1),
   type: z.enum(['bank', 'ewallet', 'cash']),
-  currency: z.string().min(1),
-  opening_balance: z.number().nonnegative().default(0),
+  currency: z.string().default('IDR'),
+  openingBalance: z.number().nonnegative().default(0),
   archived: z.boolean().default(false),
 });
 
