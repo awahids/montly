@@ -12,7 +12,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const supabase = createServerClient();
-  let body: z.infer<typeof accountSchema>;
+  let body: Partial<z.infer<typeof accountSchema>>;
   try {
     body = accountSchema.partial().parse(await req.json());
   } catch (e) {
