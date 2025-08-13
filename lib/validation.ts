@@ -15,6 +15,10 @@ export const categorySchema = z.object({
   icon: z.string().optional(),
 });
 
+const monthSchema = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Invalid month format. Use YYYY-MM');
+
 export const budgetItemSchema = z.object({
   categoryId: z.string().uuid(),
   amount: z.number().nonnegative(),
@@ -22,12 +26,13 @@ export const budgetItemSchema = z.object({
 });
 
 export const budgetSchema = z.object({
-  month: z.string().min(1),
-  items: z.array(budgetItemSchema).optional(),
+  month: monthSchema,
+  items: z.array(budgetItemSchema).default([]),
 });
 
-export const budgetUpdateSchema = z.object({
-  month: z.string().min(1),
+export const budgetPatchSchema = z.object({
+  month: monthSchema.optional(),
+  items: z.array(budgetItemSchema).optional(),
 });
 
 export const transactionSchema = z.object({
