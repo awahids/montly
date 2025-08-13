@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import * as Icons from 'lucide-react';
+import { format } from 'date-fns';
 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -138,6 +139,13 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
     [items]
   );
   const totalSpent = budget ? getMonthlySpending(budget.month) : 0;
+  const progress = totalBudget ? (totalSpent / totalBudget) * 100 : 0;
+  const overallIndicatorColor =
+    progress < 70
+      ? 'bg-green-500'
+      : progress <= 100
+      ? 'bg-orange-500'
+      : 'bg-red-500';
 
   const availableCategories = useMemo(
     () =>
@@ -219,19 +227,23 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
 
             <Card className="bg-muted/50">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold">{budget.month}</CardTitle>
+                <CardTitle className="text-2xl font-bold">
+                  {format(new Date(`${budget.month}-01`), 'MMMM yyyy')}
+                </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground">Total Budget</span>
-                  <span className="text-lg font-medium">
-                    {formatIDR(totalBudget)}
-                  </span>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Planned</span>
+                  <span>{formatIDR(totalBudget)}</span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground">Total Spent</span>
-                  <span className="text-lg font-medium">{formatIDR(totalSpent)}</span>
+                <div className="flex justify-between text-sm">
+                  <span>Spent</span>
+                  <span>{formatIDR(totalSpent)}</span>
                 </div>
+                <Progress
+                  value={Math.min(progress, 100)}
+                  indicatorClassName={overallIndicatorColor}
+                />
               </CardContent>
             </Card>
 
