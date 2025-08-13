@@ -41,7 +41,7 @@ export const budgetPatchSchema = z.object({
   items: z.array(budgetItemSchema).optional(),
 });
 
-export const transactionSchema = z.object({
+const transactionBaseSchema = z.object({
   date: z.string(),
   type: z.enum(['expense', 'income', 'transfer']),
   accountId: z.string().uuid().nullable().optional(),
@@ -52,3 +52,76 @@ export const transactionSchema = z.object({
   note: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });
+
+export const transactionCreateSchema = transactionBaseSchema.superRefine(
+  (data, ctx) => {
+    if (data.type === 'expense' || data.type === 'income') {
+      if (!data.accountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['accountId'],
+          message: 'accountId is required',
+        });
+      }
+    } else if (data.type === 'transfer') {
+      if (!data.fromAccountId || !data.toAccountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['fromAccountId'],
+          message: 'fromAccountId and toAccountId are required',
+        });
+      } else if (data.fromAccountId === data.toAccountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['toAccountId'],
+          message: 'fromAccountId and toAccountId must differ',
+        });
+      }
+      if (data.categoryId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['categoryId'],
+          message: 'categoryId must be null for transfers',
+        });
+      }
+    }
+  },
+);
+
+export const transactionPatchSchema = transactionBaseSchema
+  .partial()
+  .superRefine((data, ctx) => {
+    if (data.type === 'expense' || data.type === 'income') {
+      if (data.accountId === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['accountId'],
+          message: 'accountId is required',
+        });
+      }
+    } else if (data.type === 'transfer') {
+      if (data.fromAccountId === undefined || data.toAccountId === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['fromAccountId'],
+          message: 'fromAccountId and toAccountId are required',
+        });
+      } else if (data.fromAccountId === data.toAccountId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['toAccountId'],
+          message: 'fromAccountId and toAccountId must differ',
+        });
+      }
+      if (data.categoryId !== undefined && data.categoryId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['categoryId'],
+          message: 'categoryId must be null for transfers',
+        });
+      }
+    }
+  });
+
+export type TransactionCreate = z.infer<typeof transactionCreateSchema>;
+export type TransactionPatch = z.infer<typeof transactionPatchSchema>;
