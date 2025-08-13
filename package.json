@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node scripts/seed-user.mjs"
+    "seed": "node scripts/seed-user.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -71,5 +72,9 @@
     "vaul": "^0.9.9",
     "zod": "^4.0.17",
     "zustand": "^5.0.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "dotenv": "^16.3.1"
   }
 }
