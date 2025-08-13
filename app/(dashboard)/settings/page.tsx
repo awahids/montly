@@ -65,7 +65,7 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    fetch('/api/profile')
+    fetch('/api/settings/profile')
       .then((res) => res.json())
       .then((data) => {
         profileForm.reset({
@@ -74,13 +74,13 @@ export default function SettingsPage() {
         });
         setEmail(data.email);
       });
-    fetch('/api/categories')
+    fetch('/api/settings/categories')
       .then((res) => res.json())
       .then(setCategories);
   }, [profileForm]);
 
   async function onProfileSubmit(values: ProfileFormValues) {
-    const res = await fetch('/api/profile', {
+    const res = await fetch('/api/settings/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),
@@ -96,8 +96,8 @@ export default function SettingsPage() {
 
   async function handleSaveCategory(values: CategoryFormValues) {
     if (editingCategory) {
-      const res = await fetch(`/api/categories/${editingCategory.id}`, {
-        method: 'PUT',
+      const res = await fetch(`/api/settings/categories/${editingCategory.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
@@ -110,7 +110,7 @@ export default function SettingsPage() {
         toast({ description: error || 'Failed to save', variant: 'destructive' });
       }
     } else {
-      const res = await fetch('/api/categories', {
+      const res = await fetch('/api/settings/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
@@ -127,7 +127,7 @@ export default function SettingsPage() {
   }
 
   async function handleDeleteCategory(id: string) {
-    const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/settings/categories/${id}`, { method: 'DELETE' });
     if (res.ok) {
       setCategories((prev) => prev.filter((c) => c.id !== id));
       toast({ description: 'Category deleted' });
