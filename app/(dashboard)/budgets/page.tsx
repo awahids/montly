@@ -21,6 +21,14 @@ import { Progress } from "@/components/ui/progress";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { BudgetDetailDialog } from "@/components/budgets/budget-detail-dialog";
 import { BudgetFormDialog } from "@/components/budgets/budget-form-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
@@ -51,7 +59,6 @@ export default function BudgetsPage() {
   } = useAppStore();
 
   const [year, setYear] = useState("all");
-  const [month, setMonth] = useState("all");
   const [selectedBudgetId, setSelectedBudgetId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -92,48 +99,46 @@ export default function BudgetsPage() {
   }, [user, setBudgets, setTransactions, transactions.length, setLoading]);
 
   const years = Array.from(new Set(budgets.map((b) => b.month.slice(0, 4)))).sort();
-  const months = Array.from(
-    new Set(
-      budgets
-        .filter((b) => year === "all" || b.month.startsWith(year))
-        .map((b) => b.month.slice(5, 7))
-    )
-  ).sort();
   const filteredBudgets = budgets.filter(
-    (b) =>
-      (year === "all" || b.month.startsWith(year)) &&
-      (month === "all" || b.month.slice(5, 7) === month)
+    (b) => year === "all" || b.month.startsWith(year)
   );
 
-  const renderBudgetCard = (budget: Budget) => {
-    const totalBudget =
+  const getBudgetTotals = (budget: Budget) => {
+    const planned =
       budget.items?.reduce((sum, item) => sum + item.amount, 0) || 0;
-    const totalSpent =
+    const actual =
       budget.items?.reduce(
         (sum, item) =>
           sum + getCategorySpending(item.categoryId, budget.month),
         0
       ) || 0;
-    const progress = totalBudget ? (totalSpent / totalBudget) * 100 : 0;
+    const progress = planned ? (actual / planned) * 100 : 0;
     const indicatorColor =
       progress < 70
         ? "bg-green-500"
         : progress <= 100
         ? "bg-orange-500"
         : "bg-red-500";
+    return { planned, actual, progress, indicatorColor };
+  };
+
+  const renderBudgetCard = (budget: Budget) => {
+    const { planned, actual, progress, indicatorColor } = getBudgetTotals(budget);
 
     return (
       <Card
         key={budget.id}
         className="bg-muted/50 hover:shadow-md transition-shadow"
       >
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>{budget.month}</CardTitle>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setSelectedBudgetId(budget.id)}
-            className="transition-transform hover:scale-105"
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
+              {format(new Date(`${budget.month}-01`), "MMMM yyyy")}
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedBudgetId(budget.id)}
+              className="transition-transform hover:scale-105"
           >
             View
           </Button>
@@ -141,11 +146,11 @@ export default function BudgetsPage() {
         <CardContent className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Planned</span>
-            <span>{formatIDR(totalBudget)}</span>
+            <span>{formatIDR(planned)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Spent</span>
-            <span>{formatIDR(totalSpent)}</span>
+            <span>{formatIDR(actual)}</span>
           </div>
           <Progress value={progress} indicatorClassName={indicatorColor} />
         </CardContent>
@@ -169,19 +174,13 @@ export default function BudgetsPage() {
             onClick={() => setIsAdding(true)}
             className="transition-transform hover:scale-105"
           >
-            Add Budget
+            Create Budget
           </Button>
         </div>
       </div>
 
-      <div className="flex gap-2 max-w-sm">
-        <Select
-          value={year}
-          onValueChange={(v) => {
-            setYear(v);
-            setMonth("all");
-          }}
-        >
+      <div className="flex gap-2 max-w-xs">
+        <Select value={year} onValueChange={setYear}>
           <SelectTrigger>
             <SelectValue placeholder="Year" />
           </SelectTrigger>
@@ -194,31 +193,51 @@ export default function BudgetsPage() {
             ))}
           </SelectContent>
         </Select>
-        <Select
-          value={month}
-          onValueChange={setMonth}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Month" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {months.map((m) => (
-              <SelectItem key={m} value={m}>
-                {format(new Date(0, Number(m) - 1), "MMMM")}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="md:hidden grid gap-4 sm:grid-cols-2">
         {filteredBudgets.map((b) => renderBudgetCard(b))}
+      </div>
+
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Month</TableHead>
+              <TableHead className="text-right">Planned Total</TableHead>
+              <TableHead className="text-right">Actual Spent</TableHead>
+              <TableHead>Progress</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredBudgets.map((b) => {
+              const { planned, actual, progress, indicatorColor } =
+                getBudgetTotals(b);
+              return (
+                <TableRow key={b.id}>
+                  <TableCell>
+                    {format(new Date(`${b.month}-01`), "MMMM yyyy")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatIDR(planned)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatIDR(actual)}
+                  </TableCell>
+                  <TableCell>
+                    <Progress value={progress} indicatorClassName={indicatorColor} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
 
       <Button
         onClick={() => setIsAdding(true)}
         className="md:hidden fixed bottom-6 right-6 h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105"
+        aria-label="Create Budget"
       >
         <Plus className="h-6 w-6" />
       </Button>

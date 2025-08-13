@@ -127,6 +127,23 @@ export default function AccountsPage() {
     }
   };
 
+  const handleArchive = async (id: string, archived: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('accounts')
+        .update({ archived })
+        .eq('id', id);
+      if (error) throw error;
+      setAccounts(
+        accounts.map((a) => (a.id === id ? { ...a, archived } : a))
+      );
+      toast.success(archived ? 'Account archived' : 'Account unarchived');
+    } catch (err) {
+      console.error('Failed to update account:', err);
+      toast.error('Failed to update account');
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -182,6 +199,13 @@ export default function AccountsPage() {
                       }}
                     >
                       Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        handleArchive(account.id, !account.archived)
+                      }
+                    >
+                      {account.archived ? 'Unarchive' : 'Archive'}
                     </DropdownMenuItem>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>

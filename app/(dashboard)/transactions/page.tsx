@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import type { DateRange, SelectRangeEventHandler } from 'react-day-picker';
+import { Input } from '@/components/ui/input';
 
 import TransactionForm, {
   TransactionFormValues,
@@ -79,6 +80,7 @@ export default function TransactionsPage() {
   const [accountFilter, setAccountFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | undefined>();
 
@@ -140,7 +142,7 @@ export default function TransactionsPage() {
       category_id: values.categoryId,
       amount: values.amount,
       note: values.note,
-      tags: [],
+      tags: values.tags || [],
     };
     if (editing) {
       await supabase.from('transactions').update(payload).eq('id', editing.id);
@@ -187,7 +189,12 @@ export default function TransactionsPage() {
     const categoryOk =
       categoryFilter === 'all' || t.categoryId === categoryFilter;
     const typeOk = typeFilter === 'all' || t.type === typeFilter;
-    return dateOk && accountOk && categoryOk && typeOk;
+    const searchLower = search.toLowerCase();
+    const textOk =
+      !searchLower ||
+      t.note.toLowerCase().includes(searchLower) ||
+      (t.tags || []).some((tag) => tag.toLowerCase().includes(searchLower));
+    return dateOk && accountOk && categoryOk && typeOk && textOk;
   });
 
   return (
@@ -236,11 +243,11 @@ export default function TransactionsPage() {
               numberOfMonths={2}
             />
           </PopoverContent>
-        </Popover>
+      </Popover>
 
-        <Select value={accountFilter} onValueChange={setAccountFilter}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Account" />
+      <Select value={accountFilter} onValueChange={setAccountFilter}>
+        <SelectTrigger className="w-[160px]">
+          <SelectValue placeholder="Account" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Accounts</SelectItem>
@@ -249,11 +256,11 @@ export default function TransactionsPage() {
                 {a.name}
               </SelectItem>
             ))}
-          </SelectContent>
-        </Select>
+        </SelectContent>
+      </Select>
 
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[160px]">
+      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+        <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -263,11 +270,11 @@ export default function TransactionsPage() {
                 {c.name}
               </SelectItem>
             ))}
-          </SelectContent>
-        </Select>
+        </SelectContent>
+      </Select>
 
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px]">
+      <Select value={typeFilter} onValueChange={setTypeFilter}>
+        <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -275,9 +282,16 @@ export default function TransactionsPage() {
             <SelectItem value="expense">Expense</SelectItem>
             <SelectItem value="income">Income</SelectItem>
             <SelectItem value="transfer">Transfer</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        </SelectContent>
+      </Select>
+
+      <Input
+        placeholder="Search"
+        className="w-full md:w-[200px]"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+    </div>
 
       {/* Desktop Table */}
       <div className="hidden md:block">
