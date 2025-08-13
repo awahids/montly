@@ -15,9 +15,11 @@ export const categorySchema = z.object({
   icon: z.string().optional(),
 });
 
+export const currencyCodes = ['IDR', 'USD', 'EUR'] as const;
+
 export const profileSchema = z.object({
-  name: z.string().min(1),
-  defaultCurrency: z.string().min(1),
+  name: z.string().min(1).max(100),
+  defaultCurrency: z.enum(currencyCodes),
 });
 
 export const profilePatchSchema = profileSchema.partial();
