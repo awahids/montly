@@ -25,6 +25,12 @@ export const budgetItemSchema = z.object({
   rollover: z.boolean().default(false),
 });
 
+export const budgetItemsAddSchema = z.object({
+  items: z.array(budgetItemSchema),
+});
+
+export const budgetItemPatchSchema = budgetItemSchema.partial();
+
 export const budgetSchema = z.object({
   month: monthSchema,
   items: z.array(budgetItemSchema).default([]),
