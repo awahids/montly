@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "types": ["@types/node", "@playwright/test"],
     "plugins": [
       {
         "name": "next"
