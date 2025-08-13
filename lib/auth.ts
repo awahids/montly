@@ -23,11 +23,24 @@ export async function signIn(email: string, password: string) {
   });
 
   if (error) throw error;
+
+  const { session } = data;
+  if (session) {
+    const { access_token, refresh_token, expires_in } = session;
+    const maxAge = expires_in;
+    document.cookie = `sb-access-token=${access_token}; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`;
+    if (refresh_token) {
+      document.cookie = `sb-refresh-token=${refresh_token}; Path=/; Max-Age=${maxAge * 2}; SameSite=Lax; Secure`;
+    }
+  }
+
   return data;
 }
 
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
+  document.cookie = 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
+  document.cookie = 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
   if (error) throw error;
 }
 
