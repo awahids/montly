@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { getUser } from '@/lib/auth';
+import { getUser } from '@/lib/auth/server';
 import { budgetPatchSchema } from '@/lib/validation';
 import { z } from 'zod';
 
