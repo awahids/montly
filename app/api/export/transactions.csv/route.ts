@@ -39,7 +39,7 @@ export async function GET(req: Request) {
       .from('transactions')
       .select(
         `date, type, amount, note, tags,
-        account:accounts(name),
+        account:accounts!transactions_account_id_fkey(name),
         from_account:accounts!transactions_from_account_id_fkey(name),
         to_account:accounts!transactions_to_account_id_fkey(name),
         category:categories(name)`
