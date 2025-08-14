@@ -40,8 +40,11 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
-      if (filters.startDate && t.date < filters.startDate) return false;
-      if (filters.endDate && t.date > filters.endDate) return false;
+      const txDate = new Date(t.date).getTime();
+      if (filters.startDate && txDate < new Date(filters.startDate).getTime())
+        return false;
+      if (filters.endDate && txDate > new Date(filters.endDate).getTime())
+        return false;
       if (filters.accountId) {
         const matchesAccount =
           t.accountId === filters.accountId ||
@@ -158,6 +161,20 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                   <SelectItem value="transfer">Transfer</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  setFilters({
+                    startDate: '',
+                    endDate: '',
+                    accountId: '',
+                    categoryId: '',
+                    type: '',
+                  })
+                }
+              >
+                Clear
+              </Button>
             </div>
           </CollapsibleContent>
         </CardHeader>
