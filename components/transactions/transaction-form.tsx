@@ -169,7 +169,7 @@ export function TransactionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-screen overflow-y-auto">
+      <DialogContent className="max-h-[calc(100dvh_-_4rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
