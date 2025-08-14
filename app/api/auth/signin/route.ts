@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createServerClient } from '@/lib/supabase/server';
+import argon2 from 'argon2';
+import prisma from '@/lib/prisma';
+import { signAccessToken, signRefreshToken } from '@/lib/jwt';
+import { rateLimit } from '@/lib/rate-limit';
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -8,26 +11,44 @@ const signInSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
+  if (!rateLimit(ip)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
   let body: z.infer<typeof signInSchema>;
   try {
     body = signInSchema.parse(await req.json());
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 400 });
   }
-
-  const supabase = createServerClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: body.email,
-    password: body.password,
+  const user = await prisma.profile.findUnique({ where: { email: body.email } });
+  if (!user) {
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
+  }
+  const valid = await argon2.verify(user.passwordHash, body.password);
+  if (!valid) {
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
+  }
+  const payload = { sub: user.id, email: user.email };
+  const accessToken = await signAccessToken(payload);
+  const refreshToken = await signRefreshToken(payload);
+  const res = NextResponse.json({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    defaultCurrency: user.defaultCurrency,
   });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-
-  if (!data.session) {
-    return NextResponse.json({ error: 'No session' }, { status: 500 });
-  }
-
-  return NextResponse.json({ user: data.user, session: data.session });
+  res.cookies.set('access_token', accessToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true,
+    path: '/',
+  });
+  res.cookies.set('refresh_token', refreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true,
+    path: '/',
+  });
+  return res;
 }

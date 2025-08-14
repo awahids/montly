@@ -1,0 +1,110 @@
+// Prisma schema for MongoDB
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  email           String   @unique
+  name            String
+  passwordHash    String
+  defaultCurrency String   @default("IDR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  accounts     Account[]
+  categories   Category[]
+  budgets      Budget[]
+  transactions Transaction[]
+}
+
+model Account {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  name           String
+  type           String
+  currency       String   @default("IDR")
+  openingBalance Decimal  @default(0) @db.Decimal
+  archived       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user             Profile      @relation(fields: [userId], references: [id])
+  budgets          Budget[]
+  transactions     Transaction[] @relation("AccountTransactions")
+  fromTransactions Transaction[] @relation("FromAccountTransactions")
+  toTransactions   Transaction[] @relation("ToAccountTransactions")
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  name      String
+  type      String
+  color     String?
+  icon      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         Profile     @relation(fields: [userId], references: [id])
+  budgetItems  BudgetItem[]
+  transactions Transaction[]
+}
+
+model Budget {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  month       String
+  accountId   String   @db.ObjectId
+  totalAmount Decimal  @default(0) @db.Decimal
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    Profile @relation(fields: [userId], references: [id])
+  account Account @relation(fields: [accountId], references: [id])
+  items   BudgetItem[]
+
+  @@unique([userId, accountId, month])
+}
+
+model BudgetItem {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  budgetId   String   @db.ObjectId
+  categoryId String   @db.ObjectId
+  amount     Decimal  @db.Decimal
+  rollover   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  budget   Budget   @relation(fields: [budgetId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Transaction {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  date          DateTime
+  type          String
+  accountId     String?  @db.ObjectId
+  fromAccountId String?  @db.ObjectId
+  toAccountId   String?  @db.ObjectId
+  amount        Decimal  @db.Decimal
+  categoryId    String?  @db.ObjectId
+  note          String?
+  tags          String[] @default([])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user        Profile    @relation(fields: [userId], references: [id])
+  account     Account?   @relation("AccountTransactions", fields: [accountId], references: [id])
+  fromAccount Account?   @relation("FromAccountTransactions", fields: [fromAccountId], references: [id])
+  toAccount   Account?   @relation("ToAccountTransactions", fields: [toAccountId], references: [id])
+  category    Category?  @relation(fields: [categoryId], references: [id])
+}
+

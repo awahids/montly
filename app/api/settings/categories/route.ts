@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { categorySchema } from '@/lib/validation';
 import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
 
 const querySchema = z.object({
   type: z.enum(['expense', 'income', 'all']).optional(),
@@ -10,7 +10,6 @@ const querySchema = z.object({
 });
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
   let params: z.infer<typeof querySchema>;
   try {
     params = querySchema.parse(Object.fromEntries(new URL(req.url).searchParams));
@@ -19,20 +18,18 @@ export async function GET(req: Request) {
   }
   try {
     const user = await getUser();
-    let query = supabase
-      .from('categories')
-      .select('id, name, type, color, icon')
-      .eq('user_id', user.id);
+    const where: any = { userId: user.sub };
     if (params.type && params.type !== 'all') {
-      query = query.eq('type', params.type);
+      where.type = params.type;
     }
     if (params.q) {
-      query = query.ilike('name', `%${params.q}%`);
+      where.name = { contains: params.q, mode: 'insensitive' };
     }
-    const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    const data = await prisma.category.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, name: true, type: true, color: true, icon: true },
+    });
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });
@@ -40,7 +37,6 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = createServerClient();
   let body: z.infer<typeof categorySchema>;
   try {
     body = categorySchema.parse(await req.json());
@@ -49,20 +45,16 @@ export async function POST(req: Request) {
   }
   try {
     const user = await getUser();
-    const { data, error } = await supabase
-      .from('categories')
-      .insert({
-        user_id: user.id,
+    const data = await prisma.category.create({
+      data: {
+        userId: user.sub,
         name: body.name,
         type: body.type,
         color: body.color,
         icon: body.icon,
-      })
-      .select('id, name, type, color, icon')
-      .single();
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+      },
+      select: { id: true, name: true, type: true, color: true, icon: true },
+    });
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });

@@ -1,11 +1,14 @@
-import type { User } from '@supabase/supabase-js';
-import { createServerClient } from '../supabase/server';
+import { cookies } from 'next/headers';
+import { verifyAccessToken, JWTPayload } from '@/lib/jwt';
 
-export async function getUser(): Promise<User> {
-  const supabase = createServerClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) {
-    throw new Error(error?.message ?? 'Unauthorized');
+export async function getUser(): Promise<JWTPayload> {
+  const token = cookies().get('access_token')?.value;
+  if (!token) {
+    throw new Error('Unauthorized');
   }
-  return data.user;
+  try {
+    return await verifyAccessToken(token);
+  } catch {
+    throw new Error('Unauthorized');
+  }
 }

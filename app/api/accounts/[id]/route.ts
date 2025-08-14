@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { accountSchema } from '@/lib/validation';
 import { z } from 'zod';
 import { getAccountBalances } from '@/lib/balances';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,6 @@ export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createServerClient();
   let body: Partial<z.infer<typeof accountSchema>>;
   try {
     body = accountSchema.partial().parse(await req.json());
@@ -25,34 +24,25 @@ export async function PATCH(
     if (body.type !== undefined) updates.type = body.type;
     if (body.currency !== undefined) updates.currency = body.currency;
     if (body.openingBalance !== undefined)
-      updates.opening_balance = body.openingBalance;
+      updates.openingBalance = body.openingBalance;
     if (body.archived !== undefined) updates.archived = body.archived;
 
-    const { data, error } = await supabase
-      .from('accounts')
-      .update(updates)
-      .eq('id', params.id)
-      .eq('user_id', user.id)
-      .select('*')
-      .single();
-    if (error || !data) {
-      return NextResponse.json(
-        { error: error?.message || 'Not found' },
-        { status: 404 }
-      );
-    }
+    const data = await prisma.account.update({
+      where: { id: params.id, userId: user.sub },
+      data: updates,
+    });
 
-    const balances = await getAccountBalances(supabase, user.id, [data.id]);
+    const balances = await getAccountBalances(user.sub, [data.id]);
 
     return NextResponse.json({
       id: data.id,
-      userId: data.user_id,
+      userId: data.userId,
       name: data.name,
       type: data.type,
       currency: data.currency,
-      openingBalance: data.opening_balance,
+      openingBalance: Number(data.openingBalance),
       archived: data.archived,
-      currentBalance: balances[data.id] ?? data.opening_balance,
+      currentBalance: balances[data.id] ?? Number(data.openingBalance),
     });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });
@@ -63,17 +53,12 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createServerClient();
   try {
     const user = await getUser();
-    const { error } = await supabase
-      .from('accounts')
-      .update({ archived: true })
-      .eq('id', params.id)
-      .eq('user_id', user.id);
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+    await prisma.account.update({
+      where: { id: params.id, userId: user.sub },
+      data: { archived: true },
+    });
     return NextResponse.json({ success: true });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });

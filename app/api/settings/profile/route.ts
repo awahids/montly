@@ -1,19 +1,24 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { profilePatchSchema } from '@/lib/validation';
 import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  const supabase = createServerClient();
   try {
     const user = await getUser();
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, email, name, default_currency, created_at, updated_at')
-      .eq('id', user.id)
-      .single();
-    if (error || !data) {
+    const data = await prisma.profile.findUnique({
+      where: { id: user.sub },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        defaultCurrency: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!data) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
     return NextResponse.json(data);
@@ -23,7 +28,6 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-  const supabase = createServerClient();
   let body: z.infer<typeof profilePatchSchema>;
   try {
     body = profilePatchSchema.parse(await req.json());
@@ -32,24 +36,23 @@ export async function PATCH(req: Request) {
   }
   try {
     const user = await getUser();
-    const update = {
-      ...(body.name !== undefined ? { name: body.name } : {}),
-      ...(body.defaultCurrency !== undefined
-        ? { default_currency: body.defaultCurrency }
-        : {}),
-    };
-    const { data, error } = await supabase
-      .from('profiles')
-      .update(update)
-      .eq('id', user.id)
-      .select('id, email, name, default_currency, created_at, updated_at')
-      .single();
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-    if (!data) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
-    }
+    const data = await prisma.profile.update({
+      where: { id: user.sub },
+      data: {
+        ...(body.name !== undefined ? { name: body.name } : {}),
+        ...(body.defaultCurrency !== undefined
+          ? { defaultCurrency: body.defaultCurrency }
+          : {}),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        defaultCurrency: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });

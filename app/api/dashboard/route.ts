@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { startOfMonth, TIMEZONE } from '@/lib/date';
 import type { Database } from '@/types/database';
+import { prisma } from '@/lib/prisma';
 
 export const revalidate = 60;
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
   try {
     const user = await getUser();
     const { searchParams } = new URL(req.url);
@@ -20,85 +19,64 @@ export async function GET(req: Request) {
     const start = startOfMonth(monthDate);
     const end = new Date(Date.UTC(monthDate.getUTCFullYear(), monthDate.getUTCMonth() + 1, 1));
 
-    // accounts for balance
-    let accQuery = supabase
-      .from('accounts')
-      .select('id, opening_balance')
-      .eq('user_id', user.id);
-    if (accountId) {
-      accQuery = accQuery.eq('id', accountId);
-    }
-    const { data: accounts, error: accErr } = await accQuery;
-    if (accErr) {
-      return NextResponse.json({ error: accErr.message }, { status: 400 });
-    }
+    const accounts = await prisma.account.findMany({
+      where: { userId: user.sub, ...(accountId ? { id: accountId } : {}) },
+      select: { id: true, openingBalance: true },
+    });
 
-    // all transactions for balance
-    let txAllQuery = supabase
-      .from('transactions')
-      .select('type, amount, account_id, from_account_id, to_account_id')
-      .eq('user_id', user.id);
-    if (accountId) {
-      txAllQuery = txAllQuery.or(
-        `account_id.eq.${accountId},from_account_id.eq.${accountId},to_account_id.eq.${accountId}`
-      );
-    }
-    const { data: allTxs, error: allTxErr } = await txAllQuery;
-    if (allTxErr) {
-      return NextResponse.json({ error: allTxErr.message }, { status: 400 });
-    }
+    const allTxs = await prisma.transaction.findMany({
+      where: {
+        userId: user.sub,
+        ...(accountId
+          ? {
+              OR: [
+                { accountId },
+                { fromAccountId: accountId },
+                { toAccountId: accountId },
+              ],
+            }
+          : {}),
+      },
+      select: { type: true, amount: true, accountId: true, fromAccountId: true, toAccountId: true },
+    });
 
-    // month transactions with relations
-    const buildMonthQuery = () => {
-      let q = supabase
-        .from('transactions')
-        .select(
-          `*,
-          account:accounts(name, type),
-          from_account:accounts!transactions_from_account_id_fkey(name, type),
-          to_account:accounts!transactions_to_account_id_fkey(name, type),
-          category:categories(name, color, icon)`
-        )
-        .eq('user_id', user.id)
-        .gte('date', start.toISOString())
-        .lt('date', end.toISOString())
-        .order('date', { ascending: false });
-      if (accountId) {
-        q = q.or(
-          `account_id.eq.${accountId},from_account_id.eq.${accountId},to_account_id.eq.${accountId}`
-        );
-      }
-      return q;
-    };
-    const { data: monthTxs, error: monthErr } = await buildMonthQuery();
-    if (monthErr) {
-      return NextResponse.json({ error: monthErr.message }, { status: 400 });
-    }
+    const monthTxs = await prisma.transaction.findMany({
+      where: {
+        userId: user.sub,
+        date: { gte: start, lt: end },
+        ...(accountId
+          ? {
+              OR: [
+                { accountId },
+                { fromAccountId: accountId },
+                { toAccountId: accountId },
+              ],
+            }
+          : {}),
+      },
+      include: {
+        account: { select: { name: true, type: true } },
+        fromAccount: { select: { name: true, type: true } },
+        toAccount: { select: { name: true, type: true } },
+        category: { select: { name: true, color: true, icon: true } },
+      },
+      orderBy: { date: 'desc' },
+    });
 
-    // budgets for month
-    type BudgetItem = Database['public']['Tables']['budget_items']['Row'] & {
-      category: Pick<Database['public']['Tables']['categories']['Row'], 'name'> | null;
-    };
-    type Budget = { id: string; items: BudgetItem[] };
-    const { data: budgetData, error: budgetErr } = await supabase
-      .from('budgets')
-      .select('id, items:budget_items(amount, category_id, category:categories(name))')
-      .eq('user_id', user.id)
-      .eq('month', month)
-      .maybeSingle<Budget>();
-    if (budgetErr) {
-      return NextResponse.json({ error: budgetErr.message }, { status: 400 });
-    }
+    const budgetData = await prisma.budget.findFirst({
+      where: { userId: user.sub, month },
+      select: { id: true, items: { select: { amount: true, categoryId: true, category: { select: { name: true } } } } },
+    });
 
     let totalBalance = 0;
-    accounts?.forEach(acc => {
-      let balance = acc.opening_balance;
-      allTxs?.forEach(t => {
-        if (t.type === 'income' && t.account_id === acc.id) balance += t.amount;
-        if (t.type === 'expense' && t.account_id === acc.id) balance -= t.amount;
+    accounts.forEach(acc => {
+      let balance = Number(acc.openingBalance);
+      allTxs.forEach(t => {
+        if (t.type === 'income' && t.accountId === acc.id) balance += Number(t.amount);
+        if (t.type === 'expense' && t.accountId === acc.id) balance -= Number(t.amount);
         if (t.type === 'transfer') {
-          if (t.from_account_id === acc.id) balance -= t.amount;
-          if (t.to_account_id === acc.id) balance += t.amount;
+          if (t.fromAccountId === acc.id) balance -= Number(t.amount);
+          if (t.toAccountId === acc.id) balance += Number(t.amount);
         }
       });
       totalBalance += balance;
@@ -108,11 +86,11 @@ export async function GET(req: Request) {
     const perCategoryMap = new Map<string, { categoryId: string; categoryName: string; planned: number; actual: number }>();
     let totalPlanned = 0;
     items.forEach(item => {
-      totalPlanned += item.amount;
-      perCategoryMap.set(item.category_id, {
-        categoryId: item.category_id,
+      totalPlanned += Number(item.amount);
+      perCategoryMap.set(item.categoryId, {
+        categoryId: item.categoryId,
         categoryName: item.category?.name ?? '',
-        planned: item.amount,
+        planned: Number(item.amount),
         actual: 0,
       });
     });
@@ -123,27 +101,27 @@ export async function GET(req: Request) {
     let mtdSpend = 0;
     const dailyMap = new Map<string, number>();
     const categoryMap = new Map<string, { categoryId: string; name: string; color: string; amount: number }>();
-    monthTxs?.forEach(tx => {
+    monthTxs.forEach(tx => {
       if (tx.type === 'expense') {
         if (new Date(tx.date) <= nowJakarta) {
-          mtdSpend += tx.amount;
+          mtdSpend += Number(tx.amount);
         }
-        const dayKey = tx.date.slice(0, 10);
-        dailyMap.set(dayKey, (dailyMap.get(dayKey) ?? 0) + tx.amount);
-        if (tx.category_id) {
-          const cat = categoryMap.get(tx.category_id);
+        const dayKey = tx.date.toISOString().slice(0, 10);
+        dailyMap.set(dayKey, (dailyMap.get(dayKey) ?? 0) + Number(tx.amount));
+        if (tx.categoryId) {
+          const cat = categoryMap.get(tx.categoryId);
           const name = tx.category?.name ?? '';
           const color = tx.category?.color ?? '';
-          if (cat) cat.amount += tx.amount;
-          else categoryMap.set(tx.category_id, { categoryId: tx.category_id, name, color, amount: tx.amount });
-          const pc = perCategoryMap.get(tx.category_id);
-          if (pc) pc.actual += tx.amount;
+          if (cat) cat.amount += Number(tx.amount);
+          else categoryMap.set(tx.categoryId, { categoryId: tx.categoryId, name, color, amount: Number(tx.amount) });
+          const pc = perCategoryMap.get(tx.categoryId);
+          if (pc) pc.actual += Number(tx.amount);
           else {
-            perCategoryMap.set(tx.category_id, {
-              categoryId: tx.category_id,
+            perCategoryMap.set(tx.categoryId, {
+              categoryId: tx.categoryId,
               categoryName: name,
               planned: 0,
-              actual: tx.amount,
+              actual: Number(tx.amount),
             });
           }
         }

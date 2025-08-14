@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
+import { prisma } from '@/lib/prisma';
 
 export const revalidate = 60;
 
@@ -15,7 +15,6 @@ const querySchema = z.object({
 });
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
   try {
     const user = await getUser();
     const { searchParams } = new URL(req.url);
@@ -32,9 +31,7 @@ export async function GET(req: Request) {
 
     const months: string[] = [];
     let cur = new Date(fromDate);
-    while (
-      cur <= toDate && months.length < 12
-    ) {
+    while (cur <= toDate && months.length < 12) {
       months.push(
         `${cur.getUTCFullYear()}-${String(cur.getUTCMonth() + 1).padStart(2, '0')}`
       );
@@ -50,25 +47,23 @@ export async function GET(req: Request) {
     }
     const end = new Date(Date.UTC(toDate.getUTCFullYear(), toDate.getUTCMonth() + 1, 1));
 
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('date, type, amount')
-      .eq('user_id', user.id)
-      .gte('date', fromDate.toISOString())
-      .lt('date', end.toISOString());
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+    const data = await prisma.transaction.findMany({
+      where: {
+        userId: user.sub,
+        date: { gte: fromDate, lt: end },
+      },
+      select: { date: true, type: true, amount: true },
+    });
 
     const result = months.map(m => ({ month: m, income: 0, expense: 0 }));
     const index = new Map(result.map((r, i) => [r.month, i]));
-    data?.forEach(tx => {
+    data.forEach(tx => {
       const d = new Date(tx.date);
       const m = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
       const idx = index.get(m);
       if (idx !== undefined) {
-        if (tx.type === 'income') result[idx].income += tx.amount;
-        else if (tx.type === 'expense') result[idx].expense += tx.amount;
+        if (tx.type === 'income') result[idx].income += Number(tx.amount);
+        else if (tx.type === 'expense') result[idx].expense += Number(tx.amount);
       }
     });
 

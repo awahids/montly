@@ -1,4 +1,3 @@
-import { supabase } from './supabase';
 import { User } from '@/types';
 import { useAppStore } from './store';
 
@@ -12,7 +11,7 @@ export async function signUp(email: string, password: string, name: string) {
   if (!res.ok) {
     throw new Error(data.error || 'Failed to sign up');
   }
-  return data;
+  return data as User;
 }
 
 export async function signIn(email: string, password: string) {
@@ -25,42 +24,17 @@ export async function signIn(email: string, password: string) {
   if (!res.ok) {
     throw new Error(data.error || 'Failed to sign in');
   }
-  await supabase.auth.setSession({
-    access_token: data.session.access_token,
-    refresh_token: data.session.refresh_token,
-  });
-  const user = await getCurrentUser();
-  if (user) {
-    useAppStore.getState().setUser(user);
-  }
-  return user;
+  useAppStore.getState().setUser(data);
+  return data as User;
 }
 
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  document.cookie = 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
-  document.cookie = 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
+  await fetch('/api/auth/signout', { method: 'POST' });
   useAppStore.getState().setUser(null);
-  if (error) throw error;
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile) return null;
-
-  return {
-    id: profile.id,
-    email: profile.email,
-    name: profile.name,
-    defaultCurrency: profile.default_currency,
-  };
+  const res = await fetch('/api/profile');
+  if (!res.ok) return null;
+  return (await res.json()) as User;
 }

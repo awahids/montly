@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
+import { prisma } from '@/lib/prisma';
 
 export const revalidate = 60;
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
   try {
     const user = await getUser();
     const { searchParams } = new URL(req.url);
@@ -18,16 +17,13 @@ export async function GET(req: Request) {
     const start = new Date(Date.UTC(year, 0, 1));
     const end = new Date(Date.UTC(year + 1, 0, 1));
 
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('date, type, amount')
-      .eq('user_id', user.id)
-      .gte('date', start.toISOString())
-      .lt('date', end.toISOString());
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+    const data = await prisma.transaction.findMany({
+      where: {
+        userId: user.sub,
+        date: { gte: start, lt: end },
+      },
+      select: { date: true, type: true, amount: true },
+    });
 
     const months = Array.from({ length: 12 }, (_, i) => ({
       month: `${year}-${String(i + 1).padStart(2, '0')}`,

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import type { Database } from '@/types/database';
+import { prisma } from '@/lib/prisma';
 
 const querySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
@@ -17,7 +17,6 @@ function escapeCSV(value: string): string {
 }
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
   try {
     const user = await getUser();
     const { searchParams } = new URL(req.url);
@@ -29,51 +28,40 @@ export async function GET(req: Request) {
       );
     }
     const { from, to, type, accountId, categoryId } = parse.data;
-    type TxRow = Database['public']['Tables']['transactions']['Row'] & {
-      account: Pick<Database['public']['Tables']['accounts']['Row'], 'name'> | null;
-      from_account: Pick<Database['public']['Tables']['accounts']['Row'], 'name'> | null;
-      to_account: Pick<Database['public']['Tables']['accounts']['Row'], 'name'> | null;
-      category: Pick<Database['public']['Tables']['categories']['Row'], 'name'> | null;
-    };
-    let query = supabase
-      .from('transactions')
-      .select(
-        `date, type, amount, note, tags,
-        account:accounts(name),
-        from_account:accounts!transactions_from_account_id_fkey(name),
-        to_account:accounts!transactions_to_account_id_fkey(name),
-        category:categories(name)`
-      )
-      .eq('user_id', user.id)
-      .order('date', { ascending: true });
+    const where: any = { userId: user.sub };
+    if (from || to) {
+      where.date = {};
+      if (from) where.date.gte = new Date(`${from}T00:00:00.000Z`);
+      if (to) {
+        const endDay = new Date(`${to}T00:00:00.000Z`);
+        const end = new Date(Date.UTC(endDay.getUTCFullYear(), endDay.getUTCMonth(), endDay.getUTCDate() + 1));
+        where.date.lt = end;
+      }
+    }
+    if (type) where.type = type;
+    if (accountId)
+      where.OR = [
+        { accountId },
+        { fromAccountId: accountId },
+        { toAccountId: accountId },
+      ];
+    if (categoryId) where.categoryId = categoryId;
 
-    if (from) {
-      const start = new Date(`${from}T00:00:00.000Z`);
-      query = query.gte('date', start.toISOString());
-    }
-    if (to) {
-      const endDay = new Date(`${to}T00:00:00.000Z`);
-      const end = new Date(
-        Date.UTC(endDay.getUTCFullYear(), endDay.getUTCMonth(), endDay.getUTCDate() + 1)
-      );
-      query = query.lt('date', end.toISOString());
-    }
-    if (type) {
-      query = query.eq('type', type);
-    }
-    if (accountId) {
-      query = query.or(
-        `account_id.eq.${accountId},from_account_id.eq.${accountId},to_account_id.eq.${accountId}`
-      );
-    }
-    if (categoryId) {
-      query = query.eq('category_id', categoryId);
-    }
-
-    const { data, error } = await query.returns<TxRow[]>();
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+    const data = await prisma.transaction.findMany({
+      where,
+      select: {
+        date: true,
+        type: true,
+        amount: true,
+        note: true,
+        tags: true,
+        account: { select: { name: true } },
+        fromAccount: { select: { name: true } },
+        toAccount: { select: { name: true } },
+        category: { select: { name: true } },
+      },
+      orderBy: { date: 'asc' },
+    });
 
     const header = [
       'date',
@@ -87,15 +75,15 @@ export async function GET(req: Request) {
       'tags',
     ];
     const lines = [header.join(',')];
-    data?.forEach(tx => {
+    data.forEach(tx => {
       const note = (tx.note ?? '').replace(/\r?\n/g, ' ');
       const tags = (tx.tags ?? []).join('|');
       const row = [
-        new Date(tx.date).toISOString(),
+        tx.date.toISOString(),
         tx.type,
         tx.account?.name ?? '',
-        tx.from_account?.name ?? '',
-        tx.to_account?.name ?? '',
+        tx.fromAccount?.name ?? '',
+        tx.toAccount?.name ?? '',
         tx.category?.name ?? '',
         tx.amount.toString(),
         note,
