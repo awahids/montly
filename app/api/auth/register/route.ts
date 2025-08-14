@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 const signUpSchema = z.object({
   name: z.string().min(2),
@@ -13,10 +14,12 @@ export async function POST(req: Request) {
   try {
     body = signUpSchema.parse(await req.json());
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return NextResponse.json({ ok: false, error: (e as Error).message });
   }
 
   const supabase = createServerClient();
+  const admin = createAdminClient();
+
   const { data, error } = await supabase.auth.signUp({
     email: body.email,
     password: body.password,
@@ -24,23 +27,27 @@ export async function POST(req: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    const message =
+      error.message === 'User already registered'
+        ? 'An account already exists for this email.'
+        : error.message;
+    return NextResponse.json({ ok: false, error: message });
   }
 
   const userId = data.user?.id;
   if (userId) {
-    const { error: profileError } = await supabase.from('profiles').insert({
+    const { error: profileError } = await admin.from('profiles').insert({
       id: userId,
       email: body.email,
       name: body.name,
       default_currency: 'IDR',
     });
     if (profileError) {
-      return NextResponse.json({ error: profileError.message }, { status: 400 });
+      return NextResponse.json({ ok: false, error: profileError.message });
     }
     // clear auth cookies to require sign in after sign up
     await supabase.auth.signOut();
   }
 
-  return NextResponse.json({ user: data.user });
+  return NextResponse.json({ ok: true });
 }

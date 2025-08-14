@@ -470,7 +470,7 @@ export default function TransactionsPage() {
 
       <Button
         onClick={openNew}
-        className="md:hidden fixed bottom-6 right-6 rounded-full h-14 w-14 p-0"
+        className="md:hidden fixed right-6 bottom-[calc(5rem+env(safe-area-inset-bottom))] rounded-full h-14 w-14 p-0"
       >
         <Plus className="h-6 w-6" />
       </Button>

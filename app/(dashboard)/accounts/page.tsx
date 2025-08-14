@@ -253,7 +253,7 @@ export default function AccountsPage() {
           setEditingAccount(null);
           setDialogOpen(true);
         }}
-        className="md:hidden fixed bottom-6 right-6 h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105"
+        className="md:hidden fixed right-6 bottom-[calc(5rem+env(safe-area-inset-bottom))] h-12 w-12 rounded-full p-0 shadow-lg transition-transform hover:scale-105"
       >
         <Plus className="h-6 w-6" />
       </Button>
