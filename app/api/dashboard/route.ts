@@ -54,7 +54,7 @@ export async function GET(req: Request) {
         .from('transactions')
         .select(
           `*,
-          account:accounts(name, type),
+          account:accounts!transactions_account_id_fkey(name, type),
           from_account:accounts!transactions_from_account_id_fkey(name, type),
           to_account:accounts!transactions_to_account_id_fkey(name, type),
           category:categories(name, color, icon)`
