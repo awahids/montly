@@ -1,6 +1,9 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/components/theme-provider';
+import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -66,7 +69,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#4F46E5" />
         <meta name="apple-mobile-web-app-title" content="monli" />
@@ -100,7 +103,12 @@ export default function RootLayout({
         />
         <meta name="twitter:image" content="/monli-og-image.png" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={cn('bg-background text-foreground', inter.className)}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
