@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 const signUpSchema = z.object({
   name: z.string().min(2),
@@ -17,6 +18,8 @@ export async function POST(req: Request) {
   }
 
   const supabase = createServerClient();
+  const admin = createAdminClient();
+
   const { data, error } = await supabase.auth.signUp({
     email: body.email,
     password: body.password,
@@ -33,7 +36,7 @@ export async function POST(req: Request) {
 
   const userId = data.user?.id;
   if (userId) {
-    const { error: profileError } = await supabase.from('profiles').insert({
+    const { error: profileError } = await admin.from('profiles').insert({
       id: userId,
       email: body.email,
       name: body.name,
