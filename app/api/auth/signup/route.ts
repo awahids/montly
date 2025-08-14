@@ -1,0 +1,46 @@
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { createServerClient } from '@/lib/supabase/server';
+
+const signUpSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export async function POST(req: Request) {
+  let body: z.infer<typeof signUpSchema>;
+  try {
+    body = signUpSchema.parse(await req.json());
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+  }
+
+  const supabase = createServerClient();
+  const { data, error } = await supabase.auth.signUp({
+    email: body.email,
+    password: body.password,
+    options: { data: { name: body.name } },
+  });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  const userId = data.user?.id;
+  if (userId) {
+    const { error: profileError } = await supabase.from('profiles').insert({
+      id: userId,
+      email: body.email,
+      name: body.name,
+      default_currency: 'IDR',
+    });
+    if (profileError) {
+      return NextResponse.json({ error: profileError.message }, { status: 400 });
+    }
+    // clear auth cookies to require sign in after sign up
+    await supabase.auth.signOut();
+  }
+
+  return NextResponse.json({ user: data.user });
+}

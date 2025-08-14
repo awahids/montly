@@ -2,47 +2,28 @@ import { supabase } from './supabase';
 import { User } from '@/types';
 
 export async function signUp(email: string, password: string, name: string) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { name },
-    },
+  const res = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name }),
   });
-
-  if (error) throw error;
-
-  const { session } = data;
-  if (session) {
-    const { access_token, refresh_token, expires_in } = session;
-    const maxAge = expires_in;
-    document.cookie = `sb-access-token=${access_token}; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`;
-    if (refresh_token) {
-      document.cookie = `sb-refresh-token=${refresh_token}; Path=/; Max-Age=${maxAge * 2}; SameSite=Lax; Secure`;
-    }
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to sign up');
   }
-
   return data;
 }
 
 export async function signIn(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+  const res = await fetch('/api/auth/signin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
   });
-
-  if (error) throw error;
-
-  const { session } = data;
-  if (session) {
-    const { access_token, refresh_token, expires_in } = session;
-    const maxAge = expires_in;
-    document.cookie = `sb-access-token=${access_token}; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`;
-    if (refresh_token) {
-      document.cookie = `sb-refresh-token=${refresh_token}; Path=/; Max-Age=${maxAge * 2}; SameSite=Lax; Secure`;
-    }
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to sign in');
   }
-
   return data;
 }
 
