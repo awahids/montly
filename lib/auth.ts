@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { User } from '@/types';
+import { useAppStore } from './store';
 
 export async function signUp(email: string, password: string, name: string) {
   const res = await fetch('/api/auth/signup', {
@@ -24,13 +25,22 @@ export async function signIn(email: string, password: string) {
   if (!res.ok) {
     throw new Error(data.error || 'Failed to sign in');
   }
-  return data;
+  await supabase.auth.setSession({
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token,
+  });
+  const user = await getCurrentUser();
+  if (user) {
+    useAppStore.getState().setUser(user);
+  }
+  return user;
 }
 
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
   document.cookie = 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
   document.cookie = 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
+  useAppStore.getState().setUser(null);
   if (error) throw error;
 }
 

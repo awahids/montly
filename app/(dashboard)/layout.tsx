@@ -1,14 +1,33 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { Toaster } from "@/components/ui/sonner";
+import { useAppStore } from "@/lib/store";
+import { getCurrentUser } from "@/lib/auth";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const { user, setUser } = useAppStore();
+
+  useEffect(() => {
+    if (user) return;
+    (async () => {
+      const current = await getCurrentUser();
+      if (current) {
+        setUser(current);
+      } else {
+        router.push("/auth/signin");
+      }
+    })();
+  }, [user, setUser, router]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">

@@ -25,5 +25,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({ user: data.user });
+  if (!data.session) {
+    return NextResponse.json({ error: 'No session' }, { status: 500 });
+  }
+
+  return NextResponse.json({ user: data.user, session: data.session });
 }

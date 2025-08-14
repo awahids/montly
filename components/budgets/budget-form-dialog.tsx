@@ -45,13 +45,14 @@ type BudgetFormDialogProps = {
 };
 
 export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) {
-  const { user, categories, setCategories, budgets, setBudgets } = useAppStore();
+  const { user, budgets, setBudgets } = useAppStore();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [month, setMonth] = useState<string>(() => new Date().toISOString().slice(0, 7));
   const [items, setItems] = useState<ItemInput[]>([{ categoryId: '', amount: '' }]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!open || categories.length || !user) return;
+    if (!open || !user) return;
     const fetchCategories = async () => {
       const { data } = await supabase
         .from('categories')
@@ -61,7 +62,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
       if (data) setCategories(keysToCamel<Category[]>(data));
     };
     fetchCategories();
-  }, [open, categories.length, user, setCategories]);
+  }, [open, user]);
 
   const handleItemChange = (index: number, field: keyof ItemInput, value: string) => {
     const updated = [...items];
@@ -75,7 +76,6 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
     if (!user) return;
     setSubmitting(true);
     const payload = {
-      userId: user.id,
       month,
       items: items
         .filter((i) => i.categoryId && i.amount)
@@ -122,13 +122,11 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories
-                    .filter((c) => c.type === 'expense')
-                    .map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Input
