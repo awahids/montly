@@ -186,31 +186,47 @@ export default function DashboardPage() {
       remainingAllowance,
     });
 
-    // Category spending
-    if (currentBudgets.length) {
-      const categorySpendData: CategorySpend[] = currentBudgets.flatMap(b =>
-        (b.items || []).map(item => {
-          const actual = transactions
-            .filter(
-              t =>
-                t.type === 'expense' &&
-                t.accountId === b.accountId &&
-                t.categoryId === item.categoryId &&
-                t.date.startsWith(currentMonth)
-            )
-            .reduce((sum, t) => sum + t.amount, 0);
+    // Category spending from transactions
+    const categoryMap = new Map<string, CategorySpend>();
 
-          return {
+    transactions
+      .filter(
+        t => t.type === 'expense' && t.date.startsWith(currentMonth)
+      )
+      .forEach(t => {
+        if (!t.categoryId || !t.category) return;
+        const existing = categoryMap.get(t.categoryId);
+        if (existing) {
+          existing.amount += t.amount;
+        } else {
+          categoryMap.set(t.categoryId, {
+            categoryId: t.categoryId,
+            categoryName: t.category.name,
+            amount: t.amount,
+            budgeted: 0,
+            color: t.category.color || '#6B7280',
+          });
+        }
+      });
+
+    currentBudgets.forEach(b =>
+      (b.items || []).forEach(item => {
+        const existing = categoryMap.get(item.categoryId);
+        if (existing) {
+          existing.budgeted = item.amount;
+        } else {
+          categoryMap.set(item.categoryId, {
             categoryId: item.categoryId,
             categoryName: item.category?.name || 'Unknown',
-            amount: actual,
+            amount: 0,
             budgeted: item.amount,
             color: item.category?.color || '#6B7280',
-          };
-        })
-      );
-      setCategorySpends(categorySpendData);
-    }
+          });
+        }
+      })
+    );
+
+    setCategorySpends(Array.from(categoryMap.values()));
   }, [accounts, transactions, budgets]);
 
   if (loading) {
