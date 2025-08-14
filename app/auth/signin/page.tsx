@@ -7,12 +7,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signIn } from '@/lib/auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -24,8 +30,13 @@ type SignInForm = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInForm>({
+  const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
   });
 
@@ -68,14 +79,32 @@ export default function SignInPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                {...register('password')}
-                type="password"
-                placeholder="Enter your password"
-                disabled={loading}
-              />
+              <div className="relative">
+                <Input
+                  {...register('password')}
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  disabled={loading}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
-                <p className="text-sm text-red-600">{errors.password.message}</p>
+                <p className="text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -93,7 +122,10 @@ export default function SignInPage() {
             <div className="text-center">
               <p className="text-sm text-gray-600">
                 Don&apos;t have an account?{' '}
-                <Link href="/auth/signup" className="text-primary hover:underline">
+                <Link
+                  href="/auth/signup"
+                  className="text-primary hover:underline"
+                >
                   Sign up
                 </Link>
               </p>

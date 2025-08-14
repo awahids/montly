@@ -1,12 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -58,36 +53,45 @@ export default function ReportsPage() {
 
   const [month, setMonth] = useState(defaultMonth);
   const [year, setYear] = useState(defaultYear);
-  const [summary, setSummary] = useState<SummaryResponse>({ daily: [], categories: [] });
+  const [summary, setSummary] = useState<SummaryResponse>({
+    daily: [],
+    categories: [],
+  });
   const [trend, setTrend] = useState<TrendRow[]>([]);
   const [categoryData, setCategoryData] = useState<CategoryRow[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     fetch(`/api/dashboard?month=${month}`)
-      .then(res => res.json())
-      .then(data => setSummary({ daily: data.daily || [], categories: data.categories || [] }))
+      .then((res) => res.json())
+      .then((data) =>
+        setSummary({
+          daily: data.daily || [],
+          categories: data.categories || [],
+        })
+      )
       .catch(() => setSummary({ daily: [], categories: [] }));
   }, [month]);
 
   useEffect(() => {
     fetch(`/api/reports/income-expense?year=${year}`)
-      .then(res => res.json())
-      .then(res => setTrend(res.data || []))
+      .then((res) => res.json())
+      .then((res) => setTrend(res.data || []))
       .catch(() => setTrend([]));
   }, [year]);
 
   useEffect(() => {
     fetch(`/api/reports/category?month=${month}`)
-      .then(res => res.json())
-      .then(res => setCategoryData(res.data || []))
+      .then((res) => res.json())
+      .then((res) => setCategoryData(res.data || []))
       .catch(() => setCategoryData([]));
   }, [month]);
 
   const exportCSV = (rows: any[], filename: string) => {
     if (!rows.length) return;
     const headers = Object.keys(rows[0]).join(',');
-    const csv = headers + '\n' + rows.map(r => Object.values(r).join(',')).join('\n');
+    const csv =
+      headers + '\n' + rows.map((r) => Object.values(r).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -97,44 +101,66 @@ export default function ReportsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const dailyData = summary.daily.map(d => ({
+  const dailyData = summary.daily.map((d) => ({
     date: d.date.slice(8, 10),
     amount: d.amount,
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2 sm:px-4 md:px-8">
       <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Reports</h2>
-            <p className="text-muted-foreground">Analyze your finances</p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Reports
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Analyze your finances
+            </p>
           </div>
           <CollapsibleTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1">
-              <Filter className="h-4 w-4" /> Filters
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1 w-full sm:w-auto"
+            >
+              <Filter className="h-4 w-4" /> Filter
             </Button>
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Month</label>
-              <Input type="month" value={month} onChange={e => setMonth(e.target.value)} />
+              <Input
+                type="month"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Year</label>
-              <Input type="number" value={year} onChange={e => setYear(e.target.value)} />
+              <Input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              />
             </div>
           </div>
         </CollapsibleContent>
       </Collapsible>
 
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="summary">Monthly Summary</TabsTrigger>
-          <TabsTrigger value="trend">Income vs Expense Trend</TabsTrigger>
-          <TabsTrigger value="category">Category Breakdown</TabsTrigger>
+        <TabsList className="flex flex-wrap gap-2">
+          <TabsTrigger value="summary" className="flex-1 min-w-[120px]">
+            Monthly Summary
+          </TabsTrigger>
+          <TabsTrigger value="trend" className="flex-1 min-w-[120px]">
+            Income vs Expense Trend
+          </TabsTrigger>
+          <TabsTrigger value="category" className="flex-1 min-w-[120px]">
+            Category Details
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary" className="space-y-4">
@@ -148,26 +174,45 @@ export default function ReportsPage() {
               <Download className="h-4 w-4" /> Export CSV
             </Button>
           </div>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Daily Expenses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-72">
+                <div className="h-56 sm:h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={dailyData}>
                       <defs>
-                        <linearGradient id="sumColor" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
-                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1} />
+                        <linearGradient
+                          id="sumColor"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#3B82F6"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#3B82F6"
+                            stopOpacity={0.1}
+                          />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
-                      <YAxis tickFormatter={v => formatIDR(v)} />
+                      <YAxis tickFormatter={(v) => formatIDR(v)} />
                       <Tooltip formatter={(v: number) => formatIDR(v)} />
-                      <Area type="monotone" dataKey="amount" stroke="#3B82F6" fill="url(#sumColor)" />
+                      <Area
+                        type="monotone"
+                        dataKey="amount"
+                        stroke="#3B82F6"
+                        fill="url(#sumColor)"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -175,10 +220,10 @@ export default function ReportsPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Expense by Category</CardTitle>
+                <CardTitle>Expenses by Category</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-72">
+                <div className="h-56 sm:h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -187,10 +232,13 @@ export default function ReportsPage() {
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        outerRadius={100}
-                        innerRadius={60}
+                        outerRadius={80}
+                        innerRadius={45}
+                        // Responsive radius
+                        // outerRadius={window.innerWidth < 640 ? 80 : 100}
+                        // innerRadius={window.innerWidth < 640 ? 45 : 60}
                       >
-                        {summary.categories.map(entry => (
+                        {summary.categories.map((entry) => (
                           <Cell key={entry.categoryId} fill={entry.color} />
                         ))}
                       </Pie>
@@ -220,12 +268,12 @@ export default function ReportsPage() {
               <CardTitle>Income vs Expense ({year})</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-64 sm:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trend}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
-                    <YAxis tickFormatter={v => formatIDR(v)} />
+                    <YAxis tickFormatter={(v) => formatIDR(v)} />
                     <Tooltip formatter={(v: number) => formatIDR(v)} />
                     <Legend />
                     <Line type="monotone" dataKey="income" stroke="#16a34a" />
@@ -250,10 +298,10 @@ export default function ReportsPage() {
           </div>
           <Card>
             <CardHeader>
-              <CardTitle>Category Breakdown ({month})</CardTitle>
+              <CardTitle>Category Details ({month})</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-64 sm:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -262,10 +310,10 @@ export default function ReportsPage() {
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={110}
-                      innerRadius={70}
+                      outerRadius={90}
+                      innerRadius={50}
                     >
-                      {categoryData.map(entry => (
+                      {categoryData.map((entry) => (
                         <Cell key={entry.categoryId} fill={entry.color} />
                       ))}
                     </Pie>

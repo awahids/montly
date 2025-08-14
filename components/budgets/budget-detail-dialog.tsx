@@ -15,7 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -49,7 +55,11 @@ type BudgetDetailDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetailDialogProps) {
+export function BudgetDetailDialog({
+  budgetId,
+  open,
+  onOpenChange,
+}: BudgetDetailDialogProps) {
   const {
     user,
     budgets,
@@ -89,7 +99,9 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
             const fetchedBudget = keysToCamel<Budget>(budgetData);
             const existing = budgets.find((b) => b.id === fetchedBudget.id);
             const updatedBudgets = existing
-              ? budgets.map((b) => (b.id === fetchedBudget.id ? fetchedBudget : b))
+              ? budgets.map((b) =>
+                  b.id === fetchedBudget.id ? fetchedBudget : b
+                )
               : [...budgets, fetchedBudget];
             setBudgets(updatedBudgets);
             setBudget(fetchedBudget);
@@ -134,7 +146,17 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
     };
 
     fetchData();
-  }, [budgetId, user, budgets, categories.length, transactions.length, setBudgets, setCategories, setTransactions, setLoading]);
+  }, [
+    budgetId,
+    user,
+    budgets,
+    categories.length,
+    transactions.length,
+    setBudgets,
+    setCategories,
+    setTransactions,
+    setLoading,
+  ]);
 
   const totalBudget = budget?.totalAmount ?? 0;
   const totalSpent = budget
@@ -163,10 +185,14 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
       .update({ amount })
       .eq('id', itemId);
     if (!error) {
-      const updatedItems = items.map((i) => (i.id === itemId ? { ...i, amount } : i));
+      const updatedItems = items.map((i) =>
+        i.id === itemId ? { ...i, amount } : i
+      );
       setItems(updatedItems);
       setBudgets(
-        budgets.map((b) => (b.id === budget?.id ? { ...b, items: updatedItems } : b))
+        budgets.map((b) =>
+          b.id === budget?.id ? { ...b, items: updatedItems } : b
+        )
       );
     }
   };
@@ -180,7 +206,9 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
       const updatedItems = items.filter((i) => i.id !== itemId);
       setItems(updatedItems);
       setBudgets(
-        budgets.map((b) => (b.id === budget?.id ? { ...b, items: updatedItems } : b))
+        budgets.map((b) =>
+          b.id === budget?.id ? { ...b, items: updatedItems } : b
+        )
       );
     }
   };
@@ -203,44 +231,56 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
       const updatedItems = [...items, newItem];
       setItems(updatedItems);
       setBudgets(
-        budgets.map((b) => (b.id === budget.id ? { ...b, items: updatedItems } : b))
+        budgets.map((b) =>
+          b.id === budget.id ? { ...b, items: updatedItems } : b
+        )
       );
       setNewCategoryId('');
       setNewAmount('');
     }
   };
 
+  // Responsive: combine table and cards, show table on md+, cards on sm
+  // Also, make dialog content and cards more responsive
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl w-full px-2 sm:px-4 md:px-8">
         {loading || !budget ? (
           <LoadingSpinner />
         ) : (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <Button
+                variant="ghost"
+                onClick={() => onOpenChange(false)}
+                className="w-full sm:w-auto"
+              >
                 Back
               </Button>
-              <Button onClick={() => setIsEditing((v) => !v)}>
+              <Button
+                onClick={() => setIsEditing((v) => !v)}
+                className="w-full sm:w-auto"
+              >
                 {isEditing ? 'Done' : 'Edit'}
               </Button>
             </div>
 
-            <Card className="bg-muted/50">
+            <Card className="bg-muted/50 w-full">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold">
+                <CardTitle className="text-xl sm:text-2xl font-bold break-words">
                   {format(new Date(`${budget.month}-01`), 'MMMM yyyy')}
                   {budget.account ? ` - ${budget.account.name}` : ''}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="flex justify-between text-sm">
+                <div className="flex flex-col gap-1 sm:flex-row sm:justify-between text-sm">
                   <span>Planned</span>
-                  <span>{formatIDR(totalBudget)}</span>
+                  <span className="font-medium">{formatIDR(totalBudget)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex flex-col gap-1 sm:flex-row sm:justify-between text-sm">
                   <span>Spent</span>
-                  <span>{formatIDR(totalSpent)}</span>
+                  <span className="font-medium">{formatIDR(totalSpent)}</span>
                 </div>
                 <Progress
                   value={Math.min(progress, 100)}
@@ -249,138 +289,156 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
               </CardContent>
             </Card>
 
-            {/* Desktop table */}
+            {/* Responsive: Table for md+, Cards for <md */}
             <div className="hidden md:block">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Budget</TableHead>
-                    <TableHead className="text-right">Spent</TableHead>
-                    <TableHead>Progress</TableHead>
-                    {isEditing ? <TableHead className="w-0" /> : null}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((item) => {
-                    const spent = getCategorySpending(item.categoryId, budget.month);
-                    const progress = item.amount ? (spent / item.amount) * 100 : 0;
-                    const Icon =
-                      item.category &&
-                      item.category.icon &&
-                      (Icons as any)[item.category.icon as keyof typeof Icons]
-                        ? (Icons as any)[item.category.icon as keyof typeof Icons]
-                        : Icons.Circle;
-                    const indicatorColor =
-                      progress < 70
-                        ? 'bg-green-500'
-                        : progress <= 100
-                        ? 'bg-orange-500'
-                        : 'bg-red-500';
-                    return (
-                      <TableRow key={item.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Icon
-                              className="h-4 w-4"
-                              style={{ color: item.category?.color || undefined }}
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Category</TableHead>
+                      <TableHead className="text-right">Budget</TableHead>
+                      <TableHead className="text-right">Spent</TableHead>
+                      <TableHead>Progress</TableHead>
+                      {isEditing ? <TableHead className="w-0" /> : null}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {items.map((item) => {
+                      const spent = getCategorySpending(
+                        item.categoryId,
+                        budget.month
+                      );
+                      const progress = item.amount
+                        ? (spent / item.amount) * 100
+                        : 0;
+                      const Icon =
+                        item.category &&
+                        item.category.icon &&
+                        (Icons as any)[item.category.icon as keyof typeof Icons]
+                          ? (Icons as any)[
+                              item.category.icon as keyof typeof Icons
+                            ]
+                          : Icons.Circle;
+                      const indicatorColor =
+                        progress < 70
+                          ? 'bg-green-500'
+                          : progress <= 100
+                          ? 'bg-orange-500'
+                          : 'bg-red-500';
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Icon
+                                className="h-4 w-4"
+                                style={{
+                                  color: item.category?.color || undefined,
+                                }}
+                              />
+                              <span className="break-words">
+                                {item.category?.name}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {isEditing ? (
+                              <Input
+                                type="number"
+                                value={item.amount}
+                                onChange={(e) => {
+                                  const val = parseFloat(e.target.value);
+                                  setItems((prev) =>
+                                    prev.map((i) =>
+                                      i.id === item.id
+                                        ? { ...i, amount: isNaN(val) ? 0 : val }
+                                        : i
+                                    )
+                                  );
+                                }}
+                                onBlur={() =>
+                                  handleUpdateItem(item.id, item.amount)
+                                }
+                                className="w-24 ml-auto"
+                              />
+                            ) : (
+                              formatIDR(item.amount)
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatIDR(spent)}
+                          </TableCell>
+                          <TableCell>
+                            <Progress
+                              value={Math.min(progress, 100)}
+                              indicatorClassName={indicatorColor}
                             />
-                            <span>{item.category?.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
+                          </TableCell>
                           {isEditing ? (
-                            <Input
-                              type="number"
-                              value={item.amount}
-                              onChange={(e) => {
-                                const val = parseFloat(e.target.value);
-                                setItems((prev) =>
-                                  prev.map((i) =>
-                                    i.id === item.id
-                                      ? { ...i, amount: isNaN(val) ? 0 : val }
-                                      : i
-                                  )
-                                );
-                              }}
-                              onBlur={() => handleUpdateItem(item.id, item.amount)}
-                              className="w-24 ml-auto"
-                            />
-                          ) : (
-                            formatIDR(item.amount)
-                          )}
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveItem(item.id)}
+                              >
+                                Remove
+                              </Button>
+                            </TableCell>
+                          ) : null}
+                        </TableRow>
+                      );
+                    })}
+                    {isEditing ? (
+                      <TableRow>
+                        <TableCell>
+                          <Select
+                            value={newCategoryId}
+                            onValueChange={setNewCategoryId}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableCategories.map((c) => (
+                                <SelectItem key={c.id} value={c.id}>
+                                  {c.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </TableCell>
                         <TableCell className="text-right">
-                          {formatIDR(spent)}
-                        </TableCell>
-                        <TableCell>
-                          <Progress
-                            value={Math.min(progress, 100)}
-                            indicatorClassName={indicatorColor}
+                          <Input
+                            type="number"
+                            value={newAmount}
+                            onChange={(e) => setNewAmount(e.target.value)}
+                            className="w-24 ml-auto"
                           />
                         </TableCell>
-                        {isEditing ? (
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveItem(item.id)}
-                            >
-                              Remove
-                            </Button>
-                          </TableCell>
-                        ) : null}
+                        <TableCell />
+                        <TableCell />
+                        <TableCell className="text-right">
+                          <Button
+                            size="sm"
+                            onClick={handleAddItem}
+                            disabled={!newCategoryId || !newAmount}
+                          >
+                            Add
+                          </Button>
+                        </TableCell>
                       </TableRow>
-                    );
-                  })}
-                  {isEditing ? (
-                    <TableRow>
-                      <TableCell>
-                        <Select
-                          value={newCategoryId}
-                          onValueChange={setNewCategoryId}
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {availableCategories.map((c) => (
-                              <SelectItem key={c.id} value={c.id}>
-                                {c.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Input
-                          type="number"
-                          value={newAmount}
-                          onChange={(e) => setNewAmount(e.target.value)}
-                          className="w-24 ml-auto"
-                        />
-                      </TableCell>
-                      <TableCell />
-                      <TableCell />
-                      <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          onClick={handleAddItem}
-                          disabled={!newCategoryId || !newAmount}
-                        >
-                          Add
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                </TableBody>
-              </Table>
+                    ) : null}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
 
             {/* Mobile cards */}
             <div className="space-y-4 md:hidden">
               {items.map((item) => {
-                const spent = getCategorySpending(item.categoryId, budget.month);
+                const spent = getCategorySpending(
+                  item.categoryId,
+                  budget.month
+                );
                 const progress = item.amount ? (spent / item.amount) * 100 : 0;
                 const Icon =
                   item.category &&
@@ -395,20 +453,20 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
                     ? 'bg-orange-500'
                     : 'bg-red-500';
                 return (
-                  <Card key={item.id} className="bg-muted/50">
+                  <Card key={item.id} className="bg-muted/50 w-full">
                     <CardHeader>
                       <div className="flex items-center gap-2">
                         <Icon
                           className="h-4 w-4"
                           style={{ color: item.category?.color || undefined }}
                         />
-                        <CardTitle className="text-lg">
+                        <CardTitle className="text-base sm:text-lg break-words">
                           {item.category?.name}
                         </CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex flex-col gap-1 xs:flex-row xs:justify-between text-sm">
                         <span>Budget</span>
                         <span>
                           {isEditing ? (
@@ -425,7 +483,9 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
                                   )
                                 );
                               }}
-                              onBlur={() => handleUpdateItem(item.id, item.amount)}
+                              onBlur={() =>
+                                handleUpdateItem(item.id, item.amount)
+                              }
                               className="w-24"
                             />
                           ) : (
@@ -433,7 +493,7 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
                           )}
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
+                      <div className="flex flex-col gap-1 xs:flex-row xs:justify-between text-sm">
                         <span>Spent</span>
                         <span>{formatIDR(spent)}</span>
                       </div>
@@ -456,7 +516,7 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
                 );
               })}
               {isEditing ? (
-                <Card className="bg-muted/50">
+                <Card className="bg-muted/50 w-full">
                   <CardContent className="flex flex-col gap-2 pt-6">
                     <Select
                       value={newCategoryId}
@@ -496,4 +556,3 @@ export function BudgetDetailDialog({ budgetId, open, onOpenChange }: BudgetDetai
 }
 
 export default BudgetDetailDialog;
-
