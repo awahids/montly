@@ -106,6 +106,7 @@ interface Props {
   categories: Category[];
   onSubmit: (values: TransactionFormValues) => Promise<void>;
   onDelete?: () => Promise<void>;
+  id?: string;
 }
 
 export function TransactionForm({
@@ -116,6 +117,7 @@ export function TransactionForm({
   categories,
   onSubmit,
   onDelete,
+  id,
 }: Props) {
   // react-hook-form's resolver expects the schema's input type, while the
   // submit handler uses the parsed output type. Specify both generics so the
@@ -176,7 +178,10 @@ export function TransactionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[calc(100dvh_-_4rem)] overflow-y-auto sm:max-w-md">
+      <DialogContent
+        id={id}
+        className="max-h-[calc(100dvh_-_4rem)] overflow-y-auto sm:max-w-md"
+      >
         <DialogHeader>
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>

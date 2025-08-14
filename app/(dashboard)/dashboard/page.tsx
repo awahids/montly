@@ -351,13 +351,6 @@ export default function DashboardPage() {
         categories={categories}
       />
 
-      <Button
-        onClick={() => setFormOpen(true)}
-        className="md:hidden fixed bottom-6 right-6 rounded-full h-14 w-14 p-0"
-      >
-        <Plus className="h-6 w-6" />
-      </Button>
-
       <TransactionForm
         open={formOpen}
         onOpenChange={setFormOpen}

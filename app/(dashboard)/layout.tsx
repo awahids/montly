@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { Toaster } from "@/components/ui/sonner";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { useAppStore } from "@/lib/store";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -34,9 +35,12 @@ export default function DashboardLayout({
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6 pb-[calc(64px+env(safe-area-inset-bottom))] sm:pb-6">
+            {children}
+          </main>
         </div>
       </div>
+      <MobileNav />
       <Toaster />
     </div>
   );
