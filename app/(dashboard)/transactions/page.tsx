@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import * as LucideIcons from 'lucide-react';
 import { Plus, Pencil, Trash, Calendar as CalendarIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
@@ -116,7 +117,7 @@ export default function TransactionsPage() {
 
   const fetchTransactions = async () => {
     if (!user) return;
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('transactions')
       .select(
         `*,
@@ -127,6 +128,10 @@ export default function TransactionsPage() {
       )
       .eq('user_id', user.id)
       .order('date', { ascending: false });
+    if (error) {
+      toast.error('Failed to load transactions');
+      return;
+    }
     if (data) setTransactions(keysToCamel<Transaction[]>(data));
   };
 
@@ -144,11 +149,18 @@ export default function TransactionsPage() {
       note: values.note,
       tags: values.tags || [],
     };
-    if (editing) {
-      await supabase.from('transactions').update(payload).eq('id', editing.id);
-    } else {
-      await supabase.from('transactions').insert(payload);
+    const isEditing = Boolean(editing);
+    const { error } = isEditing
+      ? await supabase
+          .from('transactions')
+          .update(payload)
+          .eq('id', editing!.id)
+      : await supabase.from('transactions').insert(payload);
+    if (error) {
+      toast.error('Failed to save transaction');
+      return;
     }
+    toast.success(isEditing ? 'Transaction updated' : 'Transaction added');
     await fetchTransactions();
     setFormOpen(false);
     setEditing(undefined);
@@ -156,14 +168,30 @@ export default function TransactionsPage() {
 
   const handleDelete = async () => {
     if (!editing) return;
-    await supabase.from('transactions').delete().eq('id', editing.id);
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', editing.id);
+    if (error) {
+      toast.error('Failed to delete transaction');
+      return;
+    }
+    toast.success('Transaction deleted');
     await fetchTransactions();
     setFormOpen(false);
     setEditing(undefined);
   };
 
   const handleDeleteRow = async (t: Transaction) => {
-    await supabase.from('transactions').delete().eq('id', t.id);
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', t.id);
+    if (error) {
+      toast.error('Failed to delete transaction');
+      return;
+    }
+    toast.success('Transaction deleted');
     await fetchTransactions();
   };
 
