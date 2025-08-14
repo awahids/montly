@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   try {
     body = signUpSchema.parse(await req.json());
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return NextResponse.json({ ok: false, error: (e as Error).message });
   }
 
   const supabase = createServerClient();
@@ -24,7 +24,11 @@ export async function POST(req: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    const message =
+      error.message === 'User already registered'
+        ? 'An account already exists for this email.'
+        : error.message;
+    return NextResponse.json({ ok: false, error: message });
   }
 
   const userId = data.user?.id;
@@ -36,11 +40,11 @@ export async function POST(req: Request) {
       default_currency: 'IDR',
     });
     if (profileError) {
-      return NextResponse.json({ error: profileError.message }, { status: 400 });
+      return NextResponse.json({ ok: false, error: profileError.message });
     }
     // clear auth cookies to require sign in after sign up
     await supabase.auth.signOut();
   }
 
-  return NextResponse.json({ user: data.user });
+  return NextResponse.json({ ok: true });
 }

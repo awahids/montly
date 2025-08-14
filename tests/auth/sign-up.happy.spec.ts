@@ -6,7 +6,7 @@ import { genEmail } from '../utils/genEmail';
   const email = genEmail();
   const password = 'Password123';
 
-  await page.goto('/auth/signup');
+  await page.goto('/auth/sign-up');
   await page.getByLabel('Full Name').fill('Test User');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
@@ -14,7 +14,7 @@ import { genEmail } from '../utils/genEmail';
   await page.getByRole('button', { name: /create account/i }).click();
 
   // Expect redirect to sign in page after success
-  await expect(page).toHaveURL(/auth\/signin/);
+  await expect(page).toHaveURL(/auth\/sign-in/);
 
   // Verify user exists in Supabase
   const { data: user } = await supabaseAdmin.auth.admin.getUserByEmail(email);

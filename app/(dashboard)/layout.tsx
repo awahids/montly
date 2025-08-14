@@ -23,7 +23,7 @@ export default function DashboardLayout({
       if (current) {
         setUser(current);
       } else {
-        router.push("/auth/signin");
+        router.push("/auth/sign-in");
       }
     })();
   }, [user, setUser, router]);
