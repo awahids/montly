@@ -105,13 +105,9 @@ export default function DashboardPage() {
         const currentMonth = new Date().toISOString().slice(0, 7);
         const { data: budgetsData } = await supabase
           .from('budgets')
-          .select(`
-            *,
-            items:budget_items(
-              *,
-              category:categories(*)
-            )
-          `)
+          .select(
+            `*, account:accounts(*), items:budget_items(*, category:categories(*))`
+          )
           .eq('user_id', user.id)
           .eq('month', currentMonth);
 
@@ -165,8 +161,8 @@ export default function DashboardPage() {
     });
 
     // Monthly budget and actual
-    const currentBudget = budgets.find(b => b.month === currentMonth);
-    const monthlyBudget = currentBudget?.items?.reduce((sum, item) => sum + item.amount, 0) || 0;
+    const currentBudgets = budgets.filter(b => b.month === currentMonth);
+    const monthlyBudget = currentBudgets.reduce((sum, b) => sum + b.totalAmount, 0);
     
     const monthlyActual = transactions
       .filter(t => t.type === 'expense' && t.date.startsWith(currentMonth))
@@ -191,24 +187,28 @@ export default function DashboardPage() {
     });
 
     // Category spending
-    if (currentBudget?.items) {
-      const categorySpendData: CategorySpend[] = currentBudget.items.map(item => {
-        const actual = transactions
-          .filter(t =>
-            t.type === 'expense' &&
-            t.categoryId === item.categoryId &&
-            t.date.startsWith(currentMonth)
-          )
-          .reduce((sum, t) => sum + t.amount, 0);
+    if (currentBudgets.length) {
+      const categorySpendData: CategorySpend[] = currentBudgets.flatMap(b =>
+        (b.items || []).map(item => {
+          const actual = transactions
+            .filter(
+              t =>
+                t.type === 'expense' &&
+                t.accountId === b.accountId &&
+                t.categoryId === item.categoryId &&
+                t.date.startsWith(currentMonth)
+            )
+            .reduce((sum, t) => sum + t.amount, 0);
 
-        return {
-          categoryId: item.categoryId,
-          categoryName: item.category?.name || 'Unknown',
-          amount: actual,
-          budgeted: item.amount,
-          color: item.category?.color || '#6B7280',
-        };
-      });
+          return {
+            categoryId: item.categoryId,
+            categoryName: item.category?.name || 'Unknown',
+            amount: actual,
+            budgeted: item.amount,
+            color: item.category?.color || '#6B7280',
+          };
+        })
+      );
       setCategorySpends(categorySpendData);
     }
   }, [accounts, transactions, budgets]);

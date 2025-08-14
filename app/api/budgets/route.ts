@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const user = await getUser();
     const { data: budgets, error, count } = await supabase
       .from('budgets')
-      .select('id, month, items:budget_items(amount, category_id)', { count: 'exact' })
+      .select('id, month, account_id, total_amount', { count: 'exact' })
       .eq('user_id', user.id)
       .like('month', `${year}-%`)
       .order('month', { ascending: true })
@@ -27,42 +27,34 @@ export async function GET(req: Request) {
     if (!budgets || budgets.length === 0) {
       return NextResponse.json({ data: [], total: count || 0 });
     }
-    const categoryIds = Array.from(
-      new Set(budgets.flatMap(b => b.items.map(i => i.category_id)))
-    );
-    let tx: { amount: number; date: string; category_id: string | null }[] = [];
-    if (categoryIds.length) {
-      const start = `${year}-01-01`;
-      const end = `${Number(year) + 1}-01-01`;
-      const { data: tData, error: tError } = await supabase
-        .from('transactions')
-        .select('amount, date, category_id')
-        .eq('user_id', user.id)
-        .eq('type', 'expense')
-        .in('category_id', categoryIds)
-        .gte('date', start)
-        .lt('date', end);
-      if (tError) {
-        return NextResponse.json({ error: tError.message }, { status: 400 });
-      }
-      tx = tData || [];
+    const { data: tx, error: txError } = await supabase
+      .from('transactions')
+      .select('amount, date, account_id')
+      .eq('user_id', user.id)
+      .eq('type', 'expense')
+      .gte('date', `${year}-01-01`)
+      .lt('date', `${Number(year) + 1}-01-01`);
+    if (txError) {
+      return NextResponse.json({ error: txError.message }, { status: 400 });
     }
-    const actualByMonth: Record<string, number> = {};
-    for (const t of tx) {
-      const key = new Date(t.date)
+    const actualByKey: Record<string, number> = {};
+    for (const t of tx || []) {
+      const monthKey = new Date(t.date)
         .toLocaleDateString('en-CA', {
           timeZone: 'Asia/Jakarta',
           year: 'numeric',
           month: '2-digit',
         })
         .slice(0, 7);
-      actualByMonth[key] = (actualByMonth[key] || 0) + t.amount;
+      const key = `${t.account_id}-${monthKey}`;
+      actualByKey[key] = (actualByKey[key] || 0) + t.amount;
     }
     const result = budgets.map(b => ({
       id: b.id,
       month: b.month,
-      planned: b.items.reduce((sum: number, i: any) => sum + i.amount, 0),
-      actual: actualByMonth[b.month] || 0,
+      accountId: b.account_id,
+      planned: b.total_amount,
+      actual: actualByKey[`${b.account_id}-${b.month}`] || 0,
     }));
     return NextResponse.json({ data: result, total: count || 0 });
   } catch (e) {
@@ -80,10 +72,27 @@ export async function POST(req: Request) {
   }
   try {
     const user = await getUser();
+    const { data: account } = await supabase
+      .from('accounts')
+      .select('id')
+      .eq('id', body.accountId)
+      .eq('user_id', user.id)
+      .single();
+    if (!account) {
+      return NextResponse.json({ error: 'Invalid account' }, { status: 400 });
+    }
     const { data: budget, error } = await supabase
       .from('budgets')
-      .upsert({ user_id: user.id, month: body.month }, { onConflict: 'user_id,month' })
-      .select('id, month')
+      .upsert(
+        {
+          user_id: user.id,
+          month: body.month,
+          account_id: body.accountId,
+          total_amount: body.totalAmount,
+        },
+        { onConflict: 'user_id,month,account_id' }
+      )
+      .select('id, month, account_id, total_amount')
       .single();
     if (error || !budget) {
       return NextResponse.json({ error: error?.message || 'Insert failed' }, { status: 400 });

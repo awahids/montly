@@ -29,7 +29,10 @@ export interface Budget {
   id: string;
   userId: string;
   month: string;
+  accountId: string;
+  totalAmount: number;
   items: BudgetItem[];
+  account?: Account;
 }
 
 export interface BudgetItem {
