@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import argon2 from 'argon2';
+import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { signAccessToken, signRefreshToken } from '@/lib/jwt';
 import { rateLimit } from '@/lib/rate-limit';
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   if (!user) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
   }
-  const valid = await argon2.verify(user.passwordHash, body.password);
+  const valid = bcrypt.compareSync(body.password, user.passwordHash);
   if (!valid) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
   }
