@@ -21,6 +21,7 @@ interface AppState {
   getCurrentBalance: (accountId: string) => number;
   getCategorySpending: (categoryId: string, month: string) => number;
   getMonthlySpending: (month: string) => number;
+  getAccountMonthlySpending: (accountId: string, month: string) => number;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -91,6 +92,22 @@ export const useAppStore = create<AppState>((set, get) => ({
         t.type === 'expense' &&
         t.date >= monthStart && 
         t.date <= monthEnd
+      )
+      .reduce((sum, t) => sum + t.amount, 0);
+  },
+
+  getAccountMonthlySpending: (accountId: string, month: string) => {
+    const { transactions } = get();
+    const monthStart = `${month}-01`;
+    const monthEnd = `${month}-31`;
+
+    return transactions
+      .filter(
+        t =>
+          t.accountId === accountId &&
+          t.type === 'expense' &&
+          t.date >= monthStart &&
+          t.date <= monthEnd
       )
       .reduce((sum, t) => sum + t.amount, 0);
   },

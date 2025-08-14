@@ -55,7 +55,7 @@ export default function BudgetsPage() {
     setTransactions,
     loading,
     setLoading,
-    getCategorySpending,
+    getAccountMonthlySpending,
   } = useAppStore();
 
   const [year, setYear] = useState("all");
@@ -70,7 +70,9 @@ export default function BudgetsPage() {
       try {
         const { data: budgetsData } = await supabase
           .from("budgets")
-          .select(`*, items:budget_items(*, category:categories(*))`)
+          .select(
+            `*, account:accounts(*), items:budget_items(*, category:categories(*))`
+          )
           .eq("user_id", user.id);
         if (budgetsData) setBudgets(keysToCamel<Budget[]>(budgetsData));
 
@@ -104,14 +106,8 @@ export default function BudgetsPage() {
   );
 
   const getBudgetTotals = (budget: Budget) => {
-    const planned =
-      budget.items?.reduce((sum, item) => sum + item.amount, 0) || 0;
-    const actual =
-      budget.items?.reduce(
-        (sum, item) =>
-          sum + getCategorySpending(item.categoryId, budget.month),
-        0
-      ) || 0;
+    const planned = budget.totalAmount;
+    const actual = getAccountMonthlySpending(budget.accountId, budget.month);
     const progress = planned ? (actual / planned) * 100 : 0;
     const indicatorColor =
       progress < 70
@@ -132,7 +128,9 @@ export default function BudgetsPage() {
       >
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              {format(new Date(`${budget.month}-01`), "MMMM yyyy")}
+              {format(new Date(`${budget.month}-01`), "MMMM yyyy")} –
+              {" "}
+              {budget.account?.name}
             </CardTitle>
             <Button
               variant="outline"
@@ -204,6 +202,7 @@ export default function BudgetsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Month</TableHead>
+              <TableHead>Account</TableHead>
               <TableHead className="text-right">Planned Total</TableHead>
               <TableHead className="text-right">Actual Spent</TableHead>
               <TableHead>Progress</TableHead>
@@ -218,6 +217,7 @@ export default function BudgetsPage() {
                   <TableCell>
                     {format(new Date(`${b.month}-01`), "MMMM yyyy")}
                   </TableCell>
+                  <TableCell>{b.account?.name}</TableCell>
                   <TableCell className="text-right">
                     {formatIDR(planned)}
                   </TableCell>
