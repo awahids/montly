@@ -20,32 +20,13 @@ export async function GET(req: Request) {
     const start = startOfMonth(monthDate);
     const end = new Date(Date.UTC(monthDate.getUTCFullYear(), monthDate.getUTCMonth() + 1, 1));
 
-    // accounts for balance
-    let accQuery = supabase
-      .from('accounts')
-      .select('id, opening_balance')
-      .eq('user_id', user.id);
-    if (accountId) {
-      accQuery = accQuery.eq('id', accountId);
-    }
-    const { data: accounts, error: accErr } = await accQuery;
-    if (accErr) {
-      return NextResponse.json({ error: accErr.message }, { status: 400 });
-    }
-
-    // all transactions for balance
-    let txAllQuery = supabase
-      .from('transactions')
-      .select('type, amount, account_id, from_account_id, to_account_id')
-      .eq('user_id', user.id);
-    if (accountId) {
-      txAllQuery = txAllQuery.or(
-        `account_id.eq.${accountId},from_account_id.eq.${accountId},to_account_id.eq.${accountId}`
-      );
-    }
-    const { data: allTxs, error: allTxErr } = await txAllQuery;
-    if (allTxErr) {
-      return NextResponse.json({ error: allTxErr.message }, { status: 400 });
+    // total balance via SQL function
+    const { data: totalBalanceData, error: balanceErr } = await supabase.rpc(
+      'get_total_balance',
+      { account_id: accountId ?? null }
+    );
+    if (balanceErr) {
+      return NextResponse.json({ error: balanceErr.message }, { status: 400 });
     }
 
     // month transactions with relations
@@ -90,19 +71,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: budgetErr.message }, { status: 400 });
     }
 
-    let totalBalance = 0;
-    accounts?.forEach(acc => {
-      let balance = acc.opening_balance;
-      allTxs?.forEach(t => {
-        if (t.type === 'income' && t.account_id === acc.id) balance += t.amount;
-        if (t.type === 'expense' && t.account_id === acc.id) balance -= t.amount;
-        if (t.type === 'transfer') {
-          if (t.from_account_id === acc.id) balance -= t.amount;
-          if (t.to_account_id === acc.id) balance += t.amount;
-        }
-      });
-      totalBalance += balance;
-    });
+    const totalBalance = totalBalanceData ?? 0;
 
     const items = budgetData?.items ?? [];
     const perCategoryMap = new Map<string, { categoryId: string; categoryName: string; planned: number; actual: number }>();
