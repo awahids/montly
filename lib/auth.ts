@@ -2,17 +2,17 @@ import { supabase } from './supabase';
 import { User } from '@/types';
 import { useAppStore } from './store';
 
-export async function signUp(email: string, password: string, name: string) {
-  const res = await fetch('/api/auth/signup', {
+export async function register(
+  name: string,
+  email: string,
+  password: string
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetch('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, name }),
+    body: JSON.stringify({ name, email, password }),
   });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || 'Failed to sign up');
-  }
-  return data;
+  return res.json();
 }
 
 export async function signIn(email: string, password: string) {

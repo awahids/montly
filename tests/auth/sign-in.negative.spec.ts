@@ -6,7 +6,7 @@ import { genEmail } from '../utils/genEmail';
     const email = genEmail();
     await supabaseAdmin.auth.admin.createUser({ email, password: 'Password123', email_confirm: true });
 
-    await page.goto('/auth/signin');
+    await page.goto('/auth/sign-in');
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill('WrongPass123');
     await page.getByRole('button', { name: /sign in/i }).click();
@@ -14,7 +14,7 @@ import { genEmail } from '../utils/genEmail';
   });
 
   test('non existent email', async ({ page }) => {
-    await page.goto('/auth/signin');
+    await page.goto('/auth/sign-in');
     await page.getByLabel('Email').fill(genEmail());
     await page.getByLabel('Password').fill('Password123');
     await page.getByRole('button', { name: /sign in/i }).click();

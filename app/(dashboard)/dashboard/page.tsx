@@ -16,12 +16,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardCharts } from '@/components/dashboard/dashboard-charts';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+import TransactionForm, {
+  TransactionFormValues,
+} from '@/components/transactions/transaction-form';
+import { toast } from 'sonner';
 import {
   Wallet,
   TrendingUp,
   TrendingDown,
   Calendar,
-  DollarSign
+  DollarSign,
+  Plus,
 } from 'lucide-react';
 
 const toCamel = (str: string) =>
@@ -64,6 +70,35 @@ export default function DashboardPage() {
     remainingAllowance: 0,
   });
   const [categorySpends, setCategorySpends] = useState<CategorySpend[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
+
+  const handleSave = async (values: TransactionFormValues) => {
+    try {
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: values.date.toISOString().split('T')[0],
+          type: values.type,
+          accountId: values.accountId,
+          fromAccountId: values.fromAccountId,
+          toAccountId: values.toAccountId,
+          categoryId: values.categoryId,
+          amount: values.amount,
+          note: values.note,
+          tags: values.tags,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+      const tx = keysToCamel<Transaction>(data);
+      setTransactions([tx, ...transactions]);
+      toast.success('Transaction created');
+      setFormOpen(false);
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -268,11 +303,16 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">
-          Overview of your financial health
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-muted-foreground">
+            Overview of your financial health
+          </p>
+        </div>
+        <Button className="hidden md:flex" onClick={() => setFormOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> New Transaction
+        </Button>
       </div>
 
       {/* KPI Cards */}
@@ -309,6 +349,14 @@ export default function DashboardPage() {
         transactions={transactions}
         accounts={accounts}
         categories={categories}
+      />
+
+      <TransactionForm
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        accounts={accounts}
+        categories={categories}
+        onSubmit={handleSave}
       />
     </div>
   );

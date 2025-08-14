@@ -68,21 +68,45 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
               <AreaChart data={dailyExpenseData}>
                 <defs>
                   <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                    <stop
+                      offset="5%"
+                      stopColor="hsl(var(--chart-1))"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="hsl(var(--chart-1))"
+                      stopOpacity={0.1}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis tickFormatter={(value) => formatIDR(value)} />
-                <Tooltip 
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                />
+                <YAxis
+                  tickFormatter={(value) => formatIDR(value)}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                />
+                <Tooltip
                   formatter={(value: number) => [formatIDR(value), 'Amount']}
-                  labelStyle={{ color: '#374151' }}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    color: 'hsl(var(--foreground))',
+                  }}
                 />
                 <Area
                   type="monotone"
                   dataKey="amount"
-                  stroke="#3B82F6"
+                  stroke="hsl(var(--chart-1))"
                   fillOpacity={1}
                   fill="url(#colorAmount)"
                 />
@@ -114,8 +138,15 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: number) => formatIDR(value)} />
-                <Legend />
+                <Tooltip
+                  formatter={(value: number) => formatIDR(value)}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    color: 'hsl(var(--foreground))',
+                  }}
+                />
+                <Legend wrapperStyle={{ color: 'hsl(var(--muted-foreground))' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

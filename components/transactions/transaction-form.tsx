@@ -43,6 +43,13 @@ import { format } from 'date-fns';
 import { CalendarIcon, X } from 'lucide-react';
 import { formatIDR, parseIDR } from '@/lib/currency';
 
+const getJakartaDate = () => {
+  const dateStr = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jakarta',
+  }).format(new Date());
+  return new Date(`${dateStr}T00:00:00+07:00`);
+};
+
 const formSchema = z
   .object({
     date: z.date(),
@@ -99,6 +106,7 @@ interface Props {
   categories: Category[];
   onSubmit: (values: TransactionFormValues) => Promise<void>;
   onDelete?: () => Promise<void>;
+  id?: string;
 }
 
 export function TransactionForm({
@@ -109,6 +117,7 @@ export function TransactionForm({
   categories,
   onSubmit,
   onDelete,
+  id,
 }: Props) {
   // react-hook-form's resolver expects the schema's input type, while the
   // submit handler uses the parsed output type. Specify both generics so the
@@ -116,7 +125,7 @@ export function TransactionForm({
   const form = useForm<z.input<typeof formSchema>, any, TransactionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: new Date(),
+      date: getJakartaDate(),
       type: 'expense',
       accountId: undefined,
       fromAccountId: undefined,
@@ -145,7 +154,7 @@ export function TransactionForm({
       });
     } else {
       form.reset({
-        date: new Date(),
+        date: getJakartaDate(),
         type: 'expense',
         amount: 0,
         note: '',
@@ -157,7 +166,7 @@ export function TransactionForm({
   const handleSubmit = async (values: TransactionFormValues) => {
     await onSubmit(values);
     form.reset({
-      date: new Date(),
+      date: getJakartaDate(),
       type: 'expense',
       amount: 0,
       note: '',
@@ -169,7 +178,10 @@ export function TransactionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-screen overflow-y-auto">
+      <DialogContent
+        id={id}
+        className="max-h-[calc(100dvh_-_4rem)] overflow-y-auto sm:max-w-md"
+      >
         <DialogHeader>
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
