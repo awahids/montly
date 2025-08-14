@@ -161,6 +161,9 @@ export default function BudgetsPage() {
             <span>{formatIDR(actual)}</span>
           </div>
           <Progress value={progress} indicatorClassName={indicatorColor} />
+          <div className="text-right text-xs text-muted-foreground">
+            {progress.toFixed(0)}%
+          </div>
         </CardContent>
       </Card>
     );
@@ -242,10 +245,14 @@ export default function BudgetsPage() {
                     {formatIDR(actual)}
                   </TableCell>
                   <TableCell>
-                    <Progress
-                      value={progress}
-                      indicatorClassName={indicatorColor}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Progress
+                        value={progress}
+                        indicatorClassName={indicatorColor}
+                        className="flex-1"
+                      />
+                      <span className="text-sm">{progress.toFixed(0)}%</span>
+                    </div>
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
@@ -268,7 +275,7 @@ export default function BudgetsPage() {
       {/* Tombol tambah di mobile, selalu fixed dan mudah dijangkau */}
       <Button
         onClick={() => setIsAdding(true)}
-        className="md:hidden fixed bottom-6 right-6 h-14 w-14 rounded-full p-0 shadow-lg flex items-center justify-center bg-primary text-white transition-transform hover:scale-105"
+        className="md:hidden fixed right-6 bottom-[calc(5rem+env(safe-area-inset-bottom))] h-14 w-14 rounded-full p-0 shadow-lg flex items-center justify-center bg-primary text-white transition-transform hover:scale-105"
         aria-label="Buat Anggaran"
       >
         <Plus className="h-7 w-7" />

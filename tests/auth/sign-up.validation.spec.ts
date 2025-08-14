@@ -3,7 +3,7 @@ import { genEmail } from '../utils/genEmail';
 
 test.describe('sign up validation', () => {
   test('shows errors on empty submit', async ({ page }) => {
-    await page.goto('/auth/signup');
+    await page.goto('/auth/sign-up');
     await page.getByRole('button', { name: /create account/i }).click();
     await expect(page.getByText('Name must be at least')).toBeVisible();
     await expect(page.getByText('Invalid email')).toBeVisible();
@@ -11,7 +11,7 @@ test.describe('sign up validation', () => {
   });
 
   test('invalid email', async ({ page }) => {
-    await page.goto('/auth/signup');
+    await page.goto('/auth/sign-up');
     await page.getByLabel('Full Name').fill('Test User');
     await page.getByLabel('Email').fill('not-an-email');
     await page.getByLabel('Password').fill('Password123');
@@ -21,7 +21,7 @@ test.describe('sign up validation', () => {
   });
 
   test('password too short', async ({ page }) => {
-    await page.goto('/auth/signup');
+    await page.goto('/auth/sign-up');
     await page.getByLabel('Full Name').fill('Test User');
     await page.getByLabel('Email').fill(genEmail());
     await page.getByLabel('Password').fill('short');
@@ -31,7 +31,7 @@ test.describe('sign up validation', () => {
   });
 
   test('mismatched passwords', async ({ page }) => {
-    await page.goto('/auth/signup');
+    await page.goto('/auth/sign-up');
     await page.getByLabel('Full Name').fill('Test User');
     await page.getByLabel('Email').fill(genEmail());
     await page.getByLabel('Password').fill('Password123');
@@ -45,13 +45,15 @@ test.describe('sign up validation', () => {
     const password = 'Password123';
     await supabaseAdmin.auth.admin.createUser({ email, password, email_confirm: true });
 
-    await page.goto('/auth/signup');
+    await page.goto('/auth/sign-up');
     await page.getByLabel('Full Name').fill('Test User');
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);
     await page.getByLabel('Confirm Password').fill(password);
     await page.getByRole('button', { name: /create account/i }).click();
-    await expect(page.getByText(/already registered/i)).toBeVisible();
+    await expect(
+      page.getByText(/An account already exists for this email/i)
+    ).toBeVisible();
 
     const { data } = await supabaseAdmin.auth.admin.getUserByEmail(email);
     if (data.user) {

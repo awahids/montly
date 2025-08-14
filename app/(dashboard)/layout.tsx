@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { Toaster } from "@/components/ui/sonner";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { useAppStore } from "@/lib/store";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -23,20 +24,23 @@ export default function DashboardLayout({
       if (current) {
         setUser(current);
       } else {
-        router.push("/auth/signin");
+        router.push("/auth/sign-in");
       }
     })();
   }, [user, setUser, router]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="flex">
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6 pb-[calc(64px+env(safe-area-inset-bottom))] sm:pb-6">
+            {children}
+          </main>
         </div>
       </div>
+      <MobileNav />
       <Toaster />
     </div>
   );

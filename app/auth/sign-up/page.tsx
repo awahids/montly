@@ -6,12 +6,18 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signUp } from '@/lib/auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { register as registerUser } from '@/lib/auth';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 const signUpSchema = z.object({
@@ -28,84 +34,138 @@ type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  
-  const { register, handleSubmit, formState: { errors } } = useForm<SignUpForm>({
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setFocus,
+  } = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
   });
 
   const onSubmit = async (data: SignUpForm) => {
     setLoading(true);
     try {
-      await signUp(data.email, data.password, data.name);
-      toast.success('Account created successfully! Please sign in.');
-      router.push('/auth/signin');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+      const res = await registerUser(data.name, data.email, data.password);
+      if (res.ok) {
+        toast({
+          title: 'Signup successful',
+          description: 'Please sign in to continue.',
+        });
+        router.push('/auth/sign-in');
+      } else if (res.error) {
+        toast({
+          title: 'Error',
+          description: res.error,
+          variant: 'destructive',
+        });
+      }
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: 'Failed to create account',
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const onError = (errs: typeof errors) => {
+    const first = Object.keys(errs)[0] as keyof SignUpForm | undefined;
+    if (first) setFocus(first);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
+          <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
           <CardDescription>
             Start managing your finances today
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(onSubmit, onError)}
+            className="space-y-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
+                id="name"
                 {...register('name')}
                 placeholder="Enter your full name"
                 disabled={loading}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? 'name-error' : undefined}
               />
               {errors.name && (
-                <p className="text-sm text-red-600">{errors.name.message}</p>
+                <p id="name-error" className="text-sm text-red-600">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
+                id="email"
                 {...register('email')}
                 type="email"
                 placeholder="Enter your email"
                 disabled={loading}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p id="email-error" className="text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
+                id="password"
                 {...register('password')}
                 type="password"
                 placeholder="Create a password"
                 disabled={loading}
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : undefined}
               />
               {errors.password && (
-                <p className="text-sm text-red-600">{errors.password.message}</p>
+                <p id="password-error" className="text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
+                id="confirmPassword"
                 {...register('confirmPassword')}
                 type="password"
                 placeholder="Confirm your password"
                 disabled={loading}
+                aria-invalid={!!errors.confirmPassword}
+                aria-describedby={
+                  errors.confirmPassword ? 'confirmPassword-error' : undefined
+                }
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p
+                  id="confirmPassword-error"
+                  className="text-sm text-red-600"
+                >
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -123,7 +183,10 @@ export default function SignUpPage() {
             <div className="text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link href="/auth/signin" className="text-primary hover:underline">
+                <Link
+                  href="/auth/sign-in"
+                  className="text-primary hover:underline"
+                >
                   Sign in
                 </Link>
               </p>
