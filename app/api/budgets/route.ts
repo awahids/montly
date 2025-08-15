@@ -78,7 +78,7 @@ export async function POST(req: Request) {
           month: body.month,
           total_amount: body.totalAmount,
         },
-        { onConflict: 'user_id,month' }
+        { onConflict: 'user_id, month' }
       )
       .select('id, month, total_amount')
       .single();
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
       }));
       const { error: itemError } = await supabase
         .from('budget_items')
-        .upsert(upserts, { onConflict: 'budget_id,category_id' });
+        .upsert(upserts, { onConflict: 'budget_id, category_id' });
       if (itemError) {
         return NextResponse.json({ error: itemError.message }, { status: 400 });
       }

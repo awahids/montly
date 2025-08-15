@@ -131,7 +131,7 @@ export async function PATCH(
       if (upserts.length) {
         const { error: upsertError } = await supabase
           .from('budget_items')
-          .upsert(upserts, { onConflict: 'budget_id,category_id' });
+          .upsert(upserts, { onConflict: 'budget_id, category_id' });
         if (upsertError) {
           return NextResponse.json({ error: upsertError.message }, { status: 400 });
         }
