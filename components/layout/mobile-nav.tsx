@@ -9,6 +9,7 @@ import { useAppStore } from '@/lib/store';
 import TransactionForm, { TransactionFormValues } from '@/components/transactions/transaction-form';
 import { Transaction } from '@/types';
 import { toast } from 'sonner';
+import { formatDate } from '@/lib/date';
 
 const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
@@ -37,7 +38,7 @@ export function MobileNav() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date: values.date.toISOString().split('T')[0],
+          date: formatDate(values.date),
           type: values.type,
           accountId: values.accountId,
           fromAccountId: values.fromAccountId,

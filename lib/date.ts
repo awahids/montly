@@ -13,4 +13,8 @@ export function formatLocal(date: Date, options?: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat('en-US', { timeZone: TIMEZONE, ...options }).format(date);
 }
 
+export function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE }).format(date);
+}
+
 export { TIMEZONE };
