@@ -27,6 +27,7 @@ import {
 } from 'recharts';
 import { formatIDR } from '@/lib/currency';
 import { Download, Filter } from 'lucide-react';
+import CategoryMovementChart from '@/components/reports/category-movement-chart';
 
 interface TrendRow {
   month: string;
@@ -160,6 +161,9 @@ export default function ReportsPage() {
           </TabsTrigger>
           <TabsTrigger value="category" className="flex-1 min-w-[120px]">
             Category Details
+          </TabsTrigger>
+          <TabsTrigger value="movement" className="flex-1 min-w-[120px]">
+            Budget vs Actual
           </TabsTrigger>
         </TabsList>
 
@@ -324,6 +328,10 @@ export default function ReportsPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="movement" className="space-y-4">
+          <CategoryMovementChart />
         </TabsContent>
       </Tabs>
     </div>
