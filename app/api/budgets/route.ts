@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const user = await getUser();
     const { data: budgets, error, count } = await supabase
       .from('budgets')
-      .select('id, month, account_id, total_amount', { count: 'exact' })
+      .select('id, month, total_amount', { count: 'exact' })
       .eq('user_id', user.id)
       .like('month', `${year}-%`)
       .order('month', { ascending: true })
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     }
     const { data: tx, error: txError } = await supabase
       .from('transactions')
-      .select('amount, date, account_id')
+      .select('amount, date')
       .eq('user_id', user.id)
       .eq('type', 'expense')
       .gte('date', `${year}-01-01`)
@@ -37,7 +37,7 @@ export async function GET(req: Request) {
     if (txError) {
       return NextResponse.json({ error: txError.message }, { status: 400 });
     }
-    const actualByKey: Record<string, number> = {};
+    const actualByMonth: Record<string, number> = {};
     for (const t of tx || []) {
       const monthKey = new Date(t.date)
         .toLocaleDateString('en-CA', {
@@ -46,15 +46,13 @@ export async function GET(req: Request) {
           month: '2-digit',
         })
         .slice(0, 7);
-      const key = `${t.account_id}-${monthKey}`;
-      actualByKey[key] = (actualByKey[key] || 0) + t.amount;
+      actualByMonth[monthKey] = (actualByMonth[monthKey] || 0) + t.amount;
     }
     const result = budgets.map(b => ({
       id: b.id,
       month: b.month,
-      accountId: b.account_id,
       planned: b.total_amount,
-      actual: actualByKey[`${b.account_id}-${b.month}`] || 0,
+      actual: actualByMonth[b.month] || 0,
     }));
     return NextResponse.json({ data: result, total: count || 0 });
   } catch (e) {
@@ -72,27 +70,17 @@ export async function POST(req: Request) {
   }
   try {
     const user = await getUser();
-    const { data: account } = await supabase
-      .from('accounts')
-      .select('id')
-      .eq('id', body.accountId)
-      .eq('user_id', user.id)
-      .single();
-    if (!account) {
-      return NextResponse.json({ error: 'Invalid account' }, { status: 400 });
-    }
     const { data: budget, error } = await supabase
       .from('budgets')
       .upsert(
         {
           user_id: user.id,
           month: body.month,
-          account_id: body.accountId,
           total_amount: body.totalAmount,
         },
-        { onConflict: 'user_id,month,account_id' }
+        { onConflict: 'user_id,month' }
       )
-      .select('id, month, account_id, total_amount')
+      .select('id, month, total_amount')
       .single();
     if (error || !budget) {
       return NextResponse.json({ error: error?.message || 'Insert failed' }, { status: 400 });

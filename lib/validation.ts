@@ -42,14 +42,12 @@ export const budgetItemPatchSchema = budgetItemSchema.partial();
 
 export const budgetSchema = z.object({
   month: monthSchema,
-  accountId: z.string().uuid(),
   totalAmount: z.number().positive(),
   items: z.array(budgetItemSchema).default([]),
 });
 
 export const budgetPatchSchema = z.object({
   month: monthSchema.optional(),
-  accountId: z.string().uuid().optional(),
   totalAmount: z.number().positive().optional(),
   items: z.array(budgetItemSchema).optional(),
 });
