@@ -18,11 +18,11 @@ const quotes = [
 export function Testimonials() {
   return (
     <section className="py-24">
-      <div className="mx-auto max-w-5xl space-y-8 text-center">
+      <div className="mx-auto max-w-5xl space-y-8 px-4 text-center">
         <h2 className="text-3xl font-bold">What users say</h2>
         <div className="grid gap-6 md:grid-cols-3">
           {quotes.map(q => (
-            <Card key={q.author}>
+            <Card key={q.author} className="shadow-none">
               <CardContent className="pt-6">
                 <p className="text-sm">{q.quote}</p>
                 <p className="mt-4 text-sm font-medium">{q.author}</p>

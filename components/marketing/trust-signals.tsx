@@ -10,10 +10,10 @@ const items = [
 export function TrustSignals() {
   return (
     <section className="py-12">
-      <div className="mx-auto grid max-w-4xl grid-cols-2 gap-6 text-center sm:grid-cols-4">
+      <div className="mx-auto grid max-w-4xl grid-cols-2 gap-6 px-4 text-center sm:grid-cols-4">
         {items.map(({ icon: Icon, text }) => (
           <div key={text} className="flex flex-col items-center gap-2">
-            <Icon className="h-6 w-6 text-primary" />
+            <Icon className="h-5 w-5 text-primary" />
             <span className="text-sm font-medium">{text}</span>
           </div>
         ))}

@@ -7,10 +7,10 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 export function Pricing() {
   return (
     <section id="pricing" className="py-24">
-      <div className="mx-auto max-w-5xl text-center">
+      <div className="mx-auto max-w-5xl px-4 text-center">
         <h2 className="mb-8 text-3xl font-bold">Pricing</h2>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="opacity-50">
+          <Card className="opacity-50 shadow-none">
             <CardHeader>
               <CardTitle>Free</CardTitle>
             </CardHeader>
@@ -18,7 +18,7 @@ export function Pricing() {
               <p>Coming soon</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Monli Pro — Rp0 (intro period)</CardTitle>
             </CardHeader>

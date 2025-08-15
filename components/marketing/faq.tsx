@@ -17,7 +17,7 @@ const faqs = [
 export function FAQ() {
   return (
     <section id="faq" className="py-24">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl px-4">
         <h2 className="mb-8 text-center text-3xl font-bold">FAQ</h2>
         <Accordion type="single" collapsible onValueChange={() => window.umami?.track('faq_toggle')}>
           {faqs.map(f => (

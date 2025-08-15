@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export function Hero() {
   return (
-    <section className="flex flex-col items-center gap-6 py-16 text-center md:py-24">
+    <section className="flex flex-col items-center gap-6 px-4 py-16 text-center md:py-24">
       <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
         Budget monthly. Track daily. All in one place.
       </h1>
@@ -26,7 +26,7 @@ export function Hero() {
         alt="Monli dashboard screenshot"
         width={1200}
         height={800}
-        className="w-full max-w-5xl rounded-md border"
+        className="w-full max-w-5xl rounded-lg"
         priority
       />
     </section>

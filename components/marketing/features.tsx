@@ -32,14 +32,11 @@ const features = [
 export function Features() {
   return (
     <section id="features" className="py-24">
-      <div className="mx-auto flex max-w-5xl flex-col gap-16">
+      <div className="mx-auto flex max-w-5xl flex-col gap-16 px-4">
         {features.map(({ title, description, icon: Icon, image }) => (
-          <div
-            key={title}
-            className="grid items-center gap-6 md:grid-cols-2"
-          >
+          <div key={title} className="grid items-center gap-6 md:grid-cols-2">
             <div className="space-y-4">
-              <Icon className="h-6 w-6 text-primary" />
+              <Icon className="h-5 w-5 text-primary" />
               <h3 className="text-xl font-semibold">{title}</h3>
               <p className="text-muted-foreground">{description}</p>
             </div>
@@ -48,7 +45,7 @@ export function Features() {
               alt={`${title} screenshot`}
               width={600}
               height={400}
-              className="rounded-md border"
+              className="rounded-lg"
             />
           </div>
         ))}

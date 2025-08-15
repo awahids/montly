@@ -16,7 +16,7 @@ const steps = [
 export function HowItWorks() {
   return (
     <section className="py-24">
-      <div className="mx-auto max-w-5xl text-center">
+      <div className="mx-auto max-w-5xl px-4 text-center">
         <h2 className="mb-8 text-3xl font-bold">How It Works</h2>
         <ol className="mx-auto grid max-w-3xl gap-8 sm:grid-cols-3">
           {steps.map((step, i) => (
