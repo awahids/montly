@@ -41,6 +41,7 @@ import { Input } from '@/components/ui/input';
 import TransactionForm, {
   TransactionFormValues,
 } from '@/components/transactions/transaction-form';
+import { formatDate } from '@/lib/date';
 
 const toCamel = (str: string) =>
   str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -146,7 +147,7 @@ export default function TransactionsPage() {
     if (!user) return;
     const payload = {
       user_id: user.id,
-      date: values.date.toISOString().split('T')[0],
+      date: formatDate(values.date),
       type: values.type,
       account_id: values.accountId,
       from_account_id: values.fromAccountId,
