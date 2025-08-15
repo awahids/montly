@@ -26,7 +26,7 @@ planned as (
   join budget_items bi on bi.budget_id = b.id
   join categories c on c.id = bi.category_id
   where b.month = month_in
-    and c.type = type_in
+    and c.type = type_in::category_type
   group by bi.category_id
 ),
 actual as (
@@ -36,7 +36,7 @@ actual as (
   join me on me.uid = t.user_id
   join month_bounds mb on true
   join categories c on c.id = t.category_id
-  where t.type = type_in
+  where t.type = type_in::transaction_type
     and t.category_id is not null
     and t.date >= mb.start_date and t.date < mb.end_date
   group by t.category_id
