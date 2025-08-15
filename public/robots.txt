@@ -1,0 +1,5 @@
+# robots.txt for Google Search indexing
+User-agent: *
+Allow: /
+
+Sitemap: https://monli.fun/sitemap.xml
