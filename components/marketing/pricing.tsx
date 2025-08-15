@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 
 export function Pricing() {
@@ -9,18 +10,18 @@ export function Pricing() {
     <section id="pricing" className="py-24">
       <div className="mx-auto max-w-5xl px-4 text-center">
         <h2 className="mb-8 text-3xl font-bold">Pricing</h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className="opacity-50 shadow-none">
-            <CardHeader>
+        <div className="grid items-start gap-6 md:grid-cols-2">
+          <Card className="border-dashed shadow-none">
+            <CardHeader className="text-center">
               <CardTitle>Free</CardTitle>
+              <p className="mt-2 text-sm text-muted-foreground">Coming soon</p>
             </CardHeader>
-            <CardContent>
-              <p>Coming soon</p>
-            </CardContent>
           </Card>
           <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>Monli Pro — Rp0 (intro period)</CardTitle>
+            <CardHeader className="text-center">
+              <Badge className="mx-auto mb-2">Pro</Badge>
+              <CardTitle className="text-3xl font-bold">Rp0</CardTitle>
+              <p className="text-sm text-muted-foreground">Intro period</p>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-left">
