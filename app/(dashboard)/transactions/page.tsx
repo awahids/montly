@@ -145,29 +145,55 @@ export default function TransactionsPage() {
 
   const handleSave = async (values: TransactionFormValues) => {
     if (!user) return;
-    const payload = {
-      user_id: user.id,
+    const basePayload = {
       date: formatDate(values.date),
       type: values.type,
-      account_id: values.accountId,
-      from_account_id: values.fromAccountId,
-      to_account_id: values.toAccountId,
-      category_id: values.categoryId,
+      accountId: values.accountId,
+      fromAccountId: values.fromAccountId,
+      toAccountId: values.toAccountId,
+      categoryId: values.categoryId,
       amount: values.amount,
       note: values.note,
       tags: values.tags || [],
     };
+    const insertPayload = {
+      user_id: user.id,
+      date: basePayload.date,
+      type: basePayload.type,
+      account_id: basePayload.accountId,
+      from_account_id: basePayload.fromAccountId,
+      to_account_id: basePayload.toAccountId,
+      category_id: basePayload.categoryId,
+      amount: basePayload.amount,
+      note: basePayload.note,
+      tags: basePayload.tags,
+    };
     const isEditing = Boolean(editing);
-    const { error } = isEditing
-      ? await supabase
-          .from('transactions')
-          .update(payload)
-          .eq('id', editing!.id)
-      : await supabase.from('transactions').insert(payload);
-    if (error) {
-      toast.error('Failed to save transaction');
+
+    let errorMessage: string | undefined;
+
+    if (isEditing) {
+      const res = await fetch(`/api/transactions/${editing!.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(basePayload),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        errorMessage = data.error || 'Failed to save transaction';
+      }
+    } else {
+      const { error } = await supabase
+        .from('transactions')
+        .insert(insertPayload);
+      if (error) errorMessage = error.message;
+    }
+
+    if (errorMessage) {
+      toast.error(errorMessage);
       return;
     }
+
     toast.success(isEditing ? 'Transaction updated' : 'Transaction added');
     await fetchTransactions();
     setFormOpen(false);
