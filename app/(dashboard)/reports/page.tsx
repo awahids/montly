@@ -27,6 +27,7 @@ import {
 } from 'recharts';
 import { formatIDR } from '@/lib/currency';
 import { Download, Filter } from 'lucide-react';
+import CategoryMovementChart from '@/components/reports/category-movement-chart';
 
 interface TrendRow {
   month: string;
@@ -151,24 +152,39 @@ export default function ReportsPage() {
       </Collapsible>
 
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList className="flex flex-wrap gap-2">
-          <TabsTrigger value="summary" className="flex-1 min-w-[120px]">
+        <TabsList className="flex w-full overflow-x-auto gap-2 sm:overflow-visible">
+          <TabsTrigger
+            value="summary"
+            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+          >
             Monthly Summary
           </TabsTrigger>
-          <TabsTrigger value="trend" className="flex-1 min-w-[120px]">
+          <TabsTrigger
+            value="trend"
+            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+          >
             Income vs Expense Trend
           </TabsTrigger>
-          <TabsTrigger value="category" className="flex-1 min-w-[120px]">
+          <TabsTrigger
+            value="category"
+            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+          >
             Category Details
+          </TabsTrigger>
+          <TabsTrigger
+            value="movement"
+            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+          >
+            Budget vs Actual
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary" className="space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-start sm:justify-end">
             <Button
               variant="outline"
               size="sm"
-              className="gap-1"
+              className="gap-1 w-full sm:w-auto"
               onClick={() => exportCSV(summary.daily, `daily-${month}.csv`)}
             >
               <Download className="h-4 w-4" /> Export CSV
@@ -253,11 +269,11 @@ export default function ReportsPage() {
         </TabsContent>
 
         <TabsContent value="trend" className="space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-start sm:justify-end">
             <Button
               variant="outline"
               size="sm"
-              className="gap-1"
+              className="gap-1 w-full sm:w-auto"
               onClick={() => exportCSV(trend, `trend-${year}.csv`)}
             >
               <Download className="h-4 w-4" /> Export CSV
@@ -286,11 +302,11 @@ export default function ReportsPage() {
         </TabsContent>
 
         <TabsContent value="category" className="space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-start sm:justify-end">
             <Button
               variant="outline"
               size="sm"
-              className="gap-1"
+              className="gap-1 w-full sm:w-auto"
               onClick={() => exportCSV(categoryData, `categories-${month}.csv`)}
             >
               <Download className="h-4 w-4" /> Export CSV
@@ -324,6 +340,10 @@ export default function ReportsPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="movement" className="space-y-4">
+          <CategoryMovementChart />
         </TabsContent>
       </Tabs>
     </div>

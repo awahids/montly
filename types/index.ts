@@ -77,3 +77,5 @@ export interface CategorySpend {
   budgeted: number;
   color: string;
 }
+
+export type { CategoryPoint, ChartResponse } from './reports';

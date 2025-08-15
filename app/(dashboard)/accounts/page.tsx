@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Building2,
   Smartphone,
@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/currency';
-import { Account, Transaction } from '@/types';
+import { Account } from '@/types';
 import {
   Card,
   CardContent,
@@ -47,6 +47,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const typeIcons = {
   bank: Building2,
@@ -54,73 +62,48 @@ const typeIcons = {
   cash: Wallet2,
 };
 
-const toCamel = (str: string) =>
-  str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
-
-function keysToCamel<T>(obj: any): T {
-  if (Array.isArray(obj)) {
-    return obj.map((v) => keysToCamel(v)) as any;
-  }
-  if (obj && typeof obj === 'object' && obj.constructor === Object) {
-    const result: Record<string, any> = {};
-    for (const [key, value] of Object.entries(obj)) {
-      result[toCamel(key)] = keysToCamel(value);
-    }
-    return result as T;
-  }
-  return obj as T;
-}
-
 export default function AccountsPage() {
   const {
     user,
     accounts,
-    transactions,
     setAccounts,
-    setTransactions,
     loading,
     setLoading,
-    getCurrentBalance,
   } = useAppStore();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const [total, setTotal] = useState(0);
+
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/accounts?page=${page}&pageSize=${pageSize}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch accounts');
+      setAccounts(data.rows);
+      setTotal(data.total);
+    } catch (error) {
+      console.error('Failed to fetch accounts:', error);
+      toast.error('Failed to fetch accounts');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, page, setAccounts, setLoading]);
 
   useEffect(() => {
-    if (!user) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { data: accountsData } = await supabase
-          .from('accounts')
-          .select('*')
-          .eq('user_id', user.id);
-        if (accountsData) setAccounts(keysToCamel<Account[]>(accountsData));
-
-        if (!transactions.length) {
-          const { data: txData } = await supabase
-            .from('transactions')
-            .select('*')
-            .eq('user_id', user.id);
-          if (txData) setTransactions(keysToCamel<Transaction[]>(txData));
-        }
-      } catch (error) {
-        console.error('Failed to fetch accounts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user, setAccounts, setTransactions, transactions.length, setLoading]);
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase.from('accounts').delete().eq('id', id);
       if (error) throw error;
-      setAccounts(accounts.filter((a) => a.id !== id));
       toast.success('Account deleted');
+      await fetchAccounts();
     } catch (err) {
       console.error('Failed to delete account:', err);
       toast.error('Failed to delete account');
@@ -134,10 +117,8 @@ export default function AccountsPage() {
         .update({ archived })
         .eq('id', id);
       if (error) throw error;
-      setAccounts(
-        accounts.map((a) => (a.id === id ? { ...a, archived } : a))
-      );
       toast.success(archived ? 'Account archived' : 'Account unarchived');
+      await fetchAccounts();
     } catch (err) {
       console.error('Failed to update account:', err);
       toast.error('Failed to update account');
@@ -171,7 +152,7 @@ export default function AccountsPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {accounts.map((account) => {
           const Icon = typeIcons[account.type];
-          const balance = getCurrentBalance(account.id);
+          const balance = account.currentBalance ?? 0;
           return (
             <Card
               key={account.id}
@@ -248,6 +229,41 @@ export default function AccountsPage() {
         })}
       </div>
 
+      {total > pageSize && (
+        <Pagination className="pt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            {Array.from({ length: Math.ceil(total / pageSize) }).map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  isActive={page === i + 1}
+                  onClick={() => setPage(i + 1)}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setPage((p) => Math.min(Math.ceil(total / pageSize), p + 1))
+                }
+                className={
+                  page === Math.ceil(total / pageSize)
+                    ? 'pointer-events-none opacity-50'
+                    : ''
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+
       <Button
         onClick={() => {
           setEditingAccount(null);
@@ -266,7 +282,10 @@ export default function AccountsPage() {
           </DialogHeader>
           <AccountForm
             account={editingAccount || undefined}
-            onSuccess={() => setDialogOpen(false)}
+            onSuccess={() => {
+              setDialogOpen(false);
+              fetchAccounts();
+            }}
           />
         </DialogContent>
       </Dialog>

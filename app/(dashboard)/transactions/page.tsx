@@ -11,6 +11,14 @@ import { supabase } from '@/lib/supabase';
 import { formatIDR } from '@/lib/currency';
 import { cn } from '@/lib/utils';
 import { Transaction, Account, Category } from '@/types';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -78,6 +86,7 @@ export default function TransactionsPage() {
 
   const handleDateRangeSelect: SelectRangeEventHandler = (range) => {
     setDateRange(range ?? { from: undefined, to: undefined });
+    setPage(1);
   };
   const [accountFilter, setAccountFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -85,26 +94,42 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | undefined>();
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const [total, setTotal] = useState(0);
 
   const fetchTransactions = useCallback(async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(
-        `*,
-        account:accounts!transactions_account_id_fkey(name, type),
-        from_account:accounts!transactions_from_account_id_fkey(name, type),
-        to_account:accounts!transactions_to_account_id_fkey(name, type),
-        category:categories(name, color, icon)`
-      )
-      .eq('user_id', user.id)
-      .order('date', { ascending: false });
-    if (error) {
-      toast.error('Failed to load transactions');
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+    });
+    if (dateRange.from) params.set('from', formatDate(dateRange.from));
+    if (dateRange.to) params.set('to', formatDate(dateRange.to));
+    if (accountFilter !== 'all') params.set('accountId', accountFilter);
+    if (categoryFilter !== 'all') params.set('categoryId', categoryFilter);
+    if (typeFilter !== 'all') params.set('type', typeFilter);
+    if (search) params.set('search', search);
+    const res = await fetch(`/api/transactions?${params.toString()}`);
+    const data = await res.json();
+    if (!res.ok) {
+      toast.error(data.error || 'Failed to load transactions');
       return;
     }
-    if (data) setTransactions(keysToCamel<Transaction[]>(data));
-  }, [user, setTransactions]);
+    setTransactions(keysToCamel<Transaction[]>(data.rows));
+    setTotal(data.total);
+  }, [
+    user,
+    page,
+    pageSize,
+    dateRange.from,
+    dateRange.to,
+    accountFilter,
+    categoryFilter,
+    typeFilter,
+    search,
+    setTransactions,
+  ]);
 
   useEffect(() => {
     if (!user) return;
@@ -145,7 +170,7 @@ export default function TransactionsPage() {
 
   const handleSave = async (values: TransactionFormValues) => {
     if (!user) return;
-    const basePayload = {
+    const payload = {
       date: formatDate(values.date),
       type: values.type,
       accountId: values.accountId,
@@ -156,41 +181,26 @@ export default function TransactionsPage() {
       note: values.note,
       tags: values.tags || [],
     };
-    const insertPayload = {
-      user_id: user.id,
-      date: basePayload.date,
-      type: basePayload.type,
-      account_id: basePayload.accountId,
-      from_account_id: basePayload.fromAccountId,
-      to_account_id: basePayload.toAccountId,
-      category_id: basePayload.categoryId,
-      amount: basePayload.amount,
-      note: basePayload.note,
-      tags: basePayload.tags,
-    };
     const isEditing = Boolean(editing);
 
-    let errorMessage: string | undefined;
-
+    let res: Response;
     if (isEditing) {
-      const res = await fetch(`/api/transactions/${editing!.id}`, {
+      res = await fetch(`/api/transactions/${editing!.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(basePayload),
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        errorMessage = data.error || 'Failed to save transaction';
-      }
     } else {
-      const { error } = await supabase
-        .from('transactions')
-        .insert(insertPayload);
-      if (error) errorMessage = error.message;
+      res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
     }
 
-    if (errorMessage) {
-      toast.error(errorMessage);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || 'Failed to save transaction');
       return;
     }
 
@@ -202,12 +212,12 @@ export default function TransactionsPage() {
 
   const handleDelete = async () => {
     if (!editing) return;
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('id', editing.id);
-    if (error) {
-      toast.error('Failed to delete transaction');
+    const res = await fetch(`/api/transactions/${editing.id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || 'Failed to delete transaction');
       return;
     }
     toast.success('Transaction deleted');
@@ -217,12 +227,12 @@ export default function TransactionsPage() {
   };
 
   const handleDeleteRow = async (t: Transaction) => {
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('id', t.id);
-    if (error) {
-      toast.error('Failed to delete transaction');
+    const res = await fetch(`/api/transactions/${t.id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || 'Failed to delete transaction');
       return;
     }
     toast.success('Transaction deleted');
@@ -239,25 +249,7 @@ export default function TransactionsPage() {
     setFormOpen(true);
   };
 
-  const filteredTransactions = transactions.filter((t) => {
-    const dateOk =
-      (!dateRange.from || new Date(t.date) >= dateRange.from) &&
-      (!dateRange.to || new Date(t.date) <= dateRange.to);
-    const accountOk =
-      accountFilter === 'all' ||
-      t.accountId === accountFilter ||
-      t.fromAccountId === accountFilter ||
-      t.toAccountId === accountFilter;
-    const categoryOk =
-      categoryFilter === 'all' || t.categoryId === categoryFilter;
-    const typeOk = typeFilter === 'all' || t.type === typeFilter;
-    const searchLower = search.toLowerCase();
-    const textOk =
-      !searchLower ||
-      t.note.toLowerCase().includes(searchLower) ||
-      (t.tags || []).some((tag) => tag.toLowerCase().includes(searchLower));
-    return dateOk && accountOk && categoryOk && typeOk && textOk;
-  });
+  const pageCount = Math.ceil(total / pageSize);
 
   return (
     <div className="space-y-4">
@@ -272,13 +264,13 @@ export default function TransactionsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
-                'w-[250px] justify-start',
+                'w-full md:w-[250px] justify-start',
                 !dateRange.from && 'text-muted-foreground'
               )}
             >
@@ -307,8 +299,14 @@ export default function TransactionsPage() {
           </PopoverContent>
       </Popover>
 
-      <Select value={accountFilter} onValueChange={setAccountFilter}>
-        <SelectTrigger className="w-[160px]">
+      <Select
+        value={accountFilter}
+        onValueChange={(v) => {
+          setAccountFilter(v);
+          setPage(1);
+        }}
+      >
+        <SelectTrigger className="w-full md:w-[160px]">
           <SelectValue placeholder="Account" />
           </SelectTrigger>
           <SelectContent>
@@ -321,8 +319,14 @@ export default function TransactionsPage() {
         </SelectContent>
       </Select>
 
-      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-        <SelectTrigger className="w-[160px]">
+      <Select
+        value={categoryFilter}
+        onValueChange={(v) => {
+          setCategoryFilter(v);
+          setPage(1);
+        }}
+      >
+        <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -335,8 +339,14 @@ export default function TransactionsPage() {
         </SelectContent>
       </Select>
 
-      <Select value={typeFilter} onValueChange={setTypeFilter}>
-        <SelectTrigger className="w-[160px]">
+      <Select
+        value={typeFilter}
+        onValueChange={(v) => {
+          setTypeFilter(v);
+          setPage(1);
+        }}
+      >
+        <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -351,7 +361,10 @@ export default function TransactionsPage() {
         placeholder="Search"
         className="w-full md:w-[200px]"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }}
       />
     </div>
 
@@ -369,7 +382,7 @@ export default function TransactionsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTransactions.map((t) => {
+            {transactions.map((t) => {
               const Icon = t.category?.icon
                 ? (LucideIcons[
                     t.category.icon as keyof typeof LucideIcons
@@ -437,7 +450,7 @@ export default function TransactionsPage() {
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-2">
-        {filteredTransactions.map((t) => {
+        {transactions.map((t) => {
           const Icon = t.category?.icon
             ? (LucideIcons[t.category.icon as keyof typeof LucideIcons] as any)
             : null;
@@ -494,6 +507,37 @@ export default function TransactionsPage() {
           );
         })}
       </div>
+
+      {pageCount > 1 && (
+        <Pagination className="pt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            {Array.from({ length: pageCount }).map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  isActive={page === i + 1}
+                  onClick={() => setPage(i + 1)}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                className={
+                  page === pageCount ? 'pointer-events-none opacity-50' : ''
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
 
       <Button
         onClick={openNew}

@@ -7,6 +7,13 @@ export function formatIDR(amount: number): string {
   }).format(amount);
 }
 
+export const toIDR = (n: number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(n);
+
 export function formatCurrency(amount: number, currency = 'IDR'): string {
   if (currency === 'IDR') {
     return formatIDR(amount);
