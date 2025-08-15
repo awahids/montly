@@ -31,6 +31,7 @@ export default function SignInPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -42,12 +43,15 @@ export default function SignInPage() {
 
   const onSubmit = async (data: SignInForm) => {
     setLoading(true);
+    setErrorMessage(null);
     try {
       await signIn(data.email, data.password);
       toast.success('Welcome back!');
       router.push('/dashboard');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
+      const message = error.message || 'Invalid login credentials';
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -118,6 +122,10 @@ export default function SignInPage() {
                 'Sign In'
               )}
             </Button>
+
+            {errorMessage && (
+              <p className="text-sm text-red-600 text-center">{errorMessage}</p>
+            )}
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
