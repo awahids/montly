@@ -170,7 +170,7 @@ export default function TransactionsPage() {
 
   const handleSave = async (values: TransactionFormValues) => {
     if (!user) return;
-    const basePayload = {
+    const payload = {
       date: formatDate(values.date),
       type: values.type,
       accountId: values.accountId,
@@ -181,48 +181,26 @@ export default function TransactionsPage() {
       note: values.note,
       tags: values.tags || [],
     };
-    const insertPayload = {
-      user_id: user.id,
-      date: basePayload.date,
-      type: basePayload.type,
-      account_id: basePayload.accountId,
-      from_account_id: basePayload.fromAccountId,
-      to_account_id: basePayload.toAccountId,
-      category_id: basePayload.categoryId,
-      amount: basePayload.amount,
-      note: basePayload.note,
-      tags: basePayload.tags,
-    };
     const isEditing = Boolean(editing);
 
-    let errorMessage: string | undefined;
-
+    let res: Response;
     if (isEditing) {
-      const updatePayload = {
-        date: basePayload.date,
-        type: basePayload.type,
-        account_id: basePayload.accountId,
-        from_account_id: basePayload.fromAccountId,
-        to_account_id: basePayload.toAccountId,
-        category_id: basePayload.categoryId,
-        amount: basePayload.amount,
-        note: basePayload.note,
-        tags: basePayload.tags,
-      };
-      const { error } = await supabase
-        .from('transactions')
-        .update(updatePayload)
-        .eq('id', editing!.id);
-      if (error) errorMessage = error.message;
+      res = await fetch(`/api/transactions/${editing!.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
     } else {
-      const { error } = await supabase
-        .from('transactions')
-        .insert(insertPayload);
-      if (error) errorMessage = error.message;
+      res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
     }
 
-    if (errorMessage) {
-      toast.error(errorMessage);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || 'Failed to save transaction');
       return;
     }
 
@@ -234,12 +212,12 @@ export default function TransactionsPage() {
 
   const handleDelete = async () => {
     if (!editing) return;
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('id', editing.id);
-    if (error) {
-      toast.error('Failed to delete transaction');
+    const res = await fetch(`/api/transactions/${editing.id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || 'Failed to delete transaction');
       return;
     }
     toast.success('Transaction deleted');
@@ -249,12 +227,12 @@ export default function TransactionsPage() {
   };
 
   const handleDeleteRow = async (t: Transaction) => {
-    const { error } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('id', t.id);
-    if (error) {
-      toast.error('Failed to delete transaction');
+    const res = await fetch(`/api/transactions/${t.id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || 'Failed to delete transaction');
       return;
     }
     toast.success('Transaction deleted');
