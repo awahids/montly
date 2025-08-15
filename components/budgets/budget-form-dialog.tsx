@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
-import { Budget, Category, Account } from '@/types';
+import { Budget, Category } from '@/types';
 import { toast } from 'sonner';
+import { formatIDR, parseIDR } from '@/lib/currency';
 import {
   Dialog,
   DialogContent,
@@ -48,29 +49,22 @@ type BudgetFormDialogProps = {
 export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) {
   const { user, budgets, setBudgets } = useAppStore();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [accounts, setAccounts] = useState<Account[]>([]);
   const [month, setMonth] = useState<string>(() => new Date().toISOString().slice(0, 7));
-  const [accountId, setAccountId] = useState('');
-  const [total, setTotal] = useState('');
+  const [total, setTotal] = useState(0);
   const [items, setItems] = useState<ItemInput[]>([{ categoryId: '', amount: '' }]);
   const [submitting, setSubmitting] = useState(false);
   const monthRef = useRef<HTMLInputElement>(null);
-  const accountRef = useRef<HTMLButtonElement>(null);
   const totalRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open || !user) return;
     const fetchData = async () => {
-      const [catRes, accRes] = await Promise.all([
-        supabase
-          .from('categories')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('type', 'expense'),
-        fetch('/api/accounts').then(res => res.json()),
-      ]);
-      if (catRes.data) setCategories(keysToCamel<Category[]>(catRes.data));
-      if (accRes.rows) setAccounts(keysToCamel<Account[]>(accRes.rows));
+      const { data } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'expense');
+      if (data) setCategories(keysToCamel<Category[]>(data));
     };
     fetchData();
   }, [open, user]);
@@ -89,19 +83,14 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
       monthRef.current?.focus();
       return;
     }
-    if (!accountId) {
-      accountRef.current?.focus();
-      return;
-    }
-    if (!total || Number(total) < 1) {
+    if (!total || total < 1) {
       totalRef.current?.focus();
       return;
     }
     setSubmitting(true);
     const payload = {
       month,
-      accountId,
-      totalAmount: Number(total),
+      totalAmount: total,
       items: items
         .filter(i => i.categoryId && i.amount)
         .map(i => ({
@@ -118,13 +107,12 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
     if (res.ok) {
       const data = await res.json();
       const newBudget = keysToCamel<Budget>(data);
-      newBudget.account = accounts.find(a => a.id === newBudget.accountId);
+      newBudget.items = [];
       setBudgets([...budgets, newBudget]);
       toast.success('Budget created');
       onOpenChange(false);
       setMonth(new Date().toISOString().slice(0, 7));
-      setAccountId('');
-      setTotal('');
+      setTotal(0);
       setItems([{ categoryId: '', amount: '' }]);
     } else {
       const { error } = await res.json();
@@ -150,29 +138,13 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Account</label>
-            <Select value={accountId} onValueChange={setAccountId}>
-              <SelectTrigger ref={accountRef}>
-                <SelectValue placeholder="Select account" />
-              </SelectTrigger>
-              <SelectContent>
-                {accounts.map(a => (
-                  <SelectItem key={a.id} value={a.id}>
-                    {a.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
             <label className="text-sm font-medium">Total Amount</label>
             <Input
               ref={totalRef}
-              type="number"
-              min={1}
+              inputMode="numeric"
               placeholder="0"
-              value={total}
-              onChange={e => setTotal(e.target.value)}
+              value={total ? formatIDR(total) : ''}
+              onChange={e => setTotal(parseIDR(e.target.value))}
             />
           </div>
           {items.map((item, idx) => (
@@ -207,9 +179,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            disabled={
-              submitting || !month || !accountId || !total || Number(total) < 1
-            }
+            disabled={submitting || !month || !total || total < 1}
           >
             Save
           </Button>

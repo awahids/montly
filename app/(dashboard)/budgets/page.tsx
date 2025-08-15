@@ -56,7 +56,7 @@ export default function BudgetsPage() {
     setTransactions,
     loading,
     setLoading,
-    getAccountMonthlySpending,
+    getMonthlySpending,
   } = useAppStore();
 
   const [year, setYear] = useState('all');
@@ -72,7 +72,7 @@ export default function BudgetsPage() {
         const { data: budgetsData } = await supabase
           .from('budgets')
           .select(
-            `*, account:accounts(*), items:budget_items(*, category:categories(*))`
+            `*, items:budget_items(*, category:categories(*))`
           )
           .eq('user_id', user.id);
         if (budgetsData) setBudgets(keysToCamel<Budget[]>(budgetsData));
@@ -112,7 +112,7 @@ export default function BudgetsPage() {
 
   const getBudgetTotals = (budget: Budget) => {
     const planned = budget.totalAmount;
-    const actual = getAccountMonthlySpending(budget.accountId, budget.month);
+    const actual = getMonthlySpending(budget.month);
     const progress = planned ? (actual / planned) * 100 : 0;
     const indicatorColor =
       progress < 70
@@ -136,8 +136,7 @@ export default function BudgetsPage() {
         <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle className="text-base sm:text-lg">
-              {format(new Date(`${budget.month}-01`), 'MMMM yyyy')} –{' '}
-              {budget.account?.name}
+              {format(new Date(`${budget.month}-01`), 'MMMM yyyy')}
             </CardTitle>
           </div>
           <Button
@@ -187,8 +186,9 @@ export default function BudgetsPage() {
         <div className="hidden md:block">
           <Button
             onClick={() => setIsAdding(true)}
-            className="transition-transform hover:scale-105"
+            className="transition-transform hover:scale-105 flex items-center gap-1"
           >
+            <Plus className="h-4 w-4" />
             Buat Anggaran
           </Button>
         </div>
@@ -221,7 +221,6 @@ export default function BudgetsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Bulan</TableHead>
-              <TableHead>Akun</TableHead>
               <TableHead className="text-right">Rencana</TableHead>
               <TableHead className="text-right">Terpakai</TableHead>
               <TableHead>Progress</TableHead>
@@ -237,7 +236,6 @@ export default function BudgetsPage() {
                   <TableCell>
                     {format(new Date(`${b.month}-01`), 'MMMM yyyy')}
                   </TableCell>
-                  <TableCell>{b.account?.name}</TableCell>
                   <TableCell className="text-right">
                     {formatIDR(planned)}
                   </TableCell>

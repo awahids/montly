@@ -92,7 +92,6 @@ export interface Database {
           id: string;
           user_id: string;
           month: string;
-          account_id: string;
           total_amount: number;
           created_at: string;
           updated_at: string;
@@ -101,14 +100,12 @@ export interface Database {
           id?: string;
           user_id: string;
           month: string;
-          account_id: string;
           total_amount?: number;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           month?: string;
-          account_id?: string;
           total_amount?: number;
           updated_at?: string;
         };

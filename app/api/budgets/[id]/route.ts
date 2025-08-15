@@ -19,13 +19,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     };
     type Budget = Database['public']['Tables']['budgets']['Row'] & {
       items: BudgetItem[];
-      account_id: string;
       total_amount: number;
     };
     const { data: budget, error } = await supabase
       .from('budgets')
       .select(
-        'id, month, account_id, total_amount, items:budget_items(id, amount, rollover, category:categories(id, name, color))'
+        'id, month, total_amount, items:budget_items(id, amount, rollover, category:categories(id, name, color))'
       )
       .eq('id', params.id)
       .eq('user_id', user.id)
@@ -71,7 +70,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({
       id: budget.id,
       month: budget.month,
-      accountId: budget.account_id,
       totalAmount: budget.total_amount,
       items,
     });
@@ -95,7 +93,7 @@ export async function PATCH(
     const user = await getUser();
     const { data: existing, error } = await supabase
       .from('budgets')
-      .select('id, month, account_id, total_amount, items:budget_items(id, category_id, amount, rollover)')
+      .select('id, month, total_amount, items:budget_items(id, category_id, amount, rollover)')
       .eq('id', params.id)
       .eq('user_id', user.id)
       .single();
@@ -110,25 +108,6 @@ export async function PATCH(
         .eq('user_id', user.id);
       if (monthError) {
         return NextResponse.json({ error: monthError.message }, { status: 400 });
-      }
-    }
-    if (body.accountId && body.accountId !== existing.account_id) {
-      const { data: acc } = await supabase
-        .from('accounts')
-        .select('id')
-        .eq('id', body.accountId)
-        .eq('user_id', user.id)
-        .single();
-      if (!acc) {
-        return NextResponse.json({ error: 'Invalid account' }, { status: 400 });
-      }
-      const { error: accError } = await supabase
-        .from('budgets')
-        .update({ account_id: body.accountId })
-        .eq('id', params.id)
-        .eq('user_id', user.id);
-      if (accError) {
-        return NextResponse.json({ error: accError.message }, { status: 400 });
       }
     }
     if (body.totalAmount !== undefined && body.totalAmount !== existing.total_amount) {
@@ -152,7 +131,7 @@ export async function PATCH(
       if (upserts.length) {
         const { error: upsertError } = await supabase
           .from('budget_items')
-          .upsert(upserts, { onConflict: 'budget_id,category_id' });
+          .upsert(upserts, { onConflict: 'budget_id, category_id' });
         if (upsertError) {
           return NextResponse.json({ error: upsertError.message }, { status: 400 });
         }
@@ -172,7 +151,7 @@ export async function PATCH(
     }
     const { data, error: fetchError } = await supabase
       .from('budgets')
-      .select('*, account:accounts(*), items:budget_items(*, category:categories(*))')
+      .select('*, items:budget_items(*, category:categories(*))')
       .eq('id', params.id)
       .eq('user_id', user.id)
       .single();

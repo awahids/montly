@@ -1,7 +1,6 @@
 import { supabase } from './supabase';
 import { User } from '@/types';
 import { useAppStore } from './store';
-import { handleOAuthCallback } from './auth/google';
 
 export async function register(
   name: string,
@@ -65,6 +64,3 @@ export async function getCurrentUser(): Promise<User | null> {
     defaultCurrency: profile.default_currency,
   };
 }
-
-// Re-export Google OAuth functions for convenience
-export { signInWithGoogle, handleOAuthCallback, isGoogleAuthenticated } from './auth/google';

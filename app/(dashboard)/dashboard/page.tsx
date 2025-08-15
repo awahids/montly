@@ -142,7 +142,7 @@ export default function DashboardPage() {
         const { data: budgetsData } = await supabase
           .from('budgets')
           .select(
-            `*, account:accounts(*), items:budget_items(*, category:categories(*))`
+            `*, items:budget_items(*, category:categories(*))`
           )
           .eq('user_id', user.id)
           .eq('month', currentMonth);

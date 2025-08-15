@@ -77,7 +77,7 @@ export function BudgetDetailDialog({
     loading,
     setLoading,
     getCategorySpending,
-    getAccountMonthlySpending,
+    getMonthlySpending,
   } = useAppStore();
 
   const [budget, setBudget] = useState<Budget | null>(null);
@@ -95,9 +95,7 @@ export function BudgetDetailDialog({
         if (!budgets.find((b) => b.id === budgetId)) {
           const { data: budgetData } = await supabase
             .from('budgets')
-            .select(
-              `*, account:accounts(*), items:budget_items(*, category:categories(*))`
-            )
+            .select(`*, items:budget_items(*, category:categories(*))`)
             .eq('user_id', user.id)
             .eq('id', budgetId)
             .single();
@@ -165,9 +163,7 @@ export function BudgetDetailDialog({
   ]);
 
   const totalBudget = budget?.totalAmount ?? 0;
-  const totalSpent = budget
-    ? getAccountMonthlySpending(budget.accountId, budget.month)
-    : 0;
+  const totalSpent = budget ? getMonthlySpending(budget.month) : 0;
   const progress = totalBudget ? (totalSpent / totalBudget) * 100 : 0;
   const overallIndicatorColor =
     progress < 70
@@ -264,7 +260,6 @@ export function BudgetDetailDialog({
             >
               <DialogTitle className="text-xl sm:text-2xl font-bold break-words">
                 {format(new Date(`${budget.month}-01`), 'MMMM yyyy')}
-                {budget.account ? ` - ${budget.account.name}` : ''}
               </DialogTitle>
             </DialogHeader>
 
@@ -273,7 +268,6 @@ export function BudgetDetailDialog({
                 <CardHeader>
                   <CardTitle className="text-xl sm:text-2xl font-bold break-words">
                     {format(new Date(`${budget.month}-01`), 'MMMM yyyy')}
-                    {budget.account ? ` - ${budget.account.name}` : ''}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
