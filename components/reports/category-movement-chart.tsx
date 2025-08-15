@@ -80,14 +80,14 @@ export default function CategoryMovementChart() {
           type="month"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
-          className="w-fit"
+          className="w-full sm:w-fit"
           aria-label="Month"
         />
         <ToggleGroup
           type="single"
           value={type}
           onValueChange={(v) => setType((v as any) || 'expense')}
-          className="w-fit"
+          className="w-full sm:w-fit"
         >
           <ToggleGroupItem value="expense">Expense</ToggleGroupItem>
           <ToggleGroupItem value="income">Income</ToggleGroupItem>
