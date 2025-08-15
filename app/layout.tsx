@@ -72,6 +72,7 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#4F46E5" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="apple-mobile-web-app-title" content="monli" />
         <meta
           name="google-site-verification"
