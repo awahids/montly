@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,8 +16,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -35,7 +32,6 @@ const signUpSchema = z.object({
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function SignUpPage() {
-  const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -51,28 +47,16 @@ export default function SignUpPage() {
   const onSubmit = async (data: SignUpForm) => {
     setLoading(true);
     try {
-      const res = await registerUser(data.name, data.email, data.password);
-      if (res.ok) {
-        toast({
-          title: 'Signup successful',
-          description: 'Please sign in to continue.',
-        });
-        router.push('/auth/sign-in');
-      } else if (res.error) {
-        toast({
-          title: 'Error',
-          description: res.error,
-          variant: 'destructive',
-        });
-      }
+      await registerUser(data.name, data.email, data.password);
     } catch (e) {
-      toast({
-        title: 'Error',
-        description: 'Failed to create account',
-        variant: 'destructive',
-      });
+      // Regardless of the error, notify the user to check email
+      console.error('Sign up error:', e);
     } finally {
       setLoading(false);
+      toast({
+        title: 'Check your email',
+        description: "We've sent you a verification link.",
+      });
     }
   };
 
@@ -91,21 +75,6 @@ export default function SignUpPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 mb-6">
-            <GoogleSignInButton className="w-full" />
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or create account with email
-                </span>
-              </div>
-            </div>
-          </div>
-
           <form
             onSubmit={handleSubmit(onSubmit, onError)}
             className="space-y-4"
