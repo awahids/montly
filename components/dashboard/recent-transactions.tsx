@@ -116,14 +116,16 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 onChange={e => setFilters(f => ({ ...f, endDate: e.target.value }))}
               />
               <Select
-                value={filters.accountId || undefined}
-                onValueChange={value => setFilters(f => ({ ...f, accountId: value }))}
+                value={filters.accountId || 'all'}
+                onValueChange={value =>
+                  setFilters(f => ({ ...f, accountId: value === 'all' ? '' : value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Account" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Accounts</SelectItem>
+                  <SelectItem value="all">All Accounts</SelectItem>
                   {accounts?.map(acc => (
                     <SelectItem key={acc.id} value={acc.id}>
                       {acc.name}
@@ -132,14 +134,16 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 </SelectContent>
               </Select>
               <Select
-                value={filters.categoryId || undefined}
-                onValueChange={value => setFilters(f => ({ ...f, categoryId: value }))}
+                value={filters.categoryId || 'all'}
+                onValueChange={value =>
+                  setFilters(f => ({ ...f, categoryId: value === 'all' ? '' : value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   {categories?.map(cat => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
@@ -148,14 +152,16 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 </SelectContent>
               </Select>
               <Select
-                value={filters.type || undefined}
-                onValueChange={value => setFilters(f => ({ ...f, type: value }))}
+                value={filters.type || 'all'}
+                onValueChange={value =>
+                  setFilters(f => ({ ...f, type: value === 'all' ? '' : value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="expense">Expense</SelectItem>
                   <SelectItem value="transfer">Transfer</SelectItem>
