@@ -198,15 +198,22 @@ export default function TransactionsPage() {
     let errorMessage: string | undefined;
 
     if (isEditing) {
-      const res = await fetch(`/api/transactions/${editing!.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(basePayload),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        errorMessage = data.error || 'Failed to save transaction';
-      }
+      const updatePayload = {
+        date: basePayload.date,
+        type: basePayload.type,
+        account_id: basePayload.accountId,
+        from_account_id: basePayload.fromAccountId,
+        to_account_id: basePayload.toAccountId,
+        category_id: basePayload.categoryId,
+        amount: basePayload.amount,
+        note: basePayload.note,
+        tags: basePayload.tags,
+      };
+      const { error } = await supabase
+        .from('transactions')
+        .update(updatePayload)
+        .eq('id', editing!.id);
+      if (error) errorMessage = error.message;
     } else {
       const { error } = await supabase
         .from('transactions')
@@ -279,13 +286,13 @@ export default function TransactionsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
-                'w-[250px] justify-start',
+                'w-full md:w-[250px] justify-start',
                 !dateRange.from && 'text-muted-foreground'
               )}
             >
@@ -321,7 +328,7 @@ export default function TransactionsPage() {
           setPage(1);
         }}
       >
-        <SelectTrigger className="w-[160px]">
+        <SelectTrigger className="w-full md:w-[160px]">
           <SelectValue placeholder="Account" />
           </SelectTrigger>
           <SelectContent>
@@ -341,7 +348,7 @@ export default function TransactionsPage() {
           setPage(1);
         }}
       >
-        <SelectTrigger className="w-[160px]">
+        <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -361,7 +368,7 @@ export default function TransactionsPage() {
           setPage(1);
         }}
       >
-        <SelectTrigger className="w-[160px]">
+        <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
