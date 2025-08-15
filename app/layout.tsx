@@ -72,7 +72,12 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#4F46E5" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="apple-mobile-web-app-title" content="monli" />
+        <meta
+          name="google-site-verification"
+          content="gs8ipaSQ05xaS9r1ScKArsPcBLNQGIDw8OONjrt0eBM"
+        />
         <meta
           name="description"
           content="monli adalah aplikasi pengelola keuangan pribadi yang membantu kamu mencatat pengeluaran, memonitor pemasukan, menyusun anggaran, dan memantau tabungan dalam satu tempat. Cerdas, mudah digunakan, dan dilengkapi grafik interaktif agar kamu bisa melihat gambaran keuangan secara utuh dan membuat keputusan finansial yang tepat."
