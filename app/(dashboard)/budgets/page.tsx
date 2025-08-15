@@ -186,8 +186,9 @@ export default function BudgetsPage() {
         <div className="hidden md:block">
           <Button
             onClick={() => setIsAdding(true)}
-            className="transition-transform hover:scale-105"
+            className="transition-transform hover:scale-105 flex items-center gap-1"
           >
+            <Plus className="h-4 w-4" />
             Buat Anggaran
           </Button>
         </div>

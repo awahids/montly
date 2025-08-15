@@ -17,8 +17,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -91,21 +89,6 @@ export default function SignUpPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 mb-6">
-            <GoogleSignInButton className="w-full" />
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or create account with email
-                </span>
-              </div>
-            </div>
-          </div>
-
           <form
             onSubmit={handleSubmit(onSubmit, onError)}
             className="space-y-4"

@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { Budget, Category } from '@/types';
 import { toast } from 'sonner';
+import { formatIDR, parseIDR } from '@/lib/currency';
 import {
   Dialog,
   DialogContent,
@@ -49,7 +50,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
   const { user, budgets, setBudgets } = useAppStore();
   const [categories, setCategories] = useState<Category[]>([]);
   const [month, setMonth] = useState<string>(() => new Date().toISOString().slice(0, 7));
-  const [total, setTotal] = useState('');
+  const [total, setTotal] = useState(0);
   const [items, setItems] = useState<ItemInput[]>([{ categoryId: '', amount: '' }]);
   const [submitting, setSubmitting] = useState(false);
   const monthRef = useRef<HTMLInputElement>(null);
@@ -82,14 +83,14 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
       monthRef.current?.focus();
       return;
     }
-    if (!total || Number(total) < 1) {
+    if (!total || total < 1) {
       totalRef.current?.focus();
       return;
     }
     setSubmitting(true);
     const payload = {
       month,
-      totalAmount: Number(total),
+      totalAmount: total,
       items: items
         .filter(i => i.categoryId && i.amount)
         .map(i => ({
@@ -111,7 +112,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
       toast.success('Budget created');
       onOpenChange(false);
       setMonth(new Date().toISOString().slice(0, 7));
-      setTotal('');
+      setTotal(0);
       setItems([{ categoryId: '', amount: '' }]);
     } else {
       const { error } = await res.json();
@@ -140,11 +141,10 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
             <label className="text-sm font-medium">Total Amount</label>
             <Input
               ref={totalRef}
-              type="number"
-              min={1}
+              inputMode="numeric"
               placeholder="0"
-              value={total}
-              onChange={e => setTotal(e.target.value)}
+              value={total ? formatIDR(total) : ''}
+              onChange={e => setTotal(parseIDR(e.target.value))}
             />
           </div>
           {items.map((item, idx) => (
@@ -179,7 +179,7 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            disabled={submitting || !month || !total || Number(total) < 1}
+            disabled={submitting || !month || !total || total < 1}
           >
             Save
           </Button>
