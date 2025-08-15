@@ -188,7 +188,7 @@ export function TransactionForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4 pb-20"
+            className="space-y-4 pb-24"
           >
             <FormField
               control={form.control}
@@ -440,7 +440,7 @@ export function TransactionForm({
               )}
             />
 
-            <DialogFooter className="sticky bottom-0 bg-background pt-4">
+            <DialogFooter className="sticky bottom-0 bg-background pt-4 flex justify-between">
               {transaction && onDelete && (
                 <Button
                   type="button"
