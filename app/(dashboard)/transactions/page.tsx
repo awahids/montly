@@ -37,6 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import {
   Popover,
   PopoverContent,
@@ -377,6 +378,7 @@ export default function TransactionsPage() {
               <TableHead>Title</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Account</TableHead>
+              <TableHead>Category</TableHead>
               <TableHead className="text-right">Amount</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -420,6 +422,15 @@ export default function TransactionsPage() {
                       t.fromAccount?.name ||
                       t.toAccount?.name ||
                       '-'}
+                  </TableCell>
+                  <TableCell>
+                    {t.category ? (
+                      <Badge variant="secondary" className="text-xs">
+                        {t.category.name}
+                      </Badge>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell className={cn('text-right font-medium', color)}>
                     {amountPrefix}
@@ -476,9 +487,39 @@ export default function TransactionsPage() {
                 {Icon && <Icon className="h-5 w-5" color={t.category?.color} />}
                 <div>
                   <p className="text-sm font-medium">{title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(parseISO(t.date), 'MMM dd, yyyy')}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-muted-foreground">
+                      {format(parseISO(t.date), 'MMM dd, yyyy')}
+                    </p>
+                    {t.type === 'transfer' ? (
+                      <>
+                        {t.fromAccount && (
+                          <Badge variant="outline" className="text-xs">
+                            {t.fromAccount.name}
+                          </Badge>
+                        )}
+                        {t.fromAccount && t.toAccount && (
+                          <span className="text-xs text-muted-foreground">→</span>
+                        )}
+                        {t.toAccount && (
+                          <Badge variant="outline" className="text-xs">
+                            {t.toAccount.name}
+                          </Badge>
+                        )}
+                      </>
+                    ) : (
+                      t.account && (
+                        <Badge variant="outline" className="text-xs">
+                          {t.account.name}
+                        </Badge>
+                      )
+                    )}
+                    {t.category && (
+                      <Badge variant="secondary" className="text-xs">
+                        {t.category.name}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="text-right">

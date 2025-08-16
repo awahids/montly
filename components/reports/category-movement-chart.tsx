@@ -12,6 +12,7 @@ import {
   Legend,
   ReferenceLine,
   ResponsiveContainer,
+  Label,
 } from 'recharts';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -34,6 +35,21 @@ export default function CategoryMovementChart() {
     setHidden((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const chartData = data?.data ?? [];
+
+  const CustomizedAxisTick = ({ x, y, payload }: any) => (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={16}
+        textAnchor="end"
+        transform="rotate(-90)"
+        className="text-[10px]"
+      >
+        {payload.value}
+      </text>
+    </g>
+  );
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -103,34 +119,33 @@ export default function CategoryMovementChart() {
         <div className="text-sm text-muted-foreground">No data</div>
       )}
       {chartData.length > 0 && (
-        <div className="overflow-x-auto">
-          <div className="h-72 min-w-[600px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="category_name"
-                  interval={0}
-                  tickFormatter={(v: string) =>
-                    v.length > 10 ? `${v.slice(0, 10)}…` : v
-                  }
-                />
-                <YAxis tickFormatter={(v: number) => toIDR(v)} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend content={renderLegend} />
-                <ReferenceLine y={0} stroke="#888" />
-                {!hidden.planned && (
-                  <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot />
-                )}
-                {!hidden.actual && (
-                  <Line type="monotone" dataKey="actual" stroke="#16a34a" dot />
-                )}
-                {!hidden.diff && (
-                  <Line type="monotone" dataKey="diff" stroke="#dc2626" dot />
-                )}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+        <div className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ bottom: 80 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="category_name"
+                interval={0}
+                height={70}
+                tick={<CustomizedAxisTick />}
+              >
+                <Label value="Categories" position="right" angle={90} dx={10} />
+              </XAxis>
+              <YAxis tickFormatter={(v: number) => toIDR(v)} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend content={renderLegend} />
+              <ReferenceLine y={0} stroke="#888" />
+              {!hidden.planned && (
+                <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot />
+              )}
+              {!hidden.actual && (
+                <Line type="monotone" dataKey="actual" stroke="#16a34a" dot />
+              )}
+              {!hidden.diff && (
+                <Line type="monotone" dataKey="diff" stroke="#dc2626" dot />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       )}
     </div>
