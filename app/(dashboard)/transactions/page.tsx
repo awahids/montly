@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo, Fragment } from 'react';
 import { format, parseISO } from 'date-fns';
 import * as LucideIcons from 'lucide-react';
 import { Plus, Pencil, Trash, Calendar as CalendarIcon } from 'lucide-react';
@@ -98,6 +98,17 @@ export default function TransactionsPage() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const [total, setTotal] = useState(0);
+  const [dateField, setDateField] = useState<'actual' | 'budget'>('actual');
+  const [groupBy, setGroupBy] = useState<'actual' | 'budget'>('actual');
+
+  const groupedTransactions = useMemo(() => {
+    const groups: Record<string, Transaction[]> = {};
+    transactions.forEach((t) => {
+      const key = groupBy === 'budget' ? t.budgetMonth : t.actualDate.slice(0, 7);
+      (groups[key] = groups[key] || []).push(t);
+    });
+    return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
+  }, [transactions, groupBy]);
 
   const fetchTransactions = useCallback(async () => {
     if (!user) return;
@@ -105,8 +116,21 @@ export default function TransactionsPage() {
       page: String(page),
       pageSize: String(pageSize),
     });
-    if (dateRange.from) params.set('from', formatDate(dateRange.from));
-    if (dateRange.to) params.set('to', formatDate(dateRange.to));
+    if (dateRange.from)
+      params.set(
+        'from',
+        dateField === 'budget'
+          ? format(dateRange.from, 'yyyy-MM')
+          : formatDate(dateRange.from)
+      );
+    if (dateRange.to)
+      params.set(
+        'to',
+        dateField === 'budget'
+          ? format(dateRange.to, 'yyyy-MM')
+          : formatDate(dateRange.to)
+      );
+    params.set('dateField', dateField);
     if (accountFilter !== 'all') params.set('accountId', accountFilter);
     if (categoryFilter !== 'all') params.set('categoryId', categoryFilter);
     if (typeFilter !== 'all') params.set('type', typeFilter);
@@ -125,6 +149,7 @@ export default function TransactionsPage() {
     pageSize,
     dateRange.from,
     dateRange.to,
+    dateField,
     accountFilter,
     categoryFilter,
     typeFilter,
@@ -172,7 +197,9 @@ export default function TransactionsPage() {
   const handleSave = async (values: TransactionFormValues) => {
     if (!user) return;
     const payload = {
-      date: formatDate(values.date),
+      budgetMonth: values.budgetMonth,
+      actualDate: formatDate(values.actualDate),
+      date: formatDate(values.actualDate),
       type: values.type,
       accountId: values.accountId,
       fromAccountId: values.fromAccountId,
@@ -267,7 +294,7 @@ export default function TransactionsPage() {
       {/* Filters */}
       <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
         <Popover>
-          <PopoverTrigger asChild>
+      <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
@@ -299,6 +326,35 @@ export default function TransactionsPage() {
             />
           </PopoverContent>
       </Popover>
+
+      <Select
+        value={groupBy}
+        onValueChange={(v) => setGroupBy(v as 'actual' | 'budget')}
+      >
+        <SelectTrigger className="w-full md:w-[180px]">
+          <SelectValue placeholder="Group by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="budget">Budget month</SelectItem>
+          <SelectItem value="actual">Actual date month</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={dateField}
+        onValueChange={(v) => {
+          setDateField(v as 'actual' | 'budget');
+          setPage(1);
+        }}
+      >
+        <SelectTrigger className="w-full md:w-[180px]">
+          <SelectValue placeholder="Filter month by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="budget">Budget</SelectItem>
+          <SelectItem value="actual">Actual</SelectItem>
+        </SelectContent>
+      </Select>
 
       <Select
         value={accountFilter}
@@ -384,11 +440,91 @@ export default function TransactionsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((t) => {
+            {groupedTransactions.map(([month, txs]) => (
+              <Fragment key={month}>
+                <TableRow>
+                  <TableCell colSpan={6} className="font-medium">
+                    {format(parseISO(`${month}-01`), 'MMM yyyy')}
+                  </TableCell>
+                </TableRow>
+                {txs.map((t) => {
+                  const Icon = t.category?.icon
+                    ? (LucideIcons[
+                        t.category.icon as keyof typeof LucideIcons
+                      ] as any)
+                    : null;
+                  const title =
+                    t.note ||
+                    t.category?.name ||
+                    (t.type === 'transfer'
+                      ? `Transfer from ${t.fromAccount?.name} to ${t.toAccount?.name}`
+                      : 'No description');
+                  const color =
+                    t.type === 'income'
+                      ? 'text-green-600'
+                      : t.type === 'expense'
+                      ? 'text-red-600'
+                      : 'text-blue-600';
+                  const amountPrefix = t.type === 'expense' ? '-' : '';
+                  return (
+                    <TableRow key={t.id}>
+                      <TableCell className="p-0">
+                        {Icon && (
+                          <Icon
+                            className="h-4 w-4"
+                            color={t.category?.color}
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>{title}</TableCell>
+                      <TableCell>
+                        {format(parseISO(t.actualDate), 'MMM dd, yyyy')}
+                      </TableCell>
+                      <TableCell>
+                        {t.account?.name ||
+                          t.fromAccount?.name ||
+                          t.toAccount?.name ||
+                          '-'}
+                      </TableCell>
+                      <TableCell className={cn('text-right font-medium', color)}>
+                        {amountPrefix}
+                        {formatIDR(t.amount)}
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openEdit(t)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteRow(t)}
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </Fragment>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {groupedTransactions.map(([month, txs]) => (
+          <div key={month} className="space-y-2">
+            <h3 className="text-sm font-medium px-1">
+              {format(parseISO(`${month}-01`), 'MMM yyyy')}
+            </h3>
+            {txs.map((t) => {
               const Icon = t.category?.icon
-                ? (LucideIcons[
-                    t.category.icon as keyof typeof LucideIcons
-                  ] as any)
+                ? (LucideIcons[t.category.icon as keyof typeof LucideIcons] as any)
                 : null;
               const title =
                 t.note ||
@@ -404,6 +540,7 @@ export default function TransactionsPage() {
                   : 'text-blue-600';
               const amountPrefix = t.type === 'expense' ? '-' : '';
               return (
+<<<<<<< HEAD
                 <TableRow key={t.id}>
                   <TableCell className="p-0">
                     {Icon && (
@@ -547,6 +684,48 @@ export default function TransactionsPage() {
             </Card>
           );
         })}
+=======
+                <Card
+                  key={t.id}
+                  className="p-4 flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-3">
+                    {Icon && <Icon className="h-5 w-5" color={t.category?.color} />}
+                    <div>
+                      <p className="text-sm font-medium">{title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(parseISO(t.actualDate), 'MMM dd, yyyy')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={cn('text-sm font-semibold', color)}>
+                      {amountPrefix}
+                      {formatIDR(t.amount)}
+                    </p>
+                    <div className="flex justify-end space-x-1 mt-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEdit(t)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteRow(t)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        ))}
+>>>>>>> codex/add-budget-month-and-actual-date-fields
       </div>
 
       {pageCount > 1 && (

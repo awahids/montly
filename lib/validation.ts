@@ -52,8 +52,14 @@ export const budgetPatchSchema = z.object({
   items: z.array(budgetItemSchema).optional(),
 });
 
+const dateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/);
+
 const transactionBaseSchema = z.object({
-  date: z.string(),
+  budgetMonth: monthSchema,
+  actualDate: dateSchema,
+  date: dateSchema.optional(),
   type: z.enum(['expense', 'income', 'transfer']),
   accountId: z.string().uuid().nullable().optional(),
   fromAccountId: z.string().uuid().nullable().optional(),

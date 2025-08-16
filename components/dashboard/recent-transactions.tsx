@@ -50,7 +50,7 @@ export function RecentTransactions({
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      const txDate = new Date(t.date).getTime();
+      const txDate = new Date(t.actualDate).getTime();
       if (filters.startDate && txDate < new Date(filters.startDate).getTime())
         return false;
       if (filters.endDate && txDate > new Date(filters.endDate).getTime())

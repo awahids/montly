@@ -29,14 +29,15 @@ export async function GET(req: Request) {
 
     const from = searchParams.get('from');
     const to = searchParams.get('to');
+    const dateField = searchParams.get('dateField') === 'budget' ? 'budget_month' : 'actual_date';
     const type = searchParams.get('type');
     const accountId = searchParams.get('accountId');
     const categoryId = searchParams.get('categoryId');
     const tags = searchParams.get('tags');
     const search = searchParams.get('search');
 
-    if (from) query = query.gte('date', from);
-    if (to) query = query.lte('date', to);
+    if (from) query = query.gte(dateField, from);
+    if (to) query = query.lte(dateField, to);
     if (type) query = query.eq('type', type);
     if (categoryId) query = query.eq('category_id', categoryId);
     if (accountId)
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
     }
 
     const { data, error, count } = await query
-      .order('date', { ascending: false })
+      .order(dateField, { ascending: false })
       .order('created_at', { ascending: false })
       .range(fromIdx, toIdx);
     if (error) {
@@ -102,7 +103,9 @@ export async function POST(req: Request) {
       .from('transactions')
       .insert({
         user_id: user.id,
-        date: body.date,
+        date: body.actualDate,
+        actual_date: body.actualDate,
+        budget_month: body.budgetMonth,
         type: body.type,
         account_id: body.accountId,
         from_account_id: body.fromAccountId,

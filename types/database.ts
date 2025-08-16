@@ -141,6 +141,8 @@ export interface Database {
           id: string;
           user_id: string;
           date: string;
+          actual_date: string;
+          budget_month: string;
           type: 'expense' | 'income' | 'transfer';
           account_id: string | null;
           from_account_id: string | null;
@@ -156,6 +158,8 @@ export interface Database {
           id?: string;
           user_id: string;
           date: string;
+          actual_date?: string;
+          budget_month?: string;
           type: 'expense' | 'income' | 'transfer';
           account_id?: string | null;
           from_account_id?: string | null;
@@ -169,6 +173,8 @@ export interface Database {
         };
         Update: {
           date?: string;
+          actual_date?: string;
+          budget_month?: string;
           type?: 'expense' | 'income' | 'transfer';
           account_id?: string | null;
           from_account_id?: string | null;

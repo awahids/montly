@@ -29,23 +29,16 @@ export async function GET(req: Request) {
     }
     const { data: tx, error: txError } = await supabase
       .from('transactions')
-      .select('amount, date')
+      .select('amount, budget_month')
       .eq('user_id', user.id)
       .eq('type', 'expense')
-      .gte('date', `${year}-01-01`)
-      .lt('date', `${Number(year) + 1}-01-01`);
+      .like('budget_month', `${year}-%`);
     if (txError) {
       return NextResponse.json({ error: txError.message }, { status: 400 });
     }
     const actualByMonth: Record<string, number> = {};
     for (const t of tx || []) {
-      const monthKey = new Date(t.date)
-        .toLocaleDateString('en-CA', {
-          timeZone: 'Asia/Jakarta',
-          year: 'numeric',
-          month: '2-digit',
-        })
-        .slice(0, 7);
+      const monthKey = t.budget_month;
       actualByMonth[monthKey] = (actualByMonth[monthKey] || 0) + t.amount;
     }
     const result = budgets.map(b => ({

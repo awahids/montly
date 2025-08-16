@@ -32,12 +32,14 @@ export function Header() {
     }
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string | null) => {
     return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
+      ? name
+          .split(' ')
+          .map(n => n[0])
+          .join('')
+          .toUpperCase()
+      : 'U';
   };
 
   return (
@@ -57,9 +59,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
-                  <AvatarFallback>
-                    {user ? getInitials(user.name) : 'U'}
-                  </AvatarFallback>
+                  <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>

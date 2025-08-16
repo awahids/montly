@@ -68,29 +68,21 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   getCategorySpending: (categoryId: string, month: string) => {
     const { transactions } = get();
-    const monthStart = `${month}-01`;
-    const monthEnd = `${month}-31`;
-    
     return transactions
-      .filter(t => 
-        t.categoryId === categoryId && 
-        t.type === 'expense' &&
-        t.date >= monthStart && 
-        t.date <= monthEnd
+      .filter(
+        (t) =>
+          t.categoryId === categoryId &&
+          t.type === 'expense' &&
+          t.budgetMonth === month
       )
       .reduce((sum, t) => sum + t.amount, 0);
   },
 
   getMonthlySpending: (month: string) => {
     const { transactions } = get();
-    const monthStart = `${month}-01`;
-    const monthEnd = `${month}-31`;
-    
     return transactions
-      .filter(t =>
-        t.type === 'expense' &&
-        t.date >= monthStart &&
-        t.date <= monthEnd
+      .filter(
+        (t) => t.type === 'expense' && t.budgetMonth === month
       )
       .reduce((sum, t) => sum + t.amount, 0);
   },
