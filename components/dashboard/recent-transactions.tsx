@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { LazyMotion, m } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,12 @@ import {
 import { Transaction, Account, Category } from '@/types';
 import { formatIDR } from '@/lib/currency';
 import { format, parseISO } from 'date-fns';
-import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Filter } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ArrowDownLeft,
+  ArrowRightLeft,
+  Filter,
+} from 'lucide-react';
 
 interface Props {
   transactions: Transaction[];
@@ -28,7 +34,11 @@ interface Props {
   categories: Category[];
 }
 
-export function RecentTransactions({ transactions, accounts, categories }: Props) {
+export function RecentTransactions({
+  transactions,
+  accounts,
+  categories,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState({
     startDate: '',
@@ -39,7 +49,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
   });
 
   const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => {
+    return transactions.filter((t) => {
       const txDate = new Date(t.date).getTime();
       if (filters.startDate && txDate < new Date(filters.startDate).getTime())
         return false;
@@ -52,11 +62,15 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
           t.toAccountId === filters.accountId;
         if (!matchesAccount) return false;
       }
-      if (filters.categoryId && t.categoryId !== filters.categoryId) return false;
+      if (filters.categoryId && t.categoryId !== filters.categoryId)
+        return false;
       if (filters.type && t.type !== filters.type) return false;
       return true;
     });
   }, [transactions, filters]);
+
+  const loadMotionFeatures = () =>
+    import('framer-motion').then((res) => res.domAnimation);
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'income':
@@ -77,19 +91,6 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
     return transaction.note || transaction.category?.name || 'No description';
   };
 
-  const getTransactionBadgeVariant = (type: string) => {
-    switch (type) {
-      case 'income':
-        return 'default';
-      case 'expense':
-        return 'destructive';
-      case 'transfer':
-        return 'secondary';
-      default:
-        return 'outline';
-    }
-  };
-
   return (
     <Card>
       <Collapsible open={open} onOpenChange={setOpen} className="w-full">
@@ -108,17 +109,25 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
               <Input
                 type="date"
                 value={filters.startDate}
-                onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, startDate: e.target.value }))
+                }
               />
               <Input
                 type="date"
                 value={filters.endDate}
-                onChange={e => setFilters(f => ({ ...f, endDate: e.target.value }))}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, endDate: e.target.value }))
+                }
               />
               <Select
-                value={filters.accountId || 'all'}
-                onValueChange={value =>
-                  setFilters(f => ({ ...f, accountId: value === 'all' ? '' : value }))
+                value={filters.accountId || 'all' || 'all'}
+                onValueChange={(value) =>
+                  setFilters((f) => ({
+                    ...f,
+                    accountId:
+                      value === 'all' ? '' : value === 'all' ? '' : value,
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -126,7 +135,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Accounts</SelectItem>
-                  {accounts?.map(acc => (
+                  {(accounts ?? []).map((acc: any) => (
                     <SelectItem key={acc.id} value={acc.id}>
                       {acc.name}
                     </SelectItem>
@@ -135,8 +144,11 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
               </Select>
               <Select
                 value={filters.categoryId || 'all'}
-                onValueChange={value =>
-                  setFilters(f => ({ ...f, categoryId: value === 'all' ? '' : value }))
+                onValueChange={(value) =>
+                  setFilters((f) => ({
+                    ...f,
+                    categoryId: value === 'all' ? '' : value,
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -144,7 +156,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories?.map(cat => (
+                  {categories?.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>
@@ -153,15 +165,18 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
               </Select>
               <Select
                 value={filters.type || 'all'}
-                onValueChange={value =>
-                  setFilters(f => ({ ...f, type: value === 'all' ? '' : value }))
+                onValueChange={(value) =>
+                  setFilters((f) => ({
+                    ...f,
+                    type: value === 'all' ? '' : value,
+                  }))
                 }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="allall">All Types</SelectItem>
                   <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="expense">Expense</SelectItem>
                   <SelectItem value="transfer">Transfer</SelectItem>
@@ -190,69 +205,97 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
               No transactions found.
             </p>
           ) : (
-            <div className="divide-y rounded-md border">
-              {filteredTransactions.map(transaction => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                      {getTransactionIcon(transaction.type)}
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">
-                        {getTransactionDescription(transaction)}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs text-muted-foreground">
-                          {format(parseISO(transaction.date), 'MMM dd, yyyy')}
+            <LazyMotion features={loadMotionFeatures}>
+              <div className="divide-y rounded-md border">
+                {filteredTransactions.map((transaction) => (
+                  <m.div
+                    key={transaction.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 hover:bg-muted/50 transition-colors"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {getTransactionDescription(transaction)}
                         </p>
-                        {transaction.account && (
-                          <Badge variant="outline" className="text-xs">
-                            {transaction.account.name}
-                          </Badge>
-                        )}
-                        {transaction.tags && transaction.tags.length > 0 && (
-                          <div className="flex gap-1">
-                            {transaction.tags.slice(0, 2).map(tag => (
-                              <Badge key={tag} variant="secondary" className="text-xs">
-                                {tag}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-xs text-muted-foreground">
+                            {format(parseISO(transaction.date), 'MMM dd, yyyy')}
+                          </p>
+                          {transaction.type === 'transfer' ? (
+                            <>
+                              {transaction.fromAccount && (
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.fromAccount.name}
+                                </Badge>
+                              )}
+                              {transaction.fromAccount &&
+                                transaction.toAccount && (
+                                  <span className="text-xs text-muted-foreground">
+                                    →
+                                  </span>
+                                )}
+                              {transaction.toAccount && (
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.toAccount.name}
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            transaction.account && (
+                              <Badge variant="outline" className="text-xs">
+                                {transaction.account.name}
                               </Badge>
-                            ))}
-                            {transaction.tags.length > 2 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{transaction.tags.length - 2}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+                            )
+                          )}
+                          {transaction.category && (
+                            <Badge variant="secondary" className="text-xs">
+                              {transaction.category.name}
+                            </Badge>
+                          )}
+                          {transaction.tags && transaction.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {transaction.tags.slice(0, 2).map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="secondary"
+                                  className="text-xs"
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {transaction.tags.length > 2 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{transaction.tags.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right space-y-1">
-                    <p
-                      className={`text-sm font-semibold ${
-                        transaction.type === 'income'
-                          ? 'text-green-600'
-                          : transaction.type === 'expense'
-                          ? 'text-red-600'
-                          : 'text-blue-600'
-                      }`}
-                    >
-                      {transaction.type === 'expense' ? '-' : ''}
-                      {formatIDR(transaction.amount)}
-                    </p>
-                    <Badge
-                      variant={getTransactionBadgeVariant(transaction.type)}
-                      className="text-xs"
-                    >
-                      {transaction.type}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    <div className="w-full text-right sm:w-auto">
+                      <p
+                        className={`text-sm font-semibold ${
+                          transaction.type === 'income'
+                            ? 'text-green-600'
+                            : transaction.type === 'expense'
+                            ? 'text-red-600'
+                            : 'text-blue-600'
+                        }`}
+                      >
+                        {transaction.type === 'expense' ? '-' : ''}
+                        {formatIDR(transaction.amount)}
+                      </p>
+                    </div>
+                  </m.div>
+                ))}
+              </div>
+            </LazyMotion>
           )}
         </CardContent>
       </Collapsible>
