@@ -186,7 +186,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 {filteredTransactions.map(transaction => (
                   <m.div
                     key={transaction.id}
-                    className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 hover:bg-muted/50 transition-colors"
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
@@ -198,7 +198,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                         <p className="text-sm font-medium">
                           {getTransactionDescription(transaction)}
                         </p>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <p className="text-xs text-muted-foreground">
                             {format(parseISO(transaction.date), 'MMM dd, yyyy')}
                           </p>
@@ -231,7 +231,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                             </Badge>
                           )}
                           {transaction.tags && transaction.tags.length > 0 && (
-                            <div className="flex gap-1">
+                            <div className="flex flex-wrap gap-1">
                               {transaction.tags.slice(0, 2).map(tag => (
                                 <Badge key={tag} variant="secondary" className="text-xs">
                                   {tag}
@@ -247,7 +247,7 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="w-full text-right sm:w-auto">
                       <p
                         className={`text-sm font-semibold ${
                           transaction.type === 'income'
