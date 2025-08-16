@@ -104,7 +104,8 @@ export default function TransactionsPage() {
   const groupedTransactions = useMemo(() => {
     const groups: Record<string, Transaction[]> = {};
     transactions.forEach((t) => {
-      const key = groupBy === 'budget' ? t.budgetMonth : t.actualDate.slice(0, 7);
+      const key =
+        groupBy === 'budget' ? t.budgetMonth : t.actualDate.slice(0, 7);
       (groups[key] = groups[key] || []).push(t);
     });
     return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
@@ -284,7 +285,9 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Transactions</h2>
-          <p className="text-muted-foreground">Track your recent transactions.</p>
+          <p className="text-muted-foreground">
+            Track your recent transactions.
+          </p>
         </div>
         <Button className="hidden md:flex" onClick={openNew}>
           <Plus className="mr-2 h-4 w-4" /> Add Transaction
@@ -294,7 +297,7 @@ export default function TransactionsPage() {
       {/* Filters */}
       <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
         <Popover>
-      <PopoverTrigger asChild>
+          <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
@@ -325,46 +328,46 @@ export default function TransactionsPage() {
               numberOfMonths={2}
             />
           </PopoverContent>
-      </Popover>
+        </Popover>
 
-      <Select
-        value={groupBy}
-        onValueChange={(v) => setGroupBy(v as 'actual' | 'budget')}
-      >
-        <SelectTrigger className="w-full md:w-[180px]">
-          <SelectValue placeholder="Group by" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="budget">Budget month</SelectItem>
-          <SelectItem value="actual">Actual date month</SelectItem>
-        </SelectContent>
-      </Select>
+        <Select
+          value={groupBy}
+          onValueChange={(v) => setGroupBy(v as 'actual' | 'budget')}
+        >
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Group by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="budget">Budget month</SelectItem>
+            <SelectItem value="actual">Actual date month</SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Select
-        value={dateField}
-        onValueChange={(v) => {
-          setDateField(v as 'actual' | 'budget');
-          setPage(1);
-        }}
-      >
-        <SelectTrigger className="w-full md:w-[180px]">
-          <SelectValue placeholder="Filter month by" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="budget">Budget</SelectItem>
-          <SelectItem value="actual">Actual</SelectItem>
-        </SelectContent>
-      </Select>
+        <Select
+          value={dateField}
+          onValueChange={(v) => {
+            setDateField(v as 'actual' | 'budget');
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Filter month by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="budget">Budget</SelectItem>
+            <SelectItem value="actual">Actual</SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Select
-        value={accountFilter}
-        onValueChange={(v) => {
-          setAccountFilter(v);
-          setPage(1);
-        }}
-      >
-        <SelectTrigger className="w-full md:w-[160px]">
-          <SelectValue placeholder="Account" />
+        <Select
+          value={accountFilter}
+          onValueChange={(v) => {
+            setAccountFilter(v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-full md:w-[160px]">
+            <SelectValue placeholder="Account" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Accounts</SelectItem>
@@ -373,17 +376,17 @@ export default function TransactionsPage() {
                 {a.name}
               </SelectItem>
             ))}
-        </SelectContent>
-      </Select>
+          </SelectContent>
+        </Select>
 
-      <Select
-        value={categoryFilter}
-        onValueChange={(v) => {
-          setCategoryFilter(v);
-          setPage(1);
-        }}
-      >
-        <SelectTrigger className="w-full md:w-[160px]">
+        <Select
+          value={categoryFilter}
+          onValueChange={(v) => {
+            setCategoryFilter(v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -393,17 +396,17 @@ export default function TransactionsPage() {
                 {c.name}
               </SelectItem>
             ))}
-        </SelectContent>
-      </Select>
+          </SelectContent>
+        </Select>
 
-      <Select
-        value={typeFilter}
-        onValueChange={(v) => {
-          setTypeFilter(v);
-          setPage(1);
-        }}
-      >
-        <SelectTrigger className="w-full md:w-[160px]">
+        <Select
+          value={typeFilter}
+          onValueChange={(v) => {
+            setTypeFilter(v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-full md:w-[160px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -411,19 +414,19 @@ export default function TransactionsPage() {
             <SelectItem value="expense">Expense</SelectItem>
             <SelectItem value="income">Income</SelectItem>
             <SelectItem value="transfer">Transfer</SelectItem>
-        </SelectContent>
-      </Select>
+          </SelectContent>
+        </Select>
 
-      <Input
-        placeholder="Search"
-        className="w-full md:w-[200px]"
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1);
-        }}
-      />
-    </div>
+        <Input
+          placeholder="Search"
+          className="w-full md:w-[200px]"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+      </div>
 
       {/* Desktop Table */}
       <div className="hidden md:block">
@@ -470,10 +473,7 @@ export default function TransactionsPage() {
                     <TableRow key={t.id}>
                       <TableCell className="p-0">
                         {Icon && (
-                          <Icon
-                            className="h-4 w-4"
-                            color={t.category?.color}
-                          />
+                          <Icon className="h-4 w-4" color={t.category?.color} />
                         )}
                       </TableCell>
                       <TableCell>{title}</TableCell>
@@ -486,7 +486,9 @@ export default function TransactionsPage() {
                           t.toAccount?.name ||
                           '-'}
                       </TableCell>
-                      <TableCell className={cn('text-right font-medium', color)}>
+                      <TableCell
+                        className={cn('text-right font-medium', color)}
+                      >
                         {amountPrefix}
                         {formatIDR(t.amount)}
                       </TableCell>
@@ -524,7 +526,9 @@ export default function TransactionsPage() {
             </h3>
             {txs.map((t) => {
               const Icon = t.category?.icon
-                ? (LucideIcons[t.category.icon as keyof typeof LucideIcons] as any)
+                ? (LucideIcons[
+                    t.category.icon as keyof typeof LucideIcons
+                  ] as any)
                 : null;
               const title =
                 t.note ||
@@ -540,157 +544,14 @@ export default function TransactionsPage() {
                   : 'text-blue-600';
               const amountPrefix = t.type === 'expense' ? '-' : '';
               return (
-<<<<<<< HEAD
-                <TableRow key={t.id}>
-                  <TableCell className="p-0">
-                    {Icon && (
-                      <Icon
-                        className="h-4 w-4"
-                        color={t.category?.color}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell>{title}</TableCell>
-                  <TableCell>
-                    {format(parseISO(t.date), 'MMM dd, yyyy')}
-                  </TableCell>
-                  <TableCell>
-                    {t.account?.name ||
-                      t.fromAccount?.name ||
-                      t.toAccount?.name ||
-                      '-'}
-                  </TableCell>
-                  <TableCell>
-                    {t.category ? (
-                      <Badge variant="secondary" className="text-xs">
-                        {t.category.name}
-                      </Badge>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell className={cn('text-right font-medium', color)}>
-                    {amountPrefix}
-                    {formatIDR(t.amount)}
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openEdit(t)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteRow(t)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-2">
-        {transactions.map((t) => {
-          const Icon = t.category?.icon
-            ? (LucideIcons[t.category.icon as keyof typeof LucideIcons] as any)
-            : null;
-          const title =
-            t.note ||
-            t.category?.name ||
-            (t.type === 'transfer'
-              ? `Transfer from ${t.fromAccount?.name} to ${t.toAccount?.name}`
-              : 'No description');
-          const color =
-            t.type === 'income'
-              ? 'text-green-600'
-              : t.type === 'expense'
-              ? 'text-red-600'
-              : 'text-blue-600';
-          const amountPrefix = t.type === 'expense' ? '-' : '';
-          return (
-            <Card
-              key={t.id}
-              className="p-4 flex items-center justify-between"
-            >
-              <div className="flex items-center space-x-3">
-                {Icon && <Icon className="h-5 w-5" color={t.category?.color} />}
-                <div>
-                  <p className="text-sm font-medium">{title}</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs text-muted-foreground">
-                      {format(parseISO(t.date), 'MMM dd, yyyy')}
-                    </p>
-                    {t.type === 'transfer' ? (
-                      <>
-                        {t.fromAccount && (
-                          <Badge variant="outline" className="text-xs">
-                            {t.fromAccount.name}
-                          </Badge>
-                        )}
-                        {t.fromAccount && t.toAccount && (
-                          <span className="text-xs text-muted-foreground">→</span>
-                        )}
-                        {t.toAccount && (
-                          <Badge variant="outline" className="text-xs">
-                            {t.toAccount.name}
-                          </Badge>
-                        )}
-                      </>
-                    ) : (
-                      t.account && (
-                        <Badge variant="outline" className="text-xs">
-                          {t.account.name}
-                        </Badge>
-                      )
-                    )}
-                    {t.category && (
-                      <Badge variant="secondary" className="text-xs">
-                        {t.category.name}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className={cn('text-sm font-semibold', color)}>
-                  {amountPrefix}
-                  {formatIDR(t.amount)}
-                </p>
-                <div className="flex justify-end space-x-1 mt-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEdit(t)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteRow(t)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-=======
                 <Card
                   key={t.id}
                   className="p-4 flex items-center justify-between"
                 >
                   <div className="flex items-center space-x-3">
-                    {Icon && <Icon className="h-5 w-5" color={t.category?.color} />}
+                    {Icon && (
+                      <Icon className="h-5 w-5" color={t.category?.color} />
+                    )}
                     <div>
                       <p className="text-sm font-medium">{title}</p>
                       <p className="text-xs text-muted-foreground">
@@ -725,7 +586,6 @@ export default function TransactionsPage() {
             })}
           </div>
         ))}
->>>>>>> codex/add-budget-month-and-actual-date-fields
       </div>
 
       {pageCount > 1 && (
@@ -781,4 +641,3 @@ export default function TransactionsPage() {
     </div>
   );
 }
-
