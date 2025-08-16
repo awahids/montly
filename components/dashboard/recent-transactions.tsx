@@ -215,9 +215,32 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                           <p className="text-xs text-muted-foreground">
                             {format(parseISO(transaction.date), 'MMM dd, yyyy')}
                           </p>
-                          {transaction.account && (
-                            <Badge variant="outline" className="text-xs">
-                              {transaction.account.name}
+                          {transaction.type === 'transfer' ? (
+                            <>
+                              {transaction.fromAccount && (
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.fromAccount.name}
+                                </Badge>
+                              )}
+                              {transaction.fromAccount && transaction.toAccount && (
+                                <span className="text-xs text-muted-foreground">→</span>
+                              )}
+                              {transaction.toAccount && (
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.toAccount.name}
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            transaction.account && (
+                              <Badge variant="outline" className="text-xs">
+                                {transaction.account.name}
+                              </Badge>
+                            )
+                          )}
+                          {transaction.category && (
+                            <Badge variant="secondary" className="text-xs">
+                              {transaction.category.name}
                             </Badge>
                           )}
                           {transaction.tags && transaction.tags.length > 0 && (
