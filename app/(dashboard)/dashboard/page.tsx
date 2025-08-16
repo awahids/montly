@@ -79,7 +79,9 @@ export default function DashboardPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date: formatDate(values.date),
+          budgetMonth: values.budgetMonth,
+          actualDate: formatDate(values.actualDate),
+          date: formatDate(values.actualDate),
           type: values.type,
           accountId: values.accountId,
           fromAccountId: values.fromAccountId,
@@ -201,7 +203,7 @@ export default function DashboardPage() {
     const monthlyBudget = currentBudgets.reduce((sum, b) => sum + b.totalAmount, 0);
     
     const monthlyActual = transactions
-      .filter(t => t.type === 'expense' && t.date.startsWith(currentMonth))
+      .filter(t => t.type === 'expense' && t.budgetMonth === currentMonth)
       .reduce((sum, t) => sum + t.amount, 0);
 
     // MTD spend (same as monthly actual for current month)
@@ -227,7 +229,7 @@ export default function DashboardPage() {
 
     transactions
       .filter(
-        t => t.type === 'expense' && t.date.startsWith(currentMonth)
+        t => t.type === 'expense' && t.budgetMonth === currentMonth
       )
       .forEach(t => {
         if (!t.categoryId || !t.category) return;

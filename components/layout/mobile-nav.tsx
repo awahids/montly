@@ -38,7 +38,9 @@ export function MobileNav() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          date: formatDate(values.date),
+          budgetMonth: values.budgetMonth,
+          actualDate: formatDate(values.actualDate),
+          date: formatDate(values.actualDate),
           type: values.type,
           accountId: values.accountId,
           fromAccountId: values.fromAccountId,

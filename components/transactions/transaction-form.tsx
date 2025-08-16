@@ -20,6 +20,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormDescription,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -50,9 +51,19 @@ const getJakartaDate = () => {
   return new Date(`${dateStr}T00:00:00+07:00`);
 };
 
+const getCurrentMonth = () =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric',
+    month: '2-digit',
+  })
+    .format(new Date())
+    .slice(0, 7);
+
 const formSchema = z
   .object({
-    date: z.date(),
+    budgetMonth: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+    actualDate: z.date(),
     type: z.enum(['expense', 'income', 'transfer']),
     accountId: z.string().optional(),
     fromAccountId: z.string().optional(),
@@ -122,10 +133,15 @@ export function TransactionForm({
   // react-hook-form's resolver expects the schema's input type, while the
   // submit handler uses the parsed output type. Specify both generics so the
   // form works with Zod's coercion (e.g. `z.coerce.number()`).
-  const form = useForm<z.input<typeof formSchema>, any, TransactionFormValues>({
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    TransactionFormValues
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: getJakartaDate(),
+      budgetMonth: getCurrentMonth(),
+      actualDate: getJakartaDate(),
       type: 'expense',
       accountId: undefined,
       fromAccountId: undefined,
@@ -142,7 +158,8 @@ export function TransactionForm({
   useEffect(() => {
     if (transaction) {
       form.reset({
-        date: new Date(transaction.date),
+        budgetMonth: transaction.budgetMonth,
+        actualDate: new Date(transaction.actualDate),
         type: transaction.type,
         accountId: transaction.accountId,
         fromAccountId: transaction.fromAccountId,
@@ -154,7 +171,8 @@ export function TransactionForm({
       });
     } else {
       form.reset({
-        date: getJakartaDate(),
+        budgetMonth: getCurrentMonth(),
+        actualDate: getJakartaDate(),
         type: 'expense',
         amount: 0,
         note: '',
@@ -166,7 +184,8 @@ export function TransactionForm({
   const handleSubmit = async (values: TransactionFormValues) => {
     await onSubmit(values);
     form.reset({
-      date: getJakartaDate(),
+      budgetMonth: getCurrentMonth(),
+      actualDate: getJakartaDate(),
       type: 'expense',
       amount: 0,
       note: '',
@@ -192,10 +211,27 @@ export function TransactionForm({
           >
             <FormField
               control={form.control}
-              name="date"
+              name="budgetMonth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Budget Month</FormLabel>
+                  <FormControl>
+                    <Input type="month" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This decides which monthly budget the transaction belongs to.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="actualDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel>Actual Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -224,6 +260,9 @@ export function TransactionForm({
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormDescription>
+                    The real date it happened (for your timeline & receipts).
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

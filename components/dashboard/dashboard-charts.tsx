@@ -35,7 +35,7 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
     return days.map(day => {
       const dateStr = format(day, 'yyyy-MM-dd');
       const dayExpenses = transactions
-        .filter(t => t.type === 'expense' && t.date === dateStr)
+        .filter(t => t.type === 'expense' && t.actualDate === dateStr)
         .reduce((sum, t) => sum + t.amount, 0);
 
       return {

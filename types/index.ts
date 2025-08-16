@@ -46,7 +46,10 @@ export interface BudgetItem {
 export interface Transaction {
   id: string;
   userId: string;
+  /** @deprecated use actualDate */
   date: string;
+  actualDate: string;
+  budgetMonth: string;
   type: 'expense' | 'income' | 'transfer';
   accountId?: string;
   fromAccountId?: string;

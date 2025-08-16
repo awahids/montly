@@ -90,7 +90,9 @@ export async function PATCH(
     const { data, error } = await supabase
       .from('transactions')
       .update({
-        date: body.date,
+        date: body.actualDate,
+        actual_date: body.actualDate,
+        budget_month: body.budgetMonth,
         type: newType,
         account_id: newAccountId,
         from_account_id: newFrom,
