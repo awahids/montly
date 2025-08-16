@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { LazyMotion, m } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,9 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
       return true;
     });
   }, [transactions, filters]);
+
+  const loadMotionFeatures = () =>
+    import('framer-motion').then(res => res.domAnimation);
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'income':
@@ -75,19 +79,6 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
       return `Transfer from ${transaction.fromAccount?.name} to ${transaction.toAccount?.name}`;
     }
     return transaction.note || transaction.category?.name || 'No description';
-  };
-
-  const getTransactionBadgeVariant = (type: string) => {
-    switch (type) {
-      case 'income':
-        return 'default';
-      case 'expense':
-        return 'destructive';
-      case 'transfer':
-        return 'secondary';
-      default:
-        return 'outline';
-    }
   };
 
   return (
@@ -116,15 +107,17 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 onChange={e => setFilters(f => ({ ...f, endDate: e.target.value }))}
               />
               <Select
-                value={filters.accountId}
-                onValueChange={value => setFilters(f => ({ ...f, accountId: value }))}
+                value={filters.accountId || 'all'}
+                onValueChange={value =>
+                  setFilters(f => ({ ...f, accountId: value === 'all' ? '' : value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Account" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Accounts</SelectItem>
-                  {accounts.map(acc => (
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  {accounts?.map(acc => (
                     <SelectItem key={acc.id} value={acc.id}>
                       {acc.name}
                     </SelectItem>
@@ -132,15 +125,17 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 </SelectContent>
               </Select>
               <Select
-                value={filters.categoryId}
-                onValueChange={value => setFilters(f => ({ ...f, categoryId: value }))}
+                value={filters.categoryId || 'all'}
+                onValueChange={value =>
+                  setFilters(f => ({ ...f, categoryId: value === 'all' ? '' : value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
-                  {categories.map(cat => (
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories?.map(cat => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>
@@ -148,14 +143,16 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
                 </SelectContent>
               </Select>
               <Select
-                value={filters.type}
-                onValueChange={value => setFilters(f => ({ ...f, type: value }))}
+                value={filters.type || 'all'}
+                onValueChange={value =>
+                  setFilters(f => ({ ...f, type: value === 'all' ? '' : value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="expense">Expense</SelectItem>
                   <SelectItem value="transfer">Transfer</SelectItem>
@@ -179,73 +176,96 @@ export function RecentTransactions({ transactions, accounts, categories }: Props
           </CollapsibleContent>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {filteredTransactions.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No transactions found.
-              </p>
-            ) : (
-              filteredTransactions.map(transaction => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div className="flex items-center space-x-3">
-                    {getTransactionIcon(transaction.type)}
-                    <div>
-                      <p className="text-sm font-medium">
-                        {getTransactionDescription(transaction)}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <p className="text-xs text-muted-foreground">
-                          {format(parseISO(transaction.date), 'MMM dd, yyyy')}
+          {filteredTransactions.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No transactions found.
+            </p>
+          ) : (
+            <LazyMotion features={loadMotionFeatures}>
+              <div className="divide-y rounded-md border">
+                {filteredTransactions.map(transaction => (
+                  <m.div
+                    key={transaction.id}
+                    className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {getTransactionDescription(transaction)}
                         </p>
-                        {transaction.account && (
-                          <Badge variant="outline" className="text-xs">
-                            {transaction.account.name}
-                          </Badge>
-                        )}
-                        {transaction.tags && transaction.tags.length > 0 && (
-                          <div className="flex space-x-1">
-                            {transaction.tags.slice(0, 2).map(tag => (
-                              <Badge key={tag} variant="secondary" className="text-xs">
-                                {tag}
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs text-muted-foreground">
+                            {format(parseISO(transaction.date), 'MMM dd, yyyy')}
+                          </p>
+                          {transaction.type === 'transfer' ? (
+                            <>
+                              {transaction.fromAccount && (
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.fromAccount.name}
+                                </Badge>
+                              )}
+                              {transaction.fromAccount && transaction.toAccount && (
+                                <span className="text-xs text-muted-foreground">→</span>
+                              )}
+                              {transaction.toAccount && (
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.toAccount.name}
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            transaction.account && (
+                              <Badge variant="outline" className="text-xs">
+                                {transaction.account.name}
                               </Badge>
-                            ))}
-                            {transaction.tags.length > 2 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{transaction.tags.length - 2}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+                            )
+                          )}
+                          {transaction.category && (
+                            <Badge variant="secondary" className="text-xs">
+                              {transaction.category.name}
+                            </Badge>
+                          )}
+                          {transaction.tags && transaction.tags.length > 0 && (
+                            <div className="flex gap-1">
+                              {transaction.tags.slice(0, 2).map(tag => (
+                                <Badge key={tag} variant="secondary" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {transaction.tags.length > 2 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{transaction.tags.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-sm font-semibold ${
-                        transaction.type === 'income'
-                          ? 'text-green-600'
-                          : transaction.type === 'expense'
-                          ? 'text-red-600'
-                          : 'text-blue-600'
-                      }`}
-                    >
-                      {transaction.type === 'expense' ? '-' : ''}
-                      {formatIDR(transaction.amount)}
-                    </p>
-                    <Badge
-                      variant={getTransactionBadgeVariant(transaction.type)}
-                      className="text-xs mt-1"
-                    >
-                      {transaction.type}
-                    </Badge>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+                    <div className="text-right">
+                      <p
+                        className={`text-sm font-semibold ${
+                          transaction.type === 'income'
+                            ? 'text-green-600'
+                            : transaction.type === 'expense'
+                            ? 'text-red-600'
+                            : 'text-blue-600'
+                        }`}
+                      >
+                        {transaction.type === 'expense' ? '-' : ''}
+                        {formatIDR(transaction.amount)}
+                      </p>
+                    </div>
+                  </m.div>
+                ))}
+              </div>
+            </LazyMotion>
+          )}
         </CardContent>
       </Collapsible>
     </Card>

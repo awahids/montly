@@ -152,28 +152,28 @@ export default function ReportsPage() {
       </Collapsible>
 
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList className="flex w-full overflow-x-auto gap-2 sm:overflow-visible">
+        <TabsList className="grid w-full grid-cols-2 gap-2 sm:flex sm:overflow-visible">
           <TabsTrigger
             value="summary"
-            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+            className="w-full whitespace-nowrap sm:flex-1"
           >
             Monthly Summary
           </TabsTrigger>
           <TabsTrigger
             value="trend"
-            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+            className="w-full whitespace-nowrap sm:flex-1"
           >
             Income vs Expense Trend
           </TabsTrigger>
           <TabsTrigger
             value="category"
-            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+            className="w-full whitespace-nowrap sm:flex-1"
           >
             Category Details
           </TabsTrigger>
           <TabsTrigger
             value="movement"
-            className="flex-shrink-0 whitespace-nowrap min-w-[140px] sm:flex-1 sm:min-w-[120px]"
+            className="w-full whitespace-nowrap sm:flex-1"
           >
             Budget vs Actual
           </TabsTrigger>
