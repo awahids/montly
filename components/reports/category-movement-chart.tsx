@@ -29,7 +29,8 @@ export default function CategoryMovementChart({ month }: { month: string }) {
     fetch(`/api/reports/budget-vs-actual?month=${month}&type=expense`)
       .then((res) => res.json())
       .then((res: ChartResponse) => {
-        setChartData(res.data || []);
+        const filtered = (res.data || []).filter((d) => d.planned > 0);
+        setChartData(filtered);
         setError(false);
       })
       .catch(() => {
