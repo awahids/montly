@@ -20,9 +20,6 @@ export default function CategoryMovementChart({ month }: { month: string }) {
   const [chartData, setChartData] = useState<ChartResponse['data']>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [hidden, setHidden] = useState<{ [k: string]: boolean }>({});
-  const toggleLine = (key: string) =>
-    setHidden((prev) => ({ ...prev, [key]: !prev[key] }));
 
   useEffect(() => {
     setLoading(true);
@@ -59,7 +56,7 @@ export default function CategoryMovementChart({ month }: { month: string }) {
     if (active && payload && payload.length) {
       const p = payload.find((p: any) => p.dataKey === 'planned')?.value ?? 0;
       const a = payload.find((p: any) => p.dataKey === 'actual')?.value ?? 0;
-      const d = payload.find((p: any) => p.dataKey === 'diff')?.value ?? 0;
+      const d = p - a;
       const diffPct = p > 0 ? (d / p) * 100 : 0;
       return (
         <div className="rounded border bg-background p-2 text-xs">
@@ -73,24 +70,6 @@ export default function CategoryMovementChart({ month }: { month: string }) {
       );
     }
     return null;
-  };
-
-  const renderLegend = (props: any) => {
-    const { payload } = props;
-    return (
-      <div className="flex flex-wrap gap-4 text-xs">
-        {payload.map((entry: any) => (
-          <label key={entry.dataKey} className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              checked={!hidden[entry.dataKey]}
-              onChange={() => toggleLine(entry.dataKey)}
-            />
-            {entry.value}
-          </label>
-        ))}
-      </div>
-    );
   };
 
   return (
@@ -119,17 +98,10 @@ export default function CategoryMovementChart({ month }: { month: string }) {
               </XAxis>
               <YAxis tickFormatter={(v: number) => toIDR(v)} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend content={renderLegend} />
+              <Legend />
               <ReferenceLine y={0} stroke="#888" />
-              {!hidden.planned && (
-                <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot />
-              )}
-              {!hidden.actual && (
-                <Line type="monotone" dataKey="actual" stroke="#16a34a" dot />
-              )}
-              {!hidden.diff && (
-                <Line type="monotone" dataKey="diff" stroke="#dc2626" dot />
-              )}
+              <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot />
+              <Line type="monotone" dataKey="actual" stroke="#16a34a" dot />
             </LineChart>
           </ResponsiveContainer>
         </div>
