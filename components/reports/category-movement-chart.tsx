@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -19,22 +18,32 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { toIDR } from '@/lib/currency';
 import type { ChartResponse } from '@/types';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 export default function CategoryMovementChart() {
   const now = new Date();
   const defaultMonth = now.toISOString().slice(0, 7);
   const [month, setMonth] = useState(defaultMonth);
   const [type, setType] = useState<'expense' | 'income'>('expense');
-  const { data, error, isLoading } = useSWR<ChartResponse>(
-    `/api/reports/budget-vs-actual?month=${month}&type=${type}`,
-    fetcher
-  );
+  const [chartData, setChartData] = useState<ChartResponse['data']>([]);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [hidden, setHidden] = useState<{ [k: string]: boolean }>({});
   const toggleLine = (key: string) =>
     setHidden((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const chartData = data?.data ?? [];
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/reports/budget-vs-actual?month=${month}&type=${type}`)
+      .then((res) => res.json())
+      .then((res: ChartResponse) => {
+        setChartData(res.data || []);
+        setError(false);
+      })
+      .catch(() => {
+        setChartData([]);
+        setError(true);
+      })
+      .finally(() => setLoading(false));
+  }, [month, type]);
 
   const CustomizedAxisTick = ({ x, y, payload }: any) => (
     <g transform={`translate(${x},${y})`}>
@@ -112,10 +121,10 @@ export default function CategoryMovementChart() {
       {error && (
         <div className="text-sm text-destructive">Failed to load data</div>
       )}
-      {isLoading && (
+      {loading && (
         <div className="text-sm text-muted-foreground">Loading...</div>
       )}
-      {!isLoading && !error && chartData.length === 0 && (
+      {!loading && !error && chartData.length === 0 && (
         <div className="text-sm text-muted-foreground">No data</div>
       )}
       {chartData.length > 0 && (
