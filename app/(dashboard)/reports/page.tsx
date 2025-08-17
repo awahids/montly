@@ -88,11 +88,24 @@ export default function ReportsPage() {
       .catch(() => setCategoryData([]));
   }, [month]);
 
-  const exportCSV = (rows: any[], filename: string) => {
+  const exportCSV = (
+    rows: Record<string, unknown>[],
+    filename: string,
+    keys?: string[]
+  ) => {
     if (!rows.length) return;
-    const headers = Object.keys(rows[0]).join(',');
-    const csv =
-      headers + '\n' + rows.map((r) => Object.values(r).join(',')).join('\n');
+    const cols = keys ?? Object.keys(rows[0]);
+    const escape = (value: unknown) => {
+      const str = String(value ?? '');
+      return /[",\n]/.test(str)
+        ? '"' + str.replace(/"/g, '""') + '"'
+        : str;
+    };
+    const header = cols.join(',');
+    const lines = rows.map((r) =>
+      cols.map((k) => escape((r as Record<string, unknown>)[k])).join(',')
+    );
+    const csv = [header, ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -106,6 +119,58 @@ export default function ReportsPage() {
     date: d.date.slice(8, 10),
     amount: d.amount,
   }));
+
+  const exportDailyCSV = () => {
+    let running = 0;
+    const rows = summary.daily.map((d) => {
+      running += d.amount;
+      return {
+        date: d.date,
+        day: d.date.slice(8, 10),
+        amount: d.amount,
+        cumulative: running,
+      };
+    });
+    exportCSV(rows, `daily-${month}.csv`, [
+      'date',
+      'day',
+      'amount',
+      'cumulative',
+    ]);
+  };
+
+  const exportTrendCSV = () => {
+    const rows = trend.map((t) => ({
+      month: t.month,
+      income: t.income,
+      expense: t.expense,
+      balance: t.income - t.expense,
+    }));
+    exportCSV(rows, `trend-${year}.csv`, [
+      'month',
+      'income',
+      'expense',
+      'balance',
+    ]);
+  };
+
+  const exportCategoryCSV = () => {
+    const total = categoryData.reduce((sum, c) => sum + c.amount, 0);
+    const rows = categoryData.map((c) => ({
+      categoryId: c.categoryId,
+      name: c.name,
+      amount: c.amount,
+      percentage: total ? Number(((c.amount / total) * 100).toFixed(2)) : 0,
+      color: c.color,
+    }));
+    exportCSV(rows, `categories-${month}.csv`, [
+      'categoryId',
+      'name',
+      'amount',
+      'percentage',
+      'color',
+    ]);
+  };
 
   return (
     <div className="space-y-6 px-2 sm:px-4 md:px-8">
@@ -152,7 +217,7 @@ export default function ReportsPage() {
       </Collapsible>
 
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 gap-2 sm:flex sm:overflow-visible">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:flex sm:h-10 sm:overflow-visible">
           <TabsTrigger
             value="summary"
             className="w-full whitespace-nowrap sm:flex-1"
@@ -185,7 +250,7 @@ export default function ReportsPage() {
               variant="outline"
               size="sm"
               className="gap-1 w-full sm:w-auto"
-              onClick={() => exportCSV(summary.daily, `daily-${month}.csv`)}
+              onClick={exportDailyCSV}
             >
               <Download className="h-4 w-4" /> Export CSV
             </Button>
@@ -274,7 +339,7 @@ export default function ReportsPage() {
               variant="outline"
               size="sm"
               className="gap-1 w-full sm:w-auto"
-              onClick={() => exportCSV(trend, `trend-${year}.csv`)}
+              onClick={exportTrendCSV}
             >
               <Download className="h-4 w-4" /> Export CSV
             </Button>
@@ -307,7 +372,7 @@ export default function ReportsPage() {
               variant="outline"
               size="sm"
               className="gap-1 w-full sm:w-auto"
-              onClick={() => exportCSV(categoryData, `categories-${month}.csv`)}
+              onClick={exportCategoryCSV}
             >
               <Download className="h-4 w-4" /> Export CSV
             </Button>
@@ -343,7 +408,7 @@ export default function ReportsPage() {
         </TabsContent>
 
         <TabsContent value="movement" className="space-y-4">
-          <CategoryMovementChart />
+          <CategoryMovementChart month={month} />
         </TabsContent>
       </Tabs>
     </div>

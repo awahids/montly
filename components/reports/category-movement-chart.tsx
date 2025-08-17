@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -14,27 +13,29 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
-import { Input } from '@/components/ui/input';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { toIDR } from '@/lib/currency';
 import type { ChartResponse } from '@/types';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+export default function CategoryMovementChart({ month }: { month: string }) {
+  const [chartData, setChartData] = useState<ChartResponse['data']>([]);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-export default function CategoryMovementChart() {
-  const now = new Date();
-  const defaultMonth = now.toISOString().slice(0, 7);
-  const [month, setMonth] = useState(defaultMonth);
-  const [type, setType] = useState<'expense' | 'income'>('expense');
-  const { data, error, isLoading } = useSWR<ChartResponse>(
-    `/api/reports/budget-vs-actual?month=${month}&type=${type}`,
-    fetcher
-  );
-  const [hidden, setHidden] = useState<{ [k: string]: boolean }>({});
-  const toggleLine = (key: string) =>
-    setHidden((prev) => ({ ...prev, [key]: !prev[key] }));
-
-  const chartData = data?.data ?? [];
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/reports/budget-vs-actual?month=${month}&type=expense`)
+      .then((res) => res.json())
+      .then((res: ChartResponse) => {
+        const filtered = (res.data || []).filter((d) => d.planned > 0);
+        setChartData(filtered);
+        setError(false);
+      })
+      .catch(() => {
+        setChartData([]);
+        setError(true);
+      })
+      .finally(() => setLoading(false));
+  }, [month]);
 
   const CustomizedAxisTick = ({ x, y, payload }: any) => (
     <g transform={`translate(${x},${y})`}>
@@ -71,51 +72,15 @@ export default function CategoryMovementChart() {
     return null;
   };
 
-  const renderLegend = (props: any) => {
-    const { payload } = props;
-    return (
-      <div className="flex flex-wrap gap-4 text-xs">
-        {payload.map((entry: any) => (
-          <label key={entry.dataKey} className="flex items-center gap-1">
-            <input
-              type="checkbox"
-              checked={!hidden[entry.dataKey]}
-              onChange={() => toggleLine(entry.dataKey)}
-            />
-            {entry.value}
-          </label>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Input
-          type="month"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          className="w-full sm:w-fit"
-          aria-label="Month"
-        />
-        <ToggleGroup
-          type="single"
-          value={type}
-          onValueChange={(v) => setType((v as any) || 'expense')}
-          className="w-full sm:w-fit"
-        >
-          <ToggleGroupItem value="expense">Expense</ToggleGroupItem>
-          <ToggleGroupItem value="income">Income</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
       {error && (
         <div className="text-sm text-destructive">Failed to load data</div>
       )}
-      {isLoading && (
+      {loading && (
         <div className="text-sm text-muted-foreground">Loading...</div>
       )}
-      {!isLoading && !error && chartData.length === 0 && (
+      {!loading && !error && chartData.length === 0 && (
         <div className="text-sm text-muted-foreground">No data</div>
       )}
       {chartData.length > 0 && (
@@ -133,17 +98,11 @@ export default function CategoryMovementChart() {
               </XAxis>
               <YAxis tickFormatter={(v: number) => toIDR(v)} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend content={renderLegend} />
+              <Legend />
               <ReferenceLine y={0} stroke="#888" />
-              {!hidden.planned && (
-                <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot />
-              )}
-              {!hidden.actual && (
-                <Line type="monotone" dataKey="actual" stroke="#16a34a" dot />
-              )}
-              {!hidden.diff && (
-                <Line type="monotone" dataKey="diff" stroke="#dc2626" dot />
-              )}
+              <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot name="Planned" />
+              <Line type="monotone" dataKey="actual" stroke="#16a34a" dot name="Actual" />
+              <Line type="monotone" dataKey="diff" stroke="#dc2626" dot name="Diff" />
             </LineChart>
           </ResponsiveContainer>
         </div>
