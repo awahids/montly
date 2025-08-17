@@ -13,16 +13,10 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
-import { Input } from '@/components/ui/input';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { toIDR } from '@/lib/currency';
 import type { ChartResponse } from '@/types';
 
-export default function CategoryMovementChart() {
-  const now = new Date();
-  const defaultMonth = now.toISOString().slice(0, 7);
-  const [month, setMonth] = useState(defaultMonth);
-  const [type, setType] = useState<'expense' | 'income'>('expense');
+export default function CategoryMovementChart({ month }: { month: string }) {
   const [chartData, setChartData] = useState<ChartResponse['data']>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,7 +26,7 @@ export default function CategoryMovementChart() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/reports/budget-vs-actual?month=${month}&type=${type}`)
+    fetch(`/api/reports/budget-vs-actual?month=${month}&type=expense`)
       .then((res) => res.json())
       .then((res: ChartResponse) => {
         setChartData(res.data || []);
@@ -43,7 +37,7 @@ export default function CategoryMovementChart() {
         setError(true);
       })
       .finally(() => setLoading(false));
-  }, [month, type]);
+  }, [month]);
 
   const CustomizedAxisTick = ({ x, y, payload }: any) => (
     <g transform={`translate(${x},${y})`}>
@@ -100,24 +94,6 @@ export default function CategoryMovementChart() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Input
-          type="month"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          className="w-full sm:w-fit"
-          aria-label="Month"
-        />
-        <ToggleGroup
-          type="single"
-          value={type}
-          onValueChange={(v) => setType((v as any) || 'expense')}
-          className="w-full sm:w-fit"
-        >
-          <ToggleGroupItem value="expense">Expense</ToggleGroupItem>
-          <ToggleGroupItem value="income">Income</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
       {error && (
         <div className="text-sm text-destructive">Failed to load data</div>
       )}

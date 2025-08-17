@@ -408,7 +408,7 @@ export default function ReportsPage() {
         </TabsContent>
 
         <TabsContent value="movement" className="space-y-4">
-          <CategoryMovementChart />
+          <CategoryMovementChart month={month} />
         </TabsContent>
       </Tabs>
     </div>
