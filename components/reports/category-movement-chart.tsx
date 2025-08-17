@@ -56,7 +56,7 @@ export default function CategoryMovementChart({ month }: { month: string }) {
     if (active && payload && payload.length) {
       const p = payload.find((p: any) => p.dataKey === 'planned')?.value ?? 0;
       const a = payload.find((p: any) => p.dataKey === 'actual')?.value ?? 0;
-      const d = p - a;
+      const d = payload.find((p: any) => p.dataKey === 'diff')?.value ?? 0;
       const diffPct = p > 0 ? (d / p) * 100 : 0;
       return (
         <div className="rounded border bg-background p-2 text-xs">
@@ -100,8 +100,9 @@ export default function CategoryMovementChart({ month }: { month: string }) {
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <ReferenceLine y={0} stroke="#888" />
-              <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot />
-              <Line type="monotone" dataKey="actual" stroke="#16a34a" dot />
+              <Line type="monotone" dataKey="planned" stroke="#3B82F6" dot name="Planned" />
+              <Line type="monotone" dataKey="actual" stroke="#16a34a" dot name="Actual" />
+              <Line type="monotone" dataKey="diff" stroke="#dc2626" dot name="Diff" />
             </LineChart>
           </ResponsiveContainer>
         </div>
