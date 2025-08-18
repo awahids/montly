@@ -90,6 +90,8 @@ export interface Debt {
   type: 'debt' | 'credit';
   status: 'unpaid' | 'paid';
   dueDate?: string;
+  shareId: string;
+  attachments: string[];
 }
 
 export type { CategoryPoint, ChartResponse } from './reports';

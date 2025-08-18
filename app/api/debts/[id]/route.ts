@@ -9,7 +9,7 @@ export async function GET(
   const { data, error } = await supabase
     .from('debts')
     .select('*')
-    .eq('id', params.id)
+    .eq('share_id', params.id)
     .single();
   if (error || !data) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -23,5 +23,7 @@ export async function GET(
     type: data.type,
     status: data.status,
     dueDate: data.due_date,
+    shareId: data.share_id,
+    attachments: data.attachments,
   });
 }

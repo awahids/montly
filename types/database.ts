@@ -196,6 +196,8 @@ export interface Database {
           type: 'debt' | 'credit';
           status: 'unpaid' | 'paid';
           due_date: string | null;
+          share_id: string;
+          attachments: string[];
           created_at: string;
           updated_at: string;
         };
@@ -208,6 +210,8 @@ export interface Database {
           type: 'debt' | 'credit';
           status?: 'unpaid' | 'paid';
           due_date?: string | null;
+          share_id?: string;
+          attachments?: string[];
           created_at?: string;
           updated_at?: string;
         };
@@ -218,6 +222,8 @@ export interface Database {
           type?: 'debt' | 'credit';
           status?: 'unpaid' | 'paid';
           due_date?: string | null;
+          share_id?: string;
+          attachments?: string[];
           updated_at?: string;
         };
       };

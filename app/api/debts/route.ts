@@ -25,6 +25,8 @@ export async function GET() {
       type: d.type,
       status: d.status,
       dueDate: d.due_date,
+      shareId: d.share_id,
+      attachments: d.attachments,
     }));
     return NextResponse.json(rows);
   } catch (e) {
@@ -52,6 +54,7 @@ export async function POST(req: Request) {
         type: body.type,
         status: body.status,
         due_date: body.dueDate ?? null,
+        attachments: body.attachments ?? [],
       })
       .select('*')
       .single();
@@ -70,6 +73,8 @@ export async function POST(req: Request) {
       type: data.type,
       status: data.status,
       dueDate: data.due_date,
+      shareId: data.share_id,
+      attachments: data.attachments,
     });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 401 });

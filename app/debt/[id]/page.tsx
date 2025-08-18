@@ -6,7 +6,7 @@ export default async function DebtSharePage({ params }: { params: { id: string }
   const { data } = await supabase
     .from('debts')
     .select('*')
-    .eq('id', params.id)
+    .eq('share_id', params.id)
     .single();
   if (!data) {
     notFound();
@@ -18,6 +18,13 @@ export default async function DebtSharePage({ params }: { params: { id: string }
       <p><strong>Amount:</strong> {data.amount}</p>
       {data.note && <p><strong>Note:</strong> {data.note}</p>}
       <p><strong>Status:</strong> {data.status}</p>
+      {Array.isArray(data.attachments) && data.attachments.length > 0 && (
+        <div className="flex flex-wrap gap-2 pt-2">
+          {data.attachments.map((url: string) => (
+            <img key={url} src={url} alt="attachment" className="w-32 h-32 object-cover rounded" />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

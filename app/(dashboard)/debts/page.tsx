@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
 import { useAppStore } from '@/lib/store';
 import { Debt } from '@/types';
 import { toast } from 'sonner';
@@ -18,6 +19,7 @@ export default function DebtsPage() {
   const { user, debts, setDebts, loading, setLoading } = useAppStore();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ contact: '', amount: '', note: '', type: 'debt' });
+  const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -37,11 +39,21 @@ export default function DebtsPage() {
   }, [user, setDebts, setLoading]);
 
   const handleSubmit = async () => {
+    const uploaded: string[] = [];
+    for (const file of files) {
+      const path = `${user?.id}/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from('debts').upload(path, file);
+      if (!error) {
+        const { data } = supabase.storage.from('debts').getPublicUrl(path);
+        uploaded.push(data.publicUrl);
+      }
+    }
     const payload = {
       contact: form.contact,
       amount: Number(form.amount),
       note: form.note,
       type: form.type as 'debt' | 'credit',
+      attachments: uploaded,
     };
     const res = await fetch('/api/debts', {
       method: 'POST',
@@ -54,13 +66,14 @@ export default function DebtsPage() {
       toast.success('Debt added');
       setDialogOpen(false);
       setForm({ contact: '', amount: '', note: '', type: 'debt' });
+      setFiles([]);
     } else {
       toast.error(data.error || 'Failed to save debt');
     }
   };
 
-  const share = (id: string) => {
-    const url = `${window.location.origin}/debt/${id}`;
+  const share = (shareId: string) => {
+    const url = `${window.location.origin}/debt/${shareId}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copied');
   };
@@ -80,7 +93,7 @@ export default function DebtsPage() {
                 {d.type === 'debt' ? 'You owe' : 'Owed to you'} {d.amount}
               </div>
             </div>
-            <Button variant="secondary" onClick={() => share(d.id)}>
+            <Button variant="secondary" onClick={() => share(d.shareId)}>
               Share
             </Button>
           </div>
@@ -110,6 +123,12 @@ export default function DebtsPage() {
               placeholder="Note"
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
+            />
+            <Input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => setFiles(Array.from(e.target.files || []))}
             />
             <Select
               value={form.type}

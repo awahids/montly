@@ -62,6 +62,7 @@ export const debtSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
+  attachments: z.array(z.string().url()).optional(),
 });
 
 const dateSchema = z
