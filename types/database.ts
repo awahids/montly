@@ -186,6 +186,41 @@ export interface Database {
           updated_at?: string;
         };
       };
+      debts: {
+        Row: {
+          id: string;
+          user_id: string;
+          contact: string;
+          amount: number;
+          note: string;
+          type: 'debt' | 'credit';
+          status: 'unpaid' | 'paid';
+          due_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          contact: string;
+          amount: number;
+          note?: string;
+          type: 'debt' | 'credit';
+          status?: 'unpaid' | 'paid';
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          contact?: string;
+          amount?: number;
+          note?: string;
+          type?: 'debt' | 'credit';
+          status?: 'unpaid' | 'paid';
+          due_date?: string | null;
+          updated_at?: string;
+        };
+      };
     };
   };
 }
