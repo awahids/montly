@@ -81,4 +81,15 @@ export interface CategorySpend {
   color: string;
 }
 
+export interface Debt {
+  id: string;
+  userId: string;
+  contact: string;
+  amount: number;
+  note?: string;
+  type: 'debt' | 'credit';
+  status: 'unpaid' | 'paid';
+  dueDate?: string;
+}
+
 export type { CategoryPoint, ChartResponse } from './reports';

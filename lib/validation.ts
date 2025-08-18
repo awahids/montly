@@ -52,6 +52,18 @@ export const budgetPatchSchema = z.object({
   items: z.array(budgetItemSchema).optional(),
 });
 
+export const debtSchema = z.object({
+  contact: z.string().min(1),
+  amount: z.number().positive(),
+  note: z.string().optional(),
+  type: z.enum(['debt', 'credit']),
+  status: z.enum(['unpaid', 'paid']).default('unpaid'),
+  dueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+});
+
 const dateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/);

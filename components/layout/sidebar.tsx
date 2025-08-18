@@ -7,10 +7,11 @@ import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, 
   Wallet, 
-  Receipt, 
-  CreditCard, 
-  BarChart3, 
-  Settings, 
+  Receipt,
+  HandCoins,
+  CreditCard,
+  BarChart3,
+  Settings,
   Menu,
   X
 } from 'lucide-react';
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Budgets', href: '/budgets', icon: Wallet },
   { name: 'Transactions', href: '/transactions', icon: Receipt },
+  { name: 'Debts', href: '/debts', icon: HandCoins },
   { name: 'Accounts', href: '/accounts', icon: CreditCard },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },

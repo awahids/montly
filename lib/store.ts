@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User, Account, Category, Transaction, Budget } from '@/types';
+import { User, Account, Category, Transaction, Budget, Debt } from '@/types';
 
 interface AppState {
   user: User | null;
@@ -7,6 +7,7 @@ interface AppState {
   categories: Category[];
   transactions: Transaction[];
   budgets: Budget[];
+  debts: Debt[];
   loading: boolean;
   
   // Actions
@@ -15,6 +16,7 @@ interface AppState {
   setCategories: (categories: Category[]) => void;
   setTransactions: (transactions: Transaction[]) => void;
   setBudgets: (budgets: Budget[]) => void;
+  setDebts: (debts: Debt[]) => void;
   setLoading: (loading: boolean) => void;
   
   // Computed
@@ -29,6 +31,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   categories: [],
   transactions: [],
   budgets: [],
+  debts: [],
   loading: false,
 
   setUser: (user) => set({ user }),
@@ -36,6 +39,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCategories: (categories) => set({ categories }),
   setTransactions: (transactions) => set({ transactions }),
   setBudgets: (budgets) => set({ budgets }),
+  setDebts: (debts) => set({ debts }),
   setLoading: (loading) => set({ loading }),
 
   getCurrentBalance: (accountId: string) => {
