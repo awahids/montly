@@ -20,6 +20,8 @@ export default function DebtsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ contact: '', amount: '', note: '', type: 'debt' });
   const [files, setFiles] = useState<File[]>([]);
+  const [editing, setEditing] = useState<Debt | null>(null);
+  const [existing, setExisting] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -53,20 +55,30 @@ export default function DebtsPage() {
       amount: Number(form.amount),
       note: form.note,
       type: form.type as 'debt' | 'credit',
-      attachments: uploaded,
+      attachments: [...existing, ...uploaded],
     };
-    const res = await fetch('/api/debts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(
+      editing ? `/api/debts/${editing.id}` : '/api/debts',
+      {
+        method: editing ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    );
     const data = await res.json();
     if (res.ok) {
-      setDebts([...debts, data]);
-      toast.success('Debt added');
+      if (editing) {
+        setDebts(debts.map((d) => (d.id === editing.id ? data : d)));
+        toast.success('Debt updated');
+      } else {
+        setDebts([...debts, data]);
+        toast.success('Debt added');
+      }
       setDialogOpen(false);
       setForm({ contact: '', amount: '', note: '', type: 'debt' });
       setFiles([]);
+      setExisting([]);
+      setEditing(null);
     } else {
       toast.error(data.error || 'Failed to save debt');
     }
@@ -78,24 +90,70 @@ export default function DebtsPage() {
     toast.success('Link copied');
   };
 
+  const view = (shareId: string) => {
+    window.open(`/debt/${shareId}`, '_blank');
+  };
+
+  const openEdit = (d: Debt) => {
+    setForm({
+      contact: d.contact,
+      amount: String(d.amount),
+      note: d.note || '',
+      type: d.type,
+    });
+    setExisting(d.attachments || []);
+    setFiles([]);
+    setEditing(d);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Debts</h1>
-        <Button onClick={() => setDialogOpen(true)}>Add</Button>
+        <Button
+          onClick={() => {
+            setEditing(null);
+            setForm({ contact: '', amount: '', note: '', type: 'debt' });
+            setFiles([]);
+            setExisting([]);
+            setDialogOpen(true);
+          }}
+        >
+          Add
+        </Button>
       </div>
       <div className="space-y-2">
         {debts.map((d: Debt) => (
-          <div key={d.id} className="border rounded p-3 flex justify-between items-center">
+          <div
+            key={d.id}
+            className="border rounded p-3 flex justify-between items-center"
+          >
             <div>
               <div className="font-medium">{d.contact}</div>
               <div className="text-sm text-muted-foreground">
                 {d.type === 'debt' ? 'You owe' : 'Owed to you'} {d.amount}
               </div>
             </div>
-            <Button variant="secondary" onClick={() => share(d.shareId)}>
-              Share
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openEdit(d)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => view(d.shareId)}
+              >
+                Detail
+              </Button>
+              <Button size="sm" onClick={() => share(d.shareId)}>
+                Share
+              </Button>
+            </div>
           </div>
         ))}
         {!loading && debts.length === 0 && (
@@ -105,7 +163,7 @@ export default function DebtsPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Debt</DialogTitle>
+            <DialogTitle>{editing ? 'Edit Debt' : 'Add Debt'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Input

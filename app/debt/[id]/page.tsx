@@ -1,5 +1,11 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@/components/ui/card';
 
 export default async function DebtSharePage({ params }: { params: { id: string } }) {
   const supabase = createServerClient();
@@ -12,19 +18,46 @@ export default async function DebtSharePage({ params }: { params: { id: string }
     notFound();
   }
   return (
-    <div className="p-4 space-y-2">
-      <h1 className="text-2xl font-bold">Debt Detail</h1>
-      <p><strong>Name:</strong> {data.contact}</p>
-      <p><strong>Amount:</strong> {data.amount}</p>
-      {data.note && <p><strong>Note:</strong> {data.note}</p>}
-      <p><strong>Status:</strong> {data.status}</p>
-      {Array.isArray(data.attachments) && data.attachments.length > 0 && (
-        <div className="flex flex-wrap gap-2 pt-2">
-          {data.attachments.map((url: string) => (
-            <img key={url} src={url} alt="attachment" className="w-32 h-32 object-cover rounded" />
-          ))}
-        </div>
-      )}
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Debt Detail</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p>
+            <strong>Name:</strong> {data.contact}
+          </p>
+          <p>
+            <strong>Amount:</strong> {data.amount}
+          </p>
+          {data.note && (
+            <p>
+              <strong>Note:</strong> {data.note}
+            </p>
+          )}
+          <p>
+            <strong>Status:</strong> {data.status}
+          </p>
+          {Array.isArray(data.attachments) && data.attachments.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 pt-2">
+              {data.attachments.map((url: string) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={url}
+                    alt="attachment"
+                    className="w-full h-32 object-cover rounded hover:opacity-90"
+                  />
+                </a>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
