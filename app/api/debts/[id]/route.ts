@@ -36,7 +36,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const supabase = createServerClient();
-  let body: z.infer<typeof debtSchema>;
+  let body: Partial<z.infer<typeof debtSchema>>;
   try {
     body = debtSchema.partial().parse(await req.json());
   } catch (e) {
