@@ -48,26 +48,40 @@ export async function POST(req: Request) {
     }, { status: 400 });
   }
 
-  const userId = data.user?.id;
-  if (userId) {
-    const { error: profileError } = await admin.from('profiles').insert({
-      id: userId,
-      email: body.email,
-      name: body.name,
-      default_currency: 'IDR',
-    });
-    
-    if (profileError) {
-      console.error('Profile creation error:', profileError);
-      return NextResponse.json({ 
-        ok: false, 
-        error: 'Failed to create user profile. Please try again.' 
+  let userId = data.user?.id;
+
+  // In some cases, Supabase may not return the user object immediately
+  // (for example when email confirmation is required). Fetch the user
+  // using the admin client if we don't have the id yet.
+  if (!userId) {
+    const { data: fetchedUser, error: fetchError } = await admin.auth.admin.getUserByEmail(body.email);
+    if (fetchError || !fetchedUser?.user) {
+      console.error('User fetch error after sign up:', fetchError);
+      return NextResponse.json({
+        ok: false,
+        error: 'Failed to retrieve user after sign up. Please try again.'
       }, { status: 500 });
     }
-    
-    // clear auth cookies to require sign in after sign up
-    await supabase.auth.signOut();
+    userId = fetchedUser.user.id;
   }
+
+  const { error: profileError } = await admin.from('profiles').insert({
+    id: userId,
+    email: body.email,
+    name: body.name,
+    default_currency: 'IDR',
+  });
+
+  if (profileError) {
+    console.error('Profile creation error:', profileError);
+    return NextResponse.json({
+      ok: false,
+      error: 'Failed to create user profile. Please try again.'
+    }, { status: 500 });
+  }
+
+  // clear auth cookies to require sign in after sign up
+  await supabase.auth.signOut();
 
   return NextResponse.json({ 
     ok: true, 
