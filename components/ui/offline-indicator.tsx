@@ -4,7 +4,7 @@
 import { useOffline } from '@/hooks/use-offline';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Wifi, WifiOff, Sync, AlertCircle } from 'lucide-react';
+import { Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function OfflineIndicator() {
@@ -41,7 +41,7 @@ export function OfflineIndicator() {
           onClick={syncPendingChanges}
           className="h-6 px-2 text-xs"
         >
-          <Sync className="h-3 w-3 mr-1" />
+          <RefreshCw className="h-3 w-3 mr-1" />
           Sync
         </Button>
       </div>

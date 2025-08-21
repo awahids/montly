@@ -36,6 +36,7 @@ export default function DashboardLayout({
       <div className="md:hidden">
         <Header />
         <main className="p-4 pb-20 space-y-4">
+          <OfflineBanner />
           {children}
         </main>
         <MobileNav />
@@ -47,6 +48,7 @@ export default function DashboardLayout({
         <div className="flex-1 md:ml-64">
           <Header />
           <main className="p-6 space-y-6">
+            <OfflineBanner />
             {children}
           </main>
         </div>
