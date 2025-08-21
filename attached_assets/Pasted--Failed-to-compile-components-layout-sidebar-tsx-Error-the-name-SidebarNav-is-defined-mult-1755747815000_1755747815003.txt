@@ -1,0 +1,97 @@
+
+Failed to compile
+./components/layout/sidebar.tsx
+Error: 
+  × the name `SidebarNav` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/sidebar.tsx:16:1]
+  16 │   Package2
+  17 │ } from 'lucide-react';
+  18 │ import { Button } from '@/components/ui/button';
+  19 │ import { SidebarNav } from './sidebar-nav'; // Assuming SidebarNav is in a separate file
+     ·          ─────┬────
+     ·               ╰── previous definition of `SidebarNav` here
+  20 │ 
+  21 │ const navigation = [
+  22 │   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  23 │   { name: 'Budgets', href: '/budgets', icon: Wallet },
+  24 │   { name: 'Transactions', href: '/transactions', icon: Receipt },
+  25 │   { name: 'Accounts', href: '/accounts', icon: CreditCard },
+  26 │   { name: 'Reports', href: '/reports', icon: BarChart3 },
+  27 │   { name: 'Settings', href: '/settings', icon: Settings },
+  28 │ ];
+  29 │ 
+  30 │ export function Sidebar() {
+  31 │   const pathname = usePathname();
+  32 │   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  33 │ 
+  34 │   return (
+  35 │     <>
+  36 │       {/* Mobile menu button */}
+  37 │       <div className="lg:hidden fixed top-4 left-4 z-50">
+  38 │         <Button
+  39 │           variant="outline"
+  40 │           size="sm"
+  41 │           onClick={() => setIsMobileOpen(!isMobileOpen)}
+  42 │         >
+  43 │           {isMobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+  44 │         </Button>
+  45 │       </div>
+  46 │ 
+  47 │       {/* Sidebar */}
+  48 │       <div
+  49 │         className={cn(
+  50 │           'fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-950 border-r dark:border-gray-800 transform transition-transform duration-200 ease-in-out lg:translate-x-0',
+  51 │           isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+  52 │         )}
+  53 │       >
+  54 │         <div className="p-6">
+  55 │           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">FinanceApp</h2>
+  56 │           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Personal Finance Manager</p>
+  57 │         </div>
+  58 │ 
+  59 │         <nav className="mt-8 px-4">
+  60 │           <ul className="space-y-2">
+  61 │             {navigation.map((item) => {
+  62 │               const isActive = pathname === item.href;
+  63 │               return (
+  64 │                 <li key={item.name}>
+  65 │                   <Link
+  66 │                     href={item.href}
+  67 │                     onClick={() => setIsMobileOpen(false)}
+  68 │                     className={cn(
+  69 │                       'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+  70 │                       isActive
+  71 │                         ? 'bg-primary text-primary-foreground'
+  72 │                         : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+  73 │                     )}
+  74 │                   >
+  75 │                     <item.icon className="mr-3 h-5 w-5" />
+  76 │                     {item.name}
+  77 │                   </Link>
+  78 │                 </li>
+  79 │               );
+  80 │             })}
+  81 │           </ul>
+  82 │         </nav>
+  83 │       </div>
+  84 │ 
+  85 │       {/* Mobile overlay */}
+  86 │       {isMobileOpen && (
+  87 │         <div
+  88 │           className="lg:hidden fixed inset-0 z-30 bg-black bg-opacity-50"
+  89 │           onClick={() => setIsMobileOpen(false)}
+  90 │         />
+  91 │       )}
+  92 │     </>
+  93 │   );
+  94 │ }
+  95 │ 
+  96 │ // Placeholder for SidebarNav, assuming it's defined elsewhere
+  97 │ function SidebarNav() {
+     ·          ─────┬────
+     ·               ╰── `SidebarNav` redefined here
+  98 │   const pathname = usePathname();
+  99 │   return (
+ 100 │     <>
+     ╰────
+This error occurred during the build process and can only be dismissed by fixing the error.
