@@ -40,6 +40,9 @@ export async function signIn(email: string, password: string) {
     throw new Error('No session created');
   }
 
+  // Wait a bit for session to be properly set
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
   const user = await getCurrentUser();
   if (user) {
     useAppStore.getState().setUser(user);

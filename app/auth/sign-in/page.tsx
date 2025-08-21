@@ -47,7 +47,8 @@ export default function SignInPage() {
     try {
       await signIn(data.email, data.password);
       toast.success('Welcome back!');
-      router.push('/dashboard');
+      // Force a refresh to ensure middleware handles the redirect properly
+      window.location.href = '/dashboard';
     } catch (error: any) {
       const message = error.message || 'Invalid login credentials';
       setErrorMessage(message);
