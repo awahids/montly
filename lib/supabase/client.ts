@@ -9,8 +9,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
+// Create a single instance to avoid multiple client warnings
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
+// Use the same instance for browser client
 export function createBrowserClient() {
-  return createClient<Database>(supabaseUrl, supabaseAnonKey);
+  return supabase;
 }
