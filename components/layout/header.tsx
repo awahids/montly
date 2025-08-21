@@ -1,9 +1,9 @@
-
 'use client';
 
 import { useAppStore } from '@/lib/store';
 import { signOut } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +15,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogOut, User, Moon, Sun, Laptop } from 'lucide-react';
+import { OfflineIndicator } from '@/components/ui/offline-indicator';
+import { Moon, Sun, Laptop } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
 import { MobileSidebar } from './sidebar';
@@ -110,6 +110,7 @@ export function Header() {
           </div>
         </div>
         <div className="flex items-center space-x-4">
+          <OfflineIndicator />
           <UserNav />
         </div>
       </div>

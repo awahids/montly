@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { useAppStore } from "@/lib/store";
 import { getCurrentUser } from "@/lib/auth";
+import { OfflineBanner } from "@/components/ui/offline-banner";
 
 export default function DashboardLayout({
   children,
