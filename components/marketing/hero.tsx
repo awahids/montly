@@ -26,17 +26,21 @@ export function Hero() {
       </div>
 
       <div className="responsive-container relative z-10">
-        <div className="flex flex-col items-center text-center space-y-8 lg:space-y-12">
+        <div className="flex flex-col items-center text-center space-y-8 lg:space-y-12 animate-fade-in">
           {/* Main Heading */}
-          <div className="space-y-4 max-w-4xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground">
-              <span className="block">Budget monthly,</span>
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+          <div className="space-y-6 max-w-5xl">
+            <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4 animate-scale-in">
+              <span className="w-2 h-2 bg-primary rounded-full mr-2 animate-pulse"></span>
+              New Features Available
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold tracking-tight">
+              <span className="block text-foreground mb-2">Budget monthly,</span>
+              <span className="text-gradient-primary text-balance">
                 track daily
               </span>
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Manage money across banks & e-wallets, set monthly budgets, and track daily transactions with Monli.
+            <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-balance">
+              Take control of your finances with intelligent budgeting, real-time tracking, and insights across all your accounts.
             </p>
           </div>
 

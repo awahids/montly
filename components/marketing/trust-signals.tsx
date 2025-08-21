@@ -42,19 +42,23 @@ export function TrustSignals() {
           {items.map(({ icon: Icon, text, description, color }, index) => (
             <div
               key={index}
-              className="group relative card-enhanced p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default"
+              className="group relative card-enhanced p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 cursor-default overflow-hidden"
             >
-              <div className="flex flex-col items-center text-center space-y-4">
+              {/* Background gradient effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative flex flex-col items-center text-center space-y-6">
                 <div 
-                  className={`flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                  className={`flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br ${color} shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500 relative`}
                 >
-                <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-sm" />
+                  <Icon className="h-8 w-8 sm:h-10 sm:w-10 text-white drop-shadow-sm" />
+                  <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
-                <div className="space-y-2">
-                  <h4 className="font-bold text-base sm:text-lg text-foreground group-hover:text-primary transition-all duration-300">
+                <div className="space-y-3">
+                  <h4 className="font-bold text-lg sm:text-xl text-foreground group-hover:text-primary transition-all duration-300">
                     {text}
                   </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-muted-foreground/90 transition-colors">
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed group-hover:text-muted-foreground/90 transition-colors text-balance">
                     {description}
                   </p>
                 </div>

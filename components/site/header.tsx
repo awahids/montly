@@ -26,27 +26,27 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+        <nav className="hidden md:flex items-center space-x-2 lg:space-x-4">
           <Link
             href="#features"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2 px-2"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-200 relative group py-2.5 px-4 rounded-lg hover:bg-primary/5"
           >
             Features
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-200 group-hover:w-full"></span>
+            <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-primary transition-all duration-200 group-hover:w-8 rounded-full"></span>
           </Link>
           <Link
             href="#how-it-works"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2 px-2"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-200 relative group py-2.5 px-4 rounded-lg hover:bg-primary/5"
           >
             How it Works
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-200 group-hover:w-full"></span>
+            <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-primary transition-all duration-200 group-hover:w-8 rounded-full"></span>
           </Link>
           <Link
             href="#pricing"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2 px-2"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-200 relative group py-2.5 px-4 rounded-lg hover:bg-primary/5"
           >
             Pricing
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-200 group-hover:w-full"></span>
+            <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-primary transition-all duration-200 group-hover:w-8 rounded-full"></span>
           </Link>
         </nav>
 
