@@ -47,16 +47,33 @@ export default function SignUpPage() {
   const onSubmit = async (data: SignUpForm) => {
     setLoading(true);
     try {
-      await registerUser(data.name, data.email, data.password);
-    } catch (e) {
-      // Regardless of the error, notify the user to check email
-      console.error('Sign up error:', e);
-    } finally {
-      setLoading(false);
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      
+      if (!result.ok) {
+        throw new Error(result.error || 'Registration failed');
+      }
+      
       toast({
         title: 'Check your email',
         description: "We've sent you a verification link.",
       });
+    } catch (e) {
+      console.error('Sign up error:', e);
+      toast({
+        title: 'Registration failed',
+        description: e instanceof Error ? e.message : 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
