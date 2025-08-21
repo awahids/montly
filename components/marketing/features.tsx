@@ -7,7 +7,7 @@ const features = [
     description: 'See balances in one view—bank, e-wallet, and cash.',
     icon: Wallet,
     image: 'https://placehold.co/600x400/png?text=Accounts',
-    color: 'from-blue-500 via-blue-600 to-cyan-500',
+    color: 'from-indigo-500 via-indigo-600 to-purple-500',
     bgPattern: 'bg-gradient-to-br from-blue-50/80 to-cyan-50/40',
     darkBgPattern: 'dark:from-blue-950/30 dark:to-cyan-950/20',
   },
