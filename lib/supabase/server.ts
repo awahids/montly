@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from '@/types/database';
 
-export function createServerClient() {
+export function createClient() {
   const cookieStore = cookies();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
