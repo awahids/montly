@@ -1,0 +1,970 @@
+
+ 1 of 1 unhandled error
+Server Error
+ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+  × the name `Link` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/mobile-nav.tsx:1:1]
+   1 │ 'use client';
+   2 │ 
+   3 │ import { useState } from 'react';
+   4 │ import Link from 'next/link';
+     ·        ──┬─
+     ·          ╰── previous definition of `Link` here
+   5 │ import { usePathname } from 'next/navigation';
+   6 │ import { LayoutDashboard, ReceiptText, Wallet, Settings, Plus } from 'lucide-react';
+   7 │ import { cn } from '@/lib/utils';
+   8 │ import { useAppStore } from '@/lib/store';
+   9 │ import TransactionForm, { TransactionFormValues } from '@/components/transactions/transaction-form';
+  10 │ import { Transaction } from '@/types';
+  11 │ import { toast } from 'sonner';
+  12 │ import { formatDate } from '@/lib/date';
+  13 │ 
+  14 │ const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  15 │ 
+  16 │ function keysToCamel<T>(obj: any): T {
+  17 │   if (Array.isArray(obj)) {
+  18 │     return obj.map(v => keysToCamel(v)) as any;
+  19 │   }
+  20 │   if (obj && typeof obj === 'object' && obj.constructor === Object) {
+  21 │     const result: Record<string, any> = {};
+  22 │     for (const [key, value] of Object.entries(obj)) {
+  23 │       result[toCamel(key)] = keysToCamel(value);
+  24 │     }
+  25 │     return result as T;
+  26 │   }
+  27 │   return obj as T;
+  28 │ }
+  29 │ 
+  30 │ export function MobileNav() {
+  31 │   const pathname = usePathname();
+  32 │   const [open, setOpen] = useState(false);
+  33 │   const { accounts, categories, transactions, setTransactions } = useAppStore();
+  34 │ 
+  35 │   const handleSave = async (values: TransactionFormValues) => {
+  36 │     try {
+  37 │       const res = await fetch('/api/transactions', {
+  38 │         method: 'POST',
+  39 │         headers: { 'Content-Type': 'application/json' },
+  40 │         body: JSON.stringify({
+  41 │           budgetMonth: values.budgetMonth,
+  42 │           actualDate: formatDate(values.actualDate),
+  43 │           date: formatDate(values.actualDate),
+  44 │           type: values.type,
+  45 │           accountId: values.accountId,
+  46 │           fromAccountId: values.fromAccountId,
+  47 │           toAccountId: values.toAccountId,
+  48 │           categoryId: values.categoryId,
+  49 │           amount: values.amount,
+  50 │           note: values.note,
+  51 │           tags: values.tags,
+  52 │         }),
+  53 │       });
+  54 │       const data = await res.json();
+  55 │       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+  56 │       const tx = keysToCamel<Transaction>(data);
+  57 │       setTransactions([tx, ...transactions]);
+  58 │       toast.success('Transaction created');
+  59 │       setOpen(false);
+  60 │     } catch (e) {
+  61 │       toast.error((e as Error).message);
+  62 │     }
+  63 │   };
+  64 │ 
+  65 │   const linkClass = (active: boolean) =>
+  66 │     cn(
+  67 │       'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+  68 │       active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
+  69 │     );
+  70 │ 
+  71 │   return (
+  72 │     <>
+  73 │       <nav
+  74 │         className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
+  75 │         role="tablist"
+  76 │         aria-label="Primary"
+  77 │       >
+  78 │         <div className="relative h-16">
+  79 │           <div className="grid grid-cols-5 h-full">
+  80 │             <Link
+  81 │               href="/dashboard"
+  82 │               role="tab"
+  83 │               aria-label="Dashboard"
+  84 │               aria-current={pathname === '/dashboard' ? 'page' : undefined}
+  85 │               className={linkClass(pathname === '/dashboard')}
+  86 │             >
+  87 │               <LayoutDashboard className="h-5 w-5" />
+  88 │               <span className="text-[10px]">Dashboard</span>
+  89 │             </Link>
+  90 │             <Link
+  91 │               href="/transactions"
+  92 │               role="tab"
+  93 │               aria-label="Transactions"
+  94 │               aria-current={pathname.startsWith('/transactions') ? 'page' : undefined}
+  95 │               className={linkClass(pathname.startsWith('/transactions'))}
+  96 │             >
+  97 │               <ReceiptText className="h-5 w-5" />
+  98 │               <span className="text-[10px]">Transactions</span>
+  99 │             </Link>
+ 100 │             <div aria-hidden="true" />
+ 101 │             <Link
+ 102 │               href="/budgets"
+ 103 │               role="tab"
+ 104 │               aria-label="Budgets"
+ 105 │               aria-current={pathname.startsWith('/budgets') ? 'page' : undefined}
+ 106 │               className={linkClass(pathname.startsWith('/budgets'))}
+ 107 │             >
+ 108 │               <Wallet className="h-5 w-5" />
+ 109 │               <span className="text-[10px]">Budgets</span>
+ 110 │             </Link>
+ 111 │             <Link
+ 112 │               href="/settings"
+ 113 │               role="tab"
+ 114 │               aria-label="Settings"
+ 115 │               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+ 116 │               className={linkClass(pathname.startsWith('/settings'))}
+ 117 │             >
+ 118 │               <Settings className="h-5 w-5" />
+ 119 │               <span className="text-[10px]">Settings</span>
+ 120 │             </Link>
+ 121 │           </div>
+ 122 │           <button
+ 123 │             type="button"
+ 124 │             onClick={() => setOpen(true)}
+ 125 │             className="absolute left-1/2 -top-4 h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+ 126 │             aria-label="New Transaction"
+ 127 │             aria-haspopup="dialog"
+ 128 │             aria-controls="new-transaction-dialog"
+ 129 │           >
+ 130 │             <Plus className="h-5 w-5" />
+ 131 │           </button>
+ 132 │         </div>
+ 133 │       </nav>
+ 134 │       <TransactionForm
+ 135 │         id="new-transaction-dialog"
+ 136 │         open={open}
+ 137 │         onOpenChange={setOpen}
+ 138 │         accounts={accounts}
+ 139 │         categories={categories}
+ 140 │         onSubmit={handleSave}
+ 141 │       />
+ 142 │     </>
+ 143 │   );
+ 144 │ }
+ 145 │ 
+ 146 │ export default MobileNav;
+ 147 │ import Link from 'next/link';
+     ·        ──┬─
+     ·          ╰── `Link` redefined here
+ 148 │ import { usePathname } from 'next/navigation';
+ 149 │ import { cn } from '@/lib/utils';
+ 150 │ import { 
+     ╰────
+
+  × the name `usePathname` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/mobile-nav.tsx:2:1]
+   2 │ 
+   3 │ import { useState } from 'react';
+   4 │ import Link from 'next/link';
+   5 │ import { usePathname } from 'next/navigation';
+     ·          ─────┬─────
+     ·               ╰── previous definition of `usePathname` here
+   6 │ import { LayoutDashboard, ReceiptText, Wallet, Settings, Plus } from 'lucide-react';
+   7 │ import { cn } from '@/lib/utils';
+   8 │ import { useAppStore } from '@/lib/store';
+   9 │ import TransactionForm, { TransactionFormValues } from '@/components/transactions/transaction-form';
+  10 │ import { Transaction } from '@/types';
+  11 │ import { toast } from 'sonner';
+  12 │ import { formatDate } from '@/lib/date';
+  13 │ 
+  14 │ const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  15 │ 
+  16 │ function keysToCamel<T>(obj: any): T {
+  17 │   if (Array.isArray(obj)) {
+  18 │     return obj.map(v => keysToCamel(v)) as any;
+  19 │   }
+  20 │   if (obj && typeof obj === 'object' && obj.constructor === Object) {
+  21 │     const result: Record<string, any> = {};
+  22 │     for (const [key, value] of Object.entries(obj)) {
+  23 │       result[toCamel(key)] = keysToCamel(value);
+  24 │     }
+  25 │     return result as T;
+  26 │   }
+  27 │   return obj as T;
+  28 │ }
+  29 │ 
+  30 │ export function MobileNav() {
+  31 │   const pathname = usePathname();
+  32 │   const [open, setOpen] = useState(false);
+  33 │   const { accounts, categories, transactions, setTransactions } = useAppStore();
+  34 │ 
+  35 │   const handleSave = async (values: TransactionFormValues) => {
+  36 │     try {
+  37 │       const res = await fetch('/api/transactions', {
+  38 │         method: 'POST',
+  39 │         headers: { 'Content-Type': 'application/json' },
+  40 │         body: JSON.stringify({
+  41 │           budgetMonth: values.budgetMonth,
+  42 │           actualDate: formatDate(values.actualDate),
+  43 │           date: formatDate(values.actualDate),
+  44 │           type: values.type,
+  45 │           accountId: values.accountId,
+  46 │           fromAccountId: values.fromAccountId,
+  47 │           toAccountId: values.toAccountId,
+  48 │           categoryId: values.categoryId,
+  49 │           amount: values.amount,
+  50 │           note: values.note,
+  51 │           tags: values.tags,
+  52 │         }),
+  53 │       });
+  54 │       const data = await res.json();
+  55 │       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+  56 │       const tx = keysToCamel<Transaction>(data);
+  57 │       setTransactions([tx, ...transactions]);
+  58 │       toast.success('Transaction created');
+  59 │       setOpen(false);
+  60 │     } catch (e) {
+  61 │       toast.error((e as Error).message);
+  62 │     }
+  63 │   };
+  64 │ 
+  65 │   const linkClass = (active: boolean) =>
+  66 │     cn(
+  67 │       'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+  68 │       active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
+  69 │     );
+  70 │ 
+  71 │   return (
+  72 │     <>
+  73 │       <nav
+  74 │         className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
+  75 │         role="tablist"
+  76 │         aria-label="Primary"
+  77 │       >
+  78 │         <div className="relative h-16">
+  79 │           <div className="grid grid-cols-5 h-full">
+  80 │             <Link
+  81 │               href="/dashboard"
+  82 │               role="tab"
+  83 │               aria-label="Dashboard"
+  84 │               aria-current={pathname === '/dashboard' ? 'page' : undefined}
+  85 │               className={linkClass(pathname === '/dashboard')}
+  86 │             >
+  87 │               <LayoutDashboard className="h-5 w-5" />
+  88 │               <span className="text-[10px]">Dashboard</span>
+  89 │             </Link>
+  90 │             <Link
+  91 │               href="/transactions"
+  92 │               role="tab"
+  93 │               aria-label="Transactions"
+  94 │               aria-current={pathname.startsWith('/transactions') ? 'page' : undefined}
+  95 │               className={linkClass(pathname.startsWith('/transactions'))}
+  96 │             >
+  97 │               <ReceiptText className="h-5 w-5" />
+  98 │               <span className="text-[10px]">Transactions</span>
+  99 │             </Link>
+ 100 │             <div aria-hidden="true" />
+ 101 │             <Link
+ 102 │               href="/budgets"
+ 103 │               role="tab"
+ 104 │               aria-label="Budgets"
+ 105 │               aria-current={pathname.startsWith('/budgets') ? 'page' : undefined}
+ 106 │               className={linkClass(pathname.startsWith('/budgets'))}
+ 107 │             >
+ 108 │               <Wallet className="h-5 w-5" />
+ 109 │               <span className="text-[10px]">Budgets</span>
+ 110 │             </Link>
+ 111 │             <Link
+ 112 │               href="/settings"
+ 113 │               role="tab"
+ 114 │               aria-label="Settings"
+ 115 │               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+ 116 │               className={linkClass(pathname.startsWith('/settings'))}
+ 117 │             >
+ 118 │               <Settings className="h-5 w-5" />
+ 119 │               <span className="text-[10px]">Settings</span>
+ 120 │             </Link>
+ 121 │           </div>
+ 122 │           <button
+ 123 │             type="button"
+ 124 │             onClick={() => setOpen(true)}
+ 125 │             className="absolute left-1/2 -top-4 h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+ 126 │             aria-label="New Transaction"
+ 127 │             aria-haspopup="dialog"
+ 128 │             aria-controls="new-transaction-dialog"
+ 129 │           >
+ 130 │             <Plus className="h-5 w-5" />
+ 131 │           </button>
+ 132 │         </div>
+ 133 │       </nav>
+ 134 │       <TransactionForm
+ 135 │         id="new-transaction-dialog"
+ 136 │         open={open}
+ 137 │         onOpenChange={setOpen}
+ 138 │         accounts={accounts}
+ 139 │         categories={categories}
+ 140 │         onSubmit={handleSave}
+ 141 │       />
+ 142 │     </>
+ 143 │   );
+ 144 │ }
+ 145 │ 
+ 146 │ export default MobileNav;
+ 147 │ import Link from 'next/link';
+ 148 │ import { usePathname } from 'next/navigation';
+     ·          ─────┬─────
+     ·               ╰── `usePathname` redefined here
+ 149 │ import { cn } from '@/lib/utils';
+ 150 │ import { 
+ 151 │   Home, 
+     ╰────
+
+  × the name `cn` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/mobile-nav.tsx:4:1]
+   4 │ import Link from 'next/link';
+   5 │ import { usePathname } from 'next/navigation';
+   6 │ import { LayoutDashboard, ReceiptText, Wallet, Settings, Plus } from 'lucide-react';
+   7 │ import { cn } from '@/lib/utils';
+     ·          ─┬
+     ·           ╰── previous definition of `cn` here
+   8 │ import { useAppStore } from '@/lib/store';
+   9 │ import TransactionForm, { TransactionFormValues } from '@/components/transactions/transaction-form';
+  10 │ import { Transaction } from '@/types';
+  11 │ import { toast } from 'sonner';
+  12 │ import { formatDate } from '@/lib/date';
+  13 │ 
+  14 │ const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  15 │ 
+  16 │ function keysToCamel<T>(obj: any): T {
+  17 │   if (Array.isArray(obj)) {
+  18 │     return obj.map(v => keysToCamel(v)) as any;
+  19 │   }
+  20 │   if (obj && typeof obj === 'object' && obj.constructor === Object) {
+  21 │     const result: Record<string, any> = {};
+  22 │     for (const [key, value] of Object.entries(obj)) {
+  23 │       result[toCamel(key)] = keysToCamel(value);
+  24 │     }
+  25 │     return result as T;
+  26 │   }
+  27 │   return obj as T;
+  28 │ }
+  29 │ 
+  30 │ export function MobileNav() {
+  31 │   const pathname = usePathname();
+  32 │   const [open, setOpen] = useState(false);
+  33 │   const { accounts, categories, transactions, setTransactions } = useAppStore();
+  34 │ 
+  35 │   const handleSave = async (values: TransactionFormValues) => {
+  36 │     try {
+  37 │       const res = await fetch('/api/transactions', {
+  38 │         method: 'POST',
+  39 │         headers: { 'Content-Type': 'application/json' },
+  40 │         body: JSON.stringify({
+  41 │           budgetMonth: values.budgetMonth,
+  42 │           actualDate: formatDate(values.actualDate),
+  43 │           date: formatDate(values.actualDate),
+  44 │           type: values.type,
+  45 │           accountId: values.accountId,
+  46 │           fromAccountId: values.fromAccountId,
+  47 │           toAccountId: values.toAccountId,
+  48 │           categoryId: values.categoryId,
+  49 │           amount: values.amount,
+  50 │           note: values.note,
+  51 │           tags: values.tags,
+  52 │         }),
+  53 │       });
+  54 │       const data = await res.json();
+  55 │       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+  56 │       const tx = keysToCamel<Transaction>(data);
+  57 │       setTransactions([tx, ...transactions]);
+  58 │       toast.success('Transaction created');
+  59 │       setOpen(false);
+  60 │     } catch (e) {
+  61 │       toast.error((e as Error).message);
+  62 │     }
+  63 │   };
+  64 │ 
+  65 │   const linkClass = (active: boolean) =>
+  66 │     cn(
+  67 │       'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+  68 │       active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
+  69 │     );
+  70 │ 
+  71 │   return (
+  72 │     <>
+  73 │       <nav
+  74 │         className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
+  75 │         role="tablist"
+  76 │         aria-label="Primary"
+  77 │       >
+  78 │         <div className="relative h-16">
+  79 │           <div className="grid grid-cols-5 h-full">
+  80 │             <Link
+  81 │               href="/dashboard"
+  82 │               role="tab"
+  83 │               aria-label="Dashboard"
+  84 │               aria-current={pathname === '/dashboard' ? 'page' : undefined}
+  85 │               className={linkClass(pathname === '/dashboard')}
+  86 │             >
+  87 │               <LayoutDashboard className="h-5 w-5" />
+  88 │               <span className="text-[10px]">Dashboard</span>
+  89 │             </Link>
+  90 │             <Link
+  91 │               href="/transactions"
+  92 │               role="tab"
+  93 │               aria-label="Transactions"
+  94 │               aria-current={pathname.startsWith('/transactions') ? 'page' : undefined}
+  95 │               className={linkClass(pathname.startsWith('/transactions'))}
+  96 │             >
+  97 │               <ReceiptText className="h-5 w-5" />
+  98 │               <span className="text-[10px]">Transactions</span>
+  99 │             </Link>
+ 100 │             <div aria-hidden="true" />
+ 101 │             <Link
+ 102 │               href="/budgets"
+ 103 │               role="tab"
+ 104 │               aria-label="Budgets"
+ 105 │               aria-current={pathname.startsWith('/budgets') ? 'page' : undefined}
+ 106 │               className={linkClass(pathname.startsWith('/budgets'))}
+ 107 │             >
+ 108 │               <Wallet className="h-5 w-5" />
+ 109 │               <span className="text-[10px]">Budgets</span>
+ 110 │             </Link>
+ 111 │             <Link
+ 112 │               href="/settings"
+ 113 │               role="tab"
+ 114 │               aria-label="Settings"
+ 115 │               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+ 116 │               className={linkClass(pathname.startsWith('/settings'))}
+ 117 │             >
+ 118 │               <Settings className="h-5 w-5" />
+ 119 │               <span className="text-[10px]">Settings</span>
+ 120 │             </Link>
+ 121 │           </div>
+ 122 │           <button
+ 123 │             type="button"
+ 124 │             onClick={() => setOpen(true)}
+ 125 │             className="absolute left-1/2 -top-4 h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+ 126 │             aria-label="New Transaction"
+ 127 │             aria-haspopup="dialog"
+ 128 │             aria-controls="new-transaction-dialog"
+ 129 │           >
+ 130 │             <Plus className="h-5 w-5" />
+ 131 │           </button>
+ 132 │         </div>
+ 133 │       </nav>
+ 134 │       <TransactionForm
+ 135 │         id="new-transaction-dialog"
+ 136 │         open={open}
+ 137 │         onOpenChange={setOpen}
+ 138 │         accounts={accounts}
+ 139 │         categories={categories}
+ 140 │         onSubmit={handleSave}
+ 141 │       />
+ 142 │     </>
+ 143 │   );
+ 144 │ }
+ 145 │ 
+ 146 │ export default MobileNav;
+ 147 │ import Link from 'next/link';
+ 148 │ import { usePathname } from 'next/navigation';
+ 149 │ import { cn } from '@/lib/utils';
+     ·          ─┬
+     ·           ╰── `cn` redefined here
+ 150 │ import { 
+ 151 │   Home, 
+ 152 │   CreditCard, 
+     ╰────
+
+  × the name `Settings` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/mobile-nav.tsx:3:1]
+   3 │ import { useState } from 'react';
+   4 │ import Link from 'next/link';
+   5 │ import { usePathname } from 'next/navigation';
+   6 │ import { LayoutDashboard, ReceiptText, Wallet, Settings, Plus } from 'lucide-react';
+     ·                                                ────┬───
+     ·                                                    ╰── previous definition of `Settings` here
+   7 │ import { cn } from '@/lib/utils';
+   8 │ import { useAppStore } from '@/lib/store';
+   9 │ import TransactionForm, { TransactionFormValues } from '@/components/transactions/transaction-form';
+  10 │ import { Transaction } from '@/types';
+  11 │ import { toast } from 'sonner';
+  12 │ import { formatDate } from '@/lib/date';
+  13 │ 
+  14 │ const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  15 │ 
+  16 │ function keysToCamel<T>(obj: any): T {
+  17 │   if (Array.isArray(obj)) {
+  18 │     return obj.map(v => keysToCamel(v)) as any;
+  19 │   }
+  20 │   if (obj && typeof obj === 'object' && obj.constructor === Object) {
+  21 │     const result: Record<string, any> = {};
+  22 │     for (const [key, value] of Object.entries(obj)) {
+  23 │       result[toCamel(key)] = keysToCamel(value);
+  24 │     }
+  25 │     return result as T;
+  26 │   }
+  27 │   return obj as T;
+  28 │ }
+  29 │ 
+  30 │ export function MobileNav() {
+  31 │   const pathname = usePathname();
+  32 │   const [open, setOpen] = useState(false);
+  33 │   const { accounts, categories, transactions, setTransactions } = useAppStore();
+  34 │ 
+  35 │   const handleSave = async (values: TransactionFormValues) => {
+  36 │     try {
+  37 │       const res = await fetch('/api/transactions', {
+  38 │         method: 'POST',
+  39 │         headers: { 'Content-Type': 'application/json' },
+  40 │         body: JSON.stringify({
+  41 │           budgetMonth: values.budgetMonth,
+  42 │           actualDate: formatDate(values.actualDate),
+  43 │           date: formatDate(values.actualDate),
+  44 │           type: values.type,
+  45 │           accountId: values.accountId,
+  46 │           fromAccountId: values.fromAccountId,
+  47 │           toAccountId: values.toAccountId,
+  48 │           categoryId: values.categoryId,
+  49 │           amount: values.amount,
+  50 │           note: values.note,
+  51 │           tags: values.tags,
+  52 │         }),
+  53 │       });
+  54 │       const data = await res.json();
+  55 │       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+  56 │       const tx = keysToCamel<Transaction>(data);
+  57 │       setTransactions([tx, ...transactions]);
+  58 │       toast.success('Transaction created');
+  59 │       setOpen(false);
+  60 │     } catch (e) {
+  61 │       toast.error((e as Error).message);
+  62 │     }
+  63 │   };
+  64 │ 
+  65 │   const linkClass = (active: boolean) =>
+  66 │     cn(
+  67 │       'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+  68 │       active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
+  69 │     );
+  70 │ 
+  71 │   return (
+  72 │     <>
+  73 │       <nav
+  74 │         className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
+  75 │         role="tablist"
+  76 │         aria-label="Primary"
+  77 │       >
+  78 │         <div className="relative h-16">
+  79 │           <div className="grid grid-cols-5 h-full">
+  80 │             <Link
+  81 │               href="/dashboard"
+  82 │               role="tab"
+  83 │               aria-label="Dashboard"
+  84 │               aria-current={pathname === '/dashboard' ? 'page' : undefined}
+  85 │               className={linkClass(pathname === '/dashboard')}
+  86 │             >
+  87 │               <LayoutDashboard className="h-5 w-5" />
+  88 │               <span className="text-[10px]">Dashboard</span>
+  89 │             </Link>
+  90 │             <Link
+  91 │               href="/transactions"
+  92 │               role="tab"
+  93 │               aria-label="Transactions"
+  94 │               aria-current={pathname.startsWith('/transactions') ? 'page' : undefined}
+  95 │               className={linkClass(pathname.startsWith('/transactions'))}
+  96 │             >
+  97 │               <ReceiptText className="h-5 w-5" />
+  98 │               <span className="text-[10px]">Transactions</span>
+  99 │             </Link>
+ 100 │             <div aria-hidden="true" />
+ 101 │             <Link
+ 102 │               href="/budgets"
+ 103 │               role="tab"
+ 104 │               aria-label="Budgets"
+ 105 │               aria-current={pathname.startsWith('/budgets') ? 'page' : undefined}
+ 106 │               className={linkClass(pathname.startsWith('/budgets'))}
+ 107 │             >
+ 108 │               <Wallet className="h-5 w-5" />
+ 109 │               <span className="text-[10px]">Budgets</span>
+ 110 │             </Link>
+ 111 │             <Link
+ 112 │               href="/settings"
+ 113 │               role="tab"
+ 114 │               aria-label="Settings"
+ 115 │               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+ 116 │               className={linkClass(pathname.startsWith('/settings'))}
+ 117 │             >
+ 118 │               <Settings className="h-5 w-5" />
+ 119 │               <span className="text-[10px]">Settings</span>
+ 120 │             </Link>
+ 121 │           </div>
+ 122 │           <button
+ 123 │             type="button"
+ 124 │             onClick={() => setOpen(true)}
+ 125 │             className="absolute left-1/2 -top-4 h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+ 126 │             aria-label="New Transaction"
+ 127 │             aria-haspopup="dialog"
+ 128 │             aria-controls="new-transaction-dialog"
+ 129 │           >
+ 130 │             <Plus className="h-5 w-5" />
+ 131 │           </button>
+ 132 │         </div>
+ 133 │       </nav>
+ 134 │       <TransactionForm
+ 135 │         id="new-transaction-dialog"
+ 136 │         open={open}
+ 137 │         onOpenChange={setOpen}
+ 138 │         accounts={accounts}
+ 139 │         categories={categories}
+ 140 │         onSubmit={handleSave}
+ 141 │       />
+ 142 │     </>
+ 143 │   );
+ 144 │ }
+ 145 │ 
+ 146 │ export default MobileNav;
+ 147 │ import Link from 'next/link';
+ 148 │ import { usePathname } from 'next/navigation';
+ 149 │ import { cn } from '@/lib/utils';
+ 150 │ import { 
+ 151 │   Home, 
+ 152 │   CreditCard, 
+ 153 │   PieChart, 
+ 154 │   TrendingUp,
+ 155 │   Settings,
+     ·   ────┬───
+     ·       ╰── `Settings` redefined here
+ 156 │   Wallet
+ 157 │ } from 'lucide-react';
+     ╰────
+
+  × the name `Wallet` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/mobile-nav.tsx:3:1]
+   3 │ import { useState } from 'react';
+   4 │ import Link from 'next/link';
+   5 │ import { usePathname } from 'next/navigation';
+   6 │ import { LayoutDashboard, ReceiptText, Wallet, Settings, Plus } from 'lucide-react';
+     ·                                        ───┬──
+     ·                                           ╰── previous definition of `Wallet` here
+   7 │ import { cn } from '@/lib/utils';
+   8 │ import { useAppStore } from '@/lib/store';
+   9 │ import TransactionForm, { TransactionFormValues } from '@/components/transactions/transaction-form';
+  10 │ import { Transaction } from '@/types';
+  11 │ import { toast } from 'sonner';
+  12 │ import { formatDate } from '@/lib/date';
+  13 │ 
+  14 │ const toCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+  15 │ 
+  16 │ function keysToCamel<T>(obj: any): T {
+  17 │   if (Array.isArray(obj)) {
+  18 │     return obj.map(v => keysToCamel(v)) as any;
+  19 │   }
+  20 │   if (obj && typeof obj === 'object' && obj.constructor === Object) {
+  21 │     const result: Record<string, any> = {};
+  22 │     for (const [key, value] of Object.entries(obj)) {
+  23 │       result[toCamel(key)] = keysToCamel(value);
+  24 │     }
+  25 │     return result as T;
+  26 │   }
+  27 │   return obj as T;
+  28 │ }
+  29 │ 
+  30 │ export function MobileNav() {
+  31 │   const pathname = usePathname();
+  32 │   const [open, setOpen] = useState(false);
+  33 │   const { accounts, categories, transactions, setTransactions } = useAppStore();
+  34 │ 
+  35 │   const handleSave = async (values: TransactionFormValues) => {
+  36 │     try {
+  37 │       const res = await fetch('/api/transactions', {
+  38 │         method: 'POST',
+  39 │         headers: { 'Content-Type': 'application/json' },
+  40 │         body: JSON.stringify({
+  41 │           budgetMonth: values.budgetMonth,
+  42 │           actualDate: formatDate(values.actualDate),
+  43 │           date: formatDate(values.actualDate),
+  44 │           type: values.type,
+  45 │           accountId: values.accountId,
+  46 │           fromAccountId: values.fromAccountId,
+  47 │           toAccountId: values.toAccountId,
+  48 │           categoryId: values.categoryId,
+  49 │           amount: values.amount,
+  50 │           note: values.note,
+  51 │           tags: values.tags,
+  52 │         }),
+  53 │       });
+  54 │       const data = await res.json();
+  55 │       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+  56 │       const tx = keysToCamel<Transaction>(data);
+  57 │       setTransactions([tx, ...transactions]);
+  58 │       toast.success('Transaction created');
+  59 │       setOpen(false);
+  60 │     } catch (e) {
+  61 │       toast.error((e as Error).message);
+  62 │     }
+  63 │   };
+  64 │ 
+  65 │   const linkClass = (active: boolean) =>
+  66 │     cn(
+  67 │       'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+  68 │       active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
+  69 │     );
+  70 │ 
+  71 │   return (
+  72 │     <>
+  73 │       <nav
+  74 │         className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
+  75 │         role="tablist"
+  76 │         aria-label="Primary"
+  77 │       >
+  78 │         <div className="relative h-16">
+  79 │           <div className="grid grid-cols-5 h-full">
+  80 │             <Link
+  81 │               href="/dashboard"
+  82 │               role="tab"
+  83 │               aria-label="Dashboard"
+  84 │               aria-current={pathname === '/dashboard' ? 'page' : undefined}
+  85 │               className={linkClass(pathname === '/dashboard')}
+  86 │             >
+  87 │               <LayoutDashboard className="h-5 w-5" />
+  88 │               <span className="text-[10px]">Dashboard</span>
+  89 │             </Link>
+  90 │             <Link
+  91 │               href="/transactions"
+  92 │               role="tab"
+  93 │               aria-label="Transactions"
+  94 │               aria-current={pathname.startsWith('/transactions') ? 'page' : undefined}
+  95 │               className={linkClass(pathname.startsWith('/transactions'))}
+  96 │             >
+  97 │               <ReceiptText className="h-5 w-5" />
+  98 │               <span className="text-[10px]">Transactions</span>
+  99 │             </Link>
+ 100 │             <div aria-hidden="true" />
+ 101 │             <Link
+ 102 │               href="/budgets"
+ 103 │               role="tab"
+ 104 │               aria-label="Budgets"
+ 105 │               aria-current={pathname.startsWith('/budgets') ? 'page' : undefined}
+ 106 │               className={linkClass(pathname.startsWith('/budgets'))}
+ 107 │             >
+ 108 │               <Wallet className="h-5 w-5" />
+ 109 │               <span className="text-[10px]">Budgets</span>
+ 110 │             </Link>
+ 111 │             <Link
+ 112 │               href="/settings"
+ 113 │               role="tab"
+ 114 │               aria-label="Settings"
+ 115 │               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+ 116 │               className={linkClass(pathname.startsWith('/settings'))}
+ 117 │             >
+ 118 │               <Settings className="h-5 w-5" />
+ 119 │               <span className="text-[10px]">Settings</span>
+ 120 │             </Link>
+ 121 │           </div>
+ 122 │           <button
+ 123 │             type="button"
+ 124 │             onClick={() => setOpen(true)}
+ 125 │             className="absolute left-1/2 -top-4 h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+ 126 │             aria-label="New Transaction"
+ 127 │             aria-haspopup="dialog"
+ 128 │             aria-controls="new-transaction-dialog"
+ 129 │           >
+ 130 │             <Plus className="h-5 w-5" />
+ 131 │           </button>
+ 132 │         </div>
+ 133 │       </nav>
+ 134 │       <TransactionForm
+ 135 │         id="new-transaction-dialog"
+ 136 │         open={open}
+ 137 │         onOpenChange={setOpen}
+ 138 │         accounts={accounts}
+ 139 │         categories={categories}
+ 140 │         onSubmit={handleSave}
+ 141 │       />
+ 142 │     </>
+ 143 │   );
+ 144 │ }
+ 145 │ 
+ 146 │ export default MobileNav;
+ 147 │ import Link from 'next/link';
+ 148 │ import { usePathname } from 'next/navigation';
+ 149 │ import { cn } from '@/lib/utils';
+ 150 │ import { 
+ 151 │   Home, 
+ 152 │   CreditCard, 
+ 153 │   PieChart, 
+ 154 │   TrendingUp,
+ 155 │   Settings,
+ 156 │   Wallet
+     ·   ───┬──
+     ·      ╰── `Wallet` redefined here
+ 157 │ } from 'lucide-react';
+ 158 │ 
+ 159 │ const navigation = [
+     ╰────
+
+  × the name `MobileNav` is defined multiple times
+     ╭─[/home/runner/workspace/components/layout/mobile-nav.tsx:27:1]
+  27 │   return obj as T;
+  28 │ }
+  29 │ 
+  30 │ export function MobileNav() {
+     ·                 ────┬────
+     ·                     ╰── previous definition of `MobileNav` here
+  31 │   const pathname = usePathname();
+  32 │   const [open, setOpen] = useState(false);
+  33 │   const { accounts, categories, transactions, setTransactions } = useAppStore();
+  34 │ 
+  35 │   const handleSave = async (values: TransactionFormValues) => {
+  36 │     try {
+  37 │       const res = await fetch('/api/transactions', {
+  38 │         method: 'POST',
+  39 │         headers: { 'Content-Type': 'application/json' },
+  40 │         body: JSON.stringify({
+  41 │           budgetMonth: values.budgetMonth,
+  42 │           actualDate: formatDate(values.actualDate),
+  43 │           date: formatDate(values.actualDate),
+  44 │           type: values.type,
+  45 │           accountId: values.accountId,
+  46 │           fromAccountId: values.fromAccountId,
+  47 │           toAccountId: values.toAccountId,
+  48 │           categoryId: values.categoryId,
+  49 │           amount: values.amount,
+  50 │           note: values.note,
+  51 │           tags: values.tags,
+  52 │         }),
+  53 │       });
+  54 │       const data = await res.json();
+  55 │       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
+  56 │       const tx = keysToCamel<Transaction>(data);
+  57 │       setTransactions([tx, ...transactions]);
+  58 │       toast.success('Transaction created');
+  59 │       setOpen(false);
+  60 │     } catch (e) {
+  61 │       toast.error((e as Error).message);
+  62 │     }
+  63 │   };
+  64 │ 
+  65 │   const linkClass = (active: boolean) =>
+  66 │     cn(
+  67 │       'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+  68 │       active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
+  69 │     );
+  70 │ 
+  71 │   return (
+  72 │     <>
+  73 │       <nav
+  74 │         className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
+  75 │         role="tablist"
+  76 │         aria-label="Primary"
+  77 │       >
+  78 │         <div className="relative h-16">
+  79 │           <div className="grid grid-cols-5 h-full">
+  80 │             <Link
+  81 │               href="/dashboard"
+  82 │               role="tab"
+  83 │               aria-label="Dashboard"
+  84 │               aria-current={pathname === '/dashboard' ? 'page' : undefined}
+  85 │               className={linkClass(pathname === '/dashboard')}
+  86 │             >
+  87 │               <LayoutDashboard className="h-5 w-5" />
+  88 │               <span className="text-[10px]">Dashboard</span>
+  89 │             </Link>
+  90 │             <Link
+  91 │               href="/transactions"
+  92 │               role="tab"
+  93 │               aria-label="Transactions"
+  94 │               aria-current={pathname.startsWith('/transactions') ? 'page' : undefined}
+  95 │               className={linkClass(pathname.startsWith('/transactions'))}
+  96 │             >
+  97 │               <ReceiptText className="h-5 w-5" />
+  98 │               <span className="text-[10px]">Transactions</span>
+  99 │             </Link>
+ 100 │             <div aria-hidden="true" />
+ 101 │             <Link
+ 102 │               href="/budgets"
+ 103 │               role="tab"
+ 104 │               aria-label="Budgets"
+ 105 │               aria-current={pathname.startsWith('/budgets') ? 'page' : undefined}
+ 106 │               className={linkClass(pathname.startsWith('/budgets'))}
+ 107 │             >
+ 108 │               <Wallet className="h-5 w-5" />
+ 109 │               <span className="text-[10px]">Budgets</span>
+ 110 │             </Link>
+ 111 │             <Link
+ 112 │               href="/settings"
+ 113 │               role="tab"
+ 114 │               aria-label="Settings"
+ 115 │               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+ 116 │               className={linkClass(pathname.startsWith('/settings'))}
+ 117 │             >
+ 118 │               <Settings className="h-5 w-5" />
+ 119 │               <span className="text-[10px]">Settings</span>
+ 120 │             </Link>
+ 121 │           </div>
+ 122 │           <button
+ 123 │             type="button"
+ 124 │             onClick={() => setOpen(true)}
+ 125 │             className="absolute left-1/2 -top-4 h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+ 126 │             aria-label="New Transaction"
+ 127 │             aria-haspopup="dialog"
+ 128 │             aria-controls="new-transaction-dialog"
+ 129 │           >
+ 130 │             <Plus className="h-5 w-5" />
+ 131 │           </button>
+ 132 │         </div>
+ 133 │       </nav>
+ 134 │       <TransactionForm
+ 135 │         id="new-transaction-dialog"
+ 136 │         open={open}
+ 137 │         onOpenChange={setOpen}
+ 138 │         accounts={accounts}
+ 139 │         categories={categories}
+ 140 │         onSubmit={handleSave}
+ 141 │       />
+ 142 │     </>
+ 143 │   );
+ 144 │ }
+ 145 │ 
+ 146 │ export default MobileNav;
+ 147 │ import Link from 'next/link';
+ 148 │ import { usePathname } from 'next/navigation';
+ 149 │ import { cn } from '@/lib/utils';
+ 150 │ import { 
+ 151 │   Home, 
+ 152 │   CreditCard, 
+ 153 │   PieChart, 
+ 154 │   TrendingUp,
+ 155 │   Settings,
+ 156 │   Wallet
+ 157 │ } from 'lucide-react';
+ 158 │ 
+ 159 │ const navigation = [
+ 160 │   { name: 'Dashboard', href: '/dashboard', icon: Home },
+ 161 │   { name: 'Transactions', href: '/transactions', icon: CreditCard },
+ 162 │   { name: 'Budgets', href: '/budgets', icon: PieChart },
+ 163 │   { name: 'Reports', href: '/reports', icon: TrendingUp },
+ 164 │   { name: 'Accounts', href: '/accounts', icon: Wallet },
+ 165 │ ];
+ 166 │ 
+ 167 │ export function MobileNav() {
+     ·                 ────┬────
+     ·                     ╰── `MobileNav` redefined here
+ 168 │   const pathname = usePathname();
+ 169 │ 
+ 170 │   return (
+     ╰────
+
+This error happened while generating the page. Any console logs will be displayed in the terminal window.
+Call Stack
+processResult
+file:///home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js (28:398653)
+<unknown>
+file:///home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js (28:400370)
+<unknown>
+file:///home/runner/workspace/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js (1:8645)
+<unknown>
+file:///home/runner/workspace/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js (1:5019)
+r.callback
+file:///home/runner/workspace/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js (1:4039)
