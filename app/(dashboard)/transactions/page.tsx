@@ -522,7 +522,13 @@ export default function TransactionsPage() {
         {groupedTransactions.map(([month, txs]) => (
           <div key={month} className="space-y-2">
             <h3 className="text-sm font-medium px-1">
-              {format(parseISO(`${month}-01`), 'MMM yyyy')}
+              {(() => {
+                try {
+                  return format(parseISO(`${month}-01`), 'MMM yyyy');
+                } catch (error) {
+                  return month;
+                }
+              })()}
             </h3>
             {txs.map((t) => {
               const Icon = t.category?.icon
