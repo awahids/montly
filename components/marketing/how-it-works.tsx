@@ -20,11 +20,15 @@ export function HowItWorks() {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
       
       <div className="relative mx-auto max-w-6xl px-4 text-center">
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">
+        <div className="mb-20">
+          <div className="inline-flex items-center gap-3 rounded-full surface-elevated px-6 py-3 text-sm font-semibold mb-8 card-hover-glow mx-auto">
+            <div className="w-3 h-3 bg-gradient-secondary rounded-full animate-pulse"></div>
+            <span className="text-gradient-enhanced">Simple Process</span>
+          </div>
+          <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl mb-6 text-gradient-enhanced">
             How It Works
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Get started with your financial journey in just three simple steps
           </p>
         </div>
@@ -40,9 +44,15 @@ export function HowItWorks() {
           
           {steps.map((step, i) => (
             <li key={step.title} className="relative flex flex-col items-center">
-              <div className="group mb-6">
+              <div className="group mb-8">
                 <div className="relative">
                   {/* Step number with enhanced styling */}
+                  <div className="relative w-20 h-20 mx-auto mb-6">
+                    <div className="absolute inset-0 bg-gradient-primary rounded-2xl shadow-2xl transform rotate-3 group-hover:rotate-6 transition-transform duration-300"></div>
+                    <div className="relative w-full h-full bg-gradient-secondary rounded-2xl shadow-lg flex items-center justify-center text-2xl font-bold text-white transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
+                      {i + 1}
+                    </div>
+                  </div>
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-primary text-lg font-bold text-white shadow-colored group-hover:scale-110 transition-transform duration-300">
                     {i + 1}
                   </div>

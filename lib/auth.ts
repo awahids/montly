@@ -1,3 +1,4 @@
+
 import { createBrowserClient } from '@/lib/supabase/client';
 import { User } from '@/types';
 import { useAppStore } from './store';
@@ -8,7 +9,8 @@ export async function register(
   password: string
 ): Promise<{ ok: boolean; error?: string }> {
   const supabase = createBrowserClient();
-  const { data, error } = await supabase.auth.signUp({
+  
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -19,7 +21,7 @@ export async function register(
   });
 
   if (error) {
-    throw error;
+    return { ok: false, error: error.message };
   }
 
   return { ok: true };
@@ -27,6 +29,7 @@ export async function register(
 
 export async function signIn(email: string, password: string) {
   const supabase = createBrowserClient();
+  
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,

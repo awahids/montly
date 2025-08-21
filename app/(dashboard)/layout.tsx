@@ -30,30 +30,27 @@ export default function DashboardLayout({
   }, [user, setUser, router]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background">
       {/* Mobile Layout */}
       <div className="md:hidden">
         <Header />
-        <main className="mobile-safe-area p-4 pb-20">
-          <div className="w-full space-y-4 animate-fade-in">
-            {children}
-          </div>
+        <main className="p-4 pb-20 space-y-4">
+          {children}
         </main>
         <MobileNav />
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] min-h-screen">
+      <div className="hidden md:flex min-h-screen">
         <Sidebar />
-        <div className="flex flex-col">
+        <div className="flex-1 md:ml-64">
           <Header />
-          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 animate-fade-in overflow-auto">
-            <div className="w-full max-w-none space-y-6">
-              {children}
-            </div>
+          <main className="p-6 space-y-6">
+            {children}
           </main>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

@@ -18,8 +18,12 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LogOut, User, Moon, Sun, Laptop } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
+import Link from 'next/link'; // Import Link
 
-export function Header() {
+// Placeholder for UserNav component, assuming it's defined elsewhere or will be provided
+// For this example, I'll create a basic UserNav to make the Header compile.
+// In a real scenario, this would likely be a separate import or component.
+function UserNav() {
   const { user } = useAppStore();
   const { setTheme } = useTheme();
 
@@ -43,69 +47,70 @@ export function Header() {
   };
 
   return (
-    <header className="border-b bg-white dark:bg-gray-900 dark:border-gray-800 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="lg:ml-0 ml-12">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            {`Hi${user?.name ? `, ${user.name.split(' ')[0]}` : ''}`}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Manage your finances with ease
-          </p>
-        </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user?.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user?.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <Sun className="mr-2 h-4 w-4" />
+            <span>Theme</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuItem onClick={() => setTheme('light')}>
+              <Sun className="mr-2 h-4 w-4" />
+              <span>Light</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('dark')}>
+              <Moon className="mr-2 h-4 w-4" />
+              <span>Dark</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('system')}>
+              <Laptop className="mr-2 h-4 w-4" />
+              <span>System</span>
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuItem asChild>
+          <a href="/settings" className="flex items-center">
+            <User className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleSignOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Sign out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user?.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user?.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Sun className="mr-2 h-4 w-4" />
-                  <span>Theme</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => setTheme('light')}>
-                    <Sun className="mr-2 h-4 w-4" />
-                    <span>Light</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('dark')}>
-                    <Moon className="mr-2 h-4 w-4" />
-                    <span>Dark</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('system')}>
-                    <Laptop className="mr-2 h-4 w-4" />
-                    <span>System</span>
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              <DropdownMenuItem asChild>
-                <a href="/settings" className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Sign out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+export function Header() {
+  return (
+    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-14 items-center px-4 md:px-6">
+        <div className="md:hidden flex items-center">
+          <span className="font-bold text-lg">Finance App</span>
+        </div>
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <UserNav />
         </div>
       </div>
     </header>

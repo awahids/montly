@@ -12,7 +12,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.2),transparent_60%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.15),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.05),transparent_50%)]" />
-      
+
       {/* Animated Grid Pattern - Hidden on mobile for performance */}
       <div className="absolute inset-0 opacity-30 hidden sm:block">
         <div 
@@ -25,40 +25,74 @@ export function Hero() {
         />
       </div>
 
-      <div className="responsive-container relative z-10">
-        <div className="flex flex-col items-center text-center space-y-8 lg:space-y-12">
-          {/* Main Heading */}
-          <div className="space-y-4 max-w-4xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground">
-              <span className="block">Budget monthly,</span>
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
-                track daily
-              </span>
-            </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Manage money across banks & e-wallets, set monthly budgets, and track daily transactions with Monli.
-            </p>
+      {/* Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-3xl animate-float" />
+        <div className="absolute top-3/4 right-1/4 w-[32rem] h-[32rem] bg-primary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-3/4 w-64 h-64 bg-primary/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/6 right-1/6 w-40 h-40 bg-gradient-to-r from-primary/6 to-primary/4 rounded-full blur-xl animate-pulse-slow" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 text-center">
+        <div className="mx-auto max-w-4xl">
+          {/* Badge */}
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary backdrop-blur-sm">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+            Now in Beta - Join early adopters
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <Button 
-              size="lg" 
-              className="btn-primary-enhanced w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-semibold shadow-colored hover:shadow-lg transition-all-smooth"
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
+            <span className="block mb-2">Budget monthly,</span>
+            <span className="relative block">
+              <span className="bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent animate-pulse">
+                track daily
+              </span>
+              <svg
+                className="absolute -bottom-3 left-0 h-4 w-full text-primary/40 animate-pulse"
+                viewBox="0 0 300 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2 10c49.7-3 99.4-4.5 149-3.5 49.7 1.2 99.3 4.5 149 3.5"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+          </h1>
+
+          <p className="mx-auto mt-8 max-w-2xl text-xl leading-8 text-muted-foreground/90">
+            Take control of your finances with intelligent budgeting, real-time tracking, 
+            and insights across all your accounts.
+          </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
+            <Button
               asChild
+              size="lg"
+              className="group relative rounded-2xl px-10 py-5 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105"
             >
-              <Link href="/auth/sign-up">
-                Start Free Today
+              <Link href="/auth/sign-up" className="flex items-center gap-2">
+                <span className="relative z-10">Start Free Trial</span>
+                <svg className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </Link>
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-medium border-2 hover:bg-muted/50 transition-all-smooth"
+            <Button
               asChild
+              variant="outline"
+              size="lg"
+              className="group rounded-2xl px-10 py-5 text-lg font-semibold border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 backdrop-blur-sm transition-all duration-300 transform hover:scale-105"
             >
-              <Link href="#demo">
-                Watch Demo
+              <Link href="#features" className="flex items-center gap-2">
+                <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                Learn More
               </Link>
             </Button>
           </div>
@@ -79,91 +113,26 @@ export function Hero() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Floating Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-3xl animate-float" />
-        <div className="absolute top-3/4 right-1/4 w-[32rem] h-[32rem] bg-primary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/2 left-3/4 w-64 h-64 bg-primary/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/6 right-1/6 w-40 h-40 bg-gradient-to-r from-primary/6 to-primary/4 rounded-full blur-xl animate-pulse-slow" />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 text-center">
-        <div className="mx-auto max-w-4xl">
-          {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary backdrop-blur-sm">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            Now in Beta - Join early adopters
-          </div>
-
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
-            <span className="block mb-2">Take control of your</span>
-            <span className="relative block">
-              <span className="bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent animate-pulse">
-                finances
-              </span>
-              <svg
-                className="absolute -bottom-3 left-0 h-4 w-full text-primary/40 animate-pulse"
-                viewBox="0 0 300 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2 10c49.7-3 99.4-4.5 149-3.5 49.7 1.2 99.3 4.5 149 3.5"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h1>
-          
-          <p className="mx-auto mt-8 max-w-2xl text-xl leading-8 text-muted-foreground/90">
-            Simple and secure personal finance tracker. Record expenses, 
-            manage budgets, and monitor your personal finances with ease.
-          </p>
-          
-          <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
-            <Button
-              size="lg"
-              className="group relative rounded-2xl px-10 py-5 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105"
-            >
-              <span className="relative z-10">Get started for free</span>
-              <svg className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-              <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="group rounded-2xl px-10 py-5 text-lg font-semibold border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 backdrop-blur-sm transition-all duration-300 transform hover:scale-105"
-            >
-              <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2" />
-              </svg>
-              View demo
-            </Button>
-          </div>
-        </div>
 
         {/* Enhanced Feature highlights */}
-        <div className="mt-20 grid grid-cols-1 gap-4 sm:grid-cols-3 px-4 sm:px-0">
+        <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-3 px-4 sm:px-0">
           {[
-            { icon: "M5 13l4 4L19 7", text: "100% Free", delay: "0s" },
-            { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", text: "Secure & Private", delay: "0.2s" },
-            { icon: "M13 10V3L4 14h7v7l9-11h-7z", text: "Lightning Fast", delay: "0.4s" }
+            { icon: "M5 13l4 4L19 7", text: "100% Free", delay: "0s", gradient: "from-emerald-500 to-teal-600" },
+            { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", text: "Secure & Private", delay: "0.2s", gradient: "from-blue-500 to-indigo-600" },
+            { icon: "M13 10V3L4 14h7v7l9-11h-7z", text: "Lightning Fast", delay: "0.4s", gradient: "from-purple-500 to-pink-600" }
           ].map((item, index) => (
             <div 
               key={index}
-              className="group flex items-center justify-center gap-3 rounded-2xl bg-primary/10 border border-primary/20 px-6 py-4 text-sm font-medium text-primary backdrop-blur-sm hover:bg-primary/15 transition-all duration-300 transform hover:scale-105"
+              className="group card-hover-glow surface-elevated rounded-3xl px-8 py-6 text-center transition-all duration-500 transform hover:scale-105 hover:-translate-y-2"
               style={{ animationDelay: item.delay }}
             >
-              <svg className="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-              </svg>
-              {item.text}
+              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br ${item.gradient} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={item.icon} />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">{item.text}</h3>
+              <div className={`w-full h-1 rounded-full bg-gradient-to-r ${item.gradient} opacity-60 group-hover:opacity-100 transition-opacity`}></div>
             </div>
           ))}
         </div>
