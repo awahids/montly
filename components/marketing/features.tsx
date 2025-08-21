@@ -53,19 +53,19 @@ export function Features() {
       <div className="absolute bottom-10 right-10 w-48 h-48 bg-primary/3 rounded-full blur-3xl animate-pulse delay-1000" />
 
       <div className="relative mx-auto max-w-7xl px-4">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-2 text-sm font-medium text-primary mb-6 backdrop-blur-sm">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            Features that matter
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="inline-flex items-center gap-3 rounded-full surface-elevated px-6 py-3 text-sm font-semibold mb-8 card-hover-glow">
+            <div className="w-3 h-3 bg-gradient-primary rounded-full animate-pulse"></div>
+            <span className="text-gradient-enhanced">Features that matter</span>
           </div>
-          <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl mb-6">
+          <h2 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl mb-8 text-gradient-enhanced">
             Everything you need to manage your money
           </h2>
-          <p className="text-xl text-muted-foreground/90 leading-relaxed">
+          <p className="text-xl text-muted-foreground/90 leading-relaxed max-w-2xl mx-auto">
             Powerful features designed to help you take control of your finances and
             reach your goals faster than ever before.
           </p>
-        </div>
+        </div>v>
 
         {/* Refactored Feature Grid */}
         <div className="grid gap-10 md:gap-12 md:grid-cols-2 lg:grid-cols-2 mt-20">

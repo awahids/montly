@@ -157,7 +157,10 @@
   }
 
   .card-enhanced {
-    @apply bg-card/60 backdrop-blur-lg border border-border/60 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover-lift;
+    @apply bg-card/70 backdrop-blur-xl border border-border/40 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover-lift;
+    background: linear-gradient(145deg, 
+      hsl(var(--card) / 0.8) 0%, 
+      hsl(var(--muted) / 0.3) 100%);
   }
 
   .card-premium {
@@ -316,12 +319,12 @@
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
   }
 
   .dark .hover-lift:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
   }
 
   .glass-card {
@@ -453,5 +456,73 @@
     50% {
       background-position: 100% 50%;
     }
+  }
+
+  .card-hover-glow {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .card-hover-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: var(--gradient-primary);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-hover-glow:hover::before {
+    opacity: 1;
+  }
+
+  .text-gradient-enhanced {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--chart-3)) 50%,
+      hsl(var(--chart-2)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .button-modern {
+    @apply relative overflow-hidden rounded-2xl px-8 py-4 font-semibold text-white transition-all duration-300 transform hover:scale-105 active:scale-95;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--chart-3)) 100%);
+    box-shadow: 0 4px 15px hsl(var(--primary) / 0.4), 0 0 0 1px hsl(var(--primary) / 0.2);
+  }
+
+  .button-modern::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(var(--chart-3)) 0%, hsl(var(--primary)) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .button-modern:hover::before {
+    opacity: 1;
+  }
+
+  .button-modern:hover {
+    box-shadow: 0 8px 30px hsl(var(--primary) / 0.6), 0 0 0 1px hsl(var(--primary) / 0.4);
+  }
+
+  .surface-elevated {
+    @apply bg-card/80 backdrop-blur-xl border border-border/30 shadow-2xl;
+    background: linear-gradient(145deg, 
+      hsl(var(--card) / 0.9) 0%, 
+      hsl(var(--muted) / 0.4) 100%);
+  }
+
+  .input-modern {
+    @apply bg-background/60 backdrop-blur-sm border border-border/60 rounded-xl px-4 py-3 transition-all duration-300 focus:border-primary/60 focus:bg-background/80 focus:shadow-lg focus:shadow-primary/10;
   }
 }

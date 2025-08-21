@@ -79,15 +79,17 @@ export function Header() {
           <Button
             variant="ghost"
             asChild
-            className="rounded-full hover:bg-primary/10 transition-all duration-200"
+            className="rounded-2xl hover:bg-primary/10 transition-all duration-300 hover:scale-105"
           >
             <Link href="/auth/sign-in">Sign in</Link>
           </Button>
           <Button
             asChild
-            className="rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-md hover:shadow-lg transition-all duration-200"
+            className="button-modern relative z-10"
           >
-            <Link href="/auth/sign-up">Get Started</Link>
+            <Link href="/auth/sign-up">
+              <span className="relative z-10">Get Started</span>
+            </Link>
           </Button>
         </div>
 

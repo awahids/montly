@@ -115,21 +115,24 @@ export function Hero() {
         </div>
 
         {/* Enhanced Feature highlights */}
-        <div className="mt-20 grid grid-cols-1 gap-4 sm:grid-cols-3 px-4 sm:px-0">
+        <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-3 px-4 sm:px-0">
           {[
-            { icon: "M5 13l4 4L19 7", text: "100% Free", delay: "0s" },
-            { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", text: "Secure & Private", delay: "0.2s" },
-            { icon: "M13 10V3L4 14h7v7l9-11h-7z", text: "Lightning Fast", delay: "0.4s" }
+            { icon: "M5 13l4 4L19 7", text: "100% Free", delay: "0s", gradient: "from-emerald-500 to-teal-600" },
+            { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", text: "Secure & Private", delay: "0.2s", gradient: "from-blue-500 to-indigo-600" },
+            { icon: "M13 10V3L4 14h7v7l9-11h-7z", text: "Lightning Fast", delay: "0.4s", gradient: "from-purple-500 to-pink-600" }
           ].map((item, index) => (
             <div 
               key={index}
-              className="group flex items-center justify-center gap-3 rounded-2xl bg-primary/10 border border-primary/20 px-6 py-4 text-sm font-medium text-primary backdrop-blur-sm hover:bg-primary/15 transition-all duration-300 transform hover:scale-105"
+              className="group card-hover-glow surface-elevated rounded-3xl px-8 py-6 text-center transition-all duration-500 transform hover:scale-105 hover:-translate-y-2"
               style={{ animationDelay: item.delay }}
             >
-              <svg className="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-              </svg>
-              {item.text}
+              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br ${item.gradient} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={item.icon} />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">{item.text}</h3>
+              <div className={`w-full h-1 rounded-full bg-gradient-to-r ${item.gradient} opacity-60 group-hover:opacity-100 transition-opacity`}></div>
             </div>
           ))}
         </div>
