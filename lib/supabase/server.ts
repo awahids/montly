@@ -1,4 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient as createSupabaseServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
 
@@ -12,11 +12,16 @@ export function createClient() {
     throw new Error("Missing Supabase environment variables");
   }
 
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+  return createSupabaseServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;
       },
     },
   });
+}
+
+// Alias for compatibility with older imports
+export function createServerClient() {
+  return createClient();
 }
