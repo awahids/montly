@@ -4,25 +4,25 @@ const items = [
   { 
     icon: Wallet, 
     text: 'Manual Input',
-    description: 'Input transaksi secara manual - tidak terhubung ke rekening bank',
+    description: 'Enter transactions manually - no bank account connection required',
     color: 'from-blue-500 to-cyan-500'
   },
   { 
     icon: Shield, 
-    text: 'Data Pribadi Aman',
-    description: 'Data keuangan Anda tersimpan aman dan tidak dibagikan ke pihak lain',
+    text: 'Private & Secure',
+    description: 'Your financial data stays safe and is never shared with third parties',
     color: 'from-green-500 to-emerald-500'
   },
   { 
     icon: Server, 
-    text: 'Akses Kapan Saja',
-    description: 'Pantau keuangan pribadi Anda dari perangkat apa pun',
+    text: 'Access Anywhere',
+    description: 'Monitor your personal finances from any device',
     color: 'from-purple-500 to-violet-500'
   },
   { 
     icon: Moon, 
-    text: 'Desain Sederhana',
-    description: 'Interface yang bersih dan mudah digunakan',
+    text: 'Simple Design',
+    description: 'Clean and intuitive interface that\'s easy to use',
     color: 'from-gray-600 to-gray-800'
   },
 ];

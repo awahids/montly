@@ -27,8 +27,8 @@ export function CTABand() {
           </h2>
           
           <p className="mx-auto mb-10 max-w-2xl text-xl text-muted-foreground">
-            Bergabung dengan ribuan pengguna yang sudah mengelola keuangan pribadi mereka lebih baik. 
-            Mulai perjalanan finansial Anda hari ini.
+            Join thousands of users who have already improved their personal finance management. 
+            Start your financial journey today.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

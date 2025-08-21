@@ -62,8 +62,8 @@ export function Hero() {
           </h1>
           
           <p className="mx-auto mt-8 max-w-2xl text-xl leading-8 text-muted-foreground/90">
-            Personal finance tracker yang mudah digunakan. Catat pengeluaran, 
-            kelola anggaran, dan pantau keuangan pribadi Anda dengan aman.
+            Simple and secure personal finance tracker. Record expenses, 
+            manage budgets, and monitor your personal finances with ease.
           </p>
           
           <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
