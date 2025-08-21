@@ -83,80 +83,102 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
-          <CardDescription>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-primary/10 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-16" />
+      <Card className="w-full max-w-md relative shadow-xl border-0 bg-card/95 backdrop-blur-sm">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 rounded-lg" />
+        <CardHeader className="text-center relative z-10 pb-8">
+          <div className="mx-auto w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            Create your account
+          </CardTitle>
+          <CardDescription className="text-muted-foreground/80">
             Start managing your finances today
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10 pt-0">
           <form
             onSubmit={handleSubmit(onSubmit, onError)}
-            className="space-y-4"
+            className="space-y-6"
           >
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name" className="text-sm font-medium text-foreground/90">Full Name</Label>
               <Input
                 id="name"
                 {...register('name')}
                 placeholder="Enter your full name"
                 disabled={loading}
+                className="h-11 bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
               />
               {errors.name && (
-                <p id="name-error" className="text-sm text-red-600">
+                <p id="name-error" className="text-sm text-destructive flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                   {errors.name.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-foreground/90">Email</Label>
               <Input
                 id="email"
                 {...register('email')}
                 type="email"
                 placeholder="Enter your email"
                 disabled={loading}
+                className="h-11 bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
               />
               {errors.email && (
-                <p id="email-error" className="text-sm text-red-600">
+                <p id="email-error" className="text-sm text-destructive flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                   {errors.email.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-foreground/90">Password</Label>
               <Input
                 id="password"
                 {...register('password')}
                 type="password"
                 placeholder="Create a password"
                 disabled={loading}
+                className="h-11 bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? 'password-error' : undefined}
               />
               {errors.password && (
-                <p id="password-error" className="text-sm text-red-600">
+                <p id="password-error" className="text-sm text-destructive flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                   {errors.password.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground/90">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 {...register('confirmPassword')}
                 type="password"
                 placeholder="Confirm your password"
                 disabled={loading}
+                className="h-11 bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 aria-invalid={!!errors.confirmPassword}
                 aria-describedby={
                   errors.confirmPassword ? 'confirmPassword-error' : undefined
@@ -165,30 +187,42 @@ export default function SignUpPage() {
               {errors.confirmPassword && (
                 <p
                   id="confirmPassword-error"
-                  className="text-sm text-red-600"
+                  className="text-sm text-destructive flex items-center gap-1"
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                   {errors.confirmPassword.message}
                 </p>
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full h-11 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" 
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating account...
                 </>
               ) : (
-                'Create Account'
+                <>
+                  <span>Create Account</span>
+                  <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </>
               )}
             </Button>
 
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
+            <div className="text-center pt-4">
+              <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link
                   href="/auth/sign-in"
-                  className="text-primary hover:underline"
+                  className="text-primary hover:text-primary/80 font-medium hover:underline transition-colors"
                 >
                   Sign in
                 </Link>
