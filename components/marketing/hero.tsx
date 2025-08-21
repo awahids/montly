@@ -25,72 +25,6 @@ export function Hero() {
         />
       </div>
 
-      <div className="responsive-container relative z-10">
-        <div className="flex flex-col items-center text-center space-y-8 lg:space-y-12 animate-fade-in">
-          {/* Main Heading */}
-          <div className="space-y-6 max-w-5xl">
-            <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4 animate-scale-in">
-              <span className="w-2 h-2 bg-primary rounded-full mr-2 animate-pulse"></span>
-              New Features Available
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold tracking-tight">
-              <span className="block text-foreground mb-2">Budget monthly,</span>
-              <span className="text-gradient-primary text-balance">
-                track daily
-              </span>
-            </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-balance">
-              Take control of your finances with intelligent budgeting, real-time tracking, and insights across all your accounts.
-            </p>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-8 animate-slide-up">
-            <Button
-              asChild
-              size="lg"
-              className="button-gradient text-primary-foreground px-10 py-7 text-lg font-semibold rounded-2xl hover:shadow-2xl transition-all duration-300 relative z-10 group"
-            >
-              <Link href="/auth/sign-up" className="flex items-center gap-2">
-                Start Free Trial
-                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="glass-morphism px-10 py-7 text-lg font-semibold rounded-2xl border-2 hover:bg-primary/10 transition-all duration-300 interactive-element group"
-            >
-              <Link href="#features" className="flex items-center gap-2">
-                Learn More
-                <svg className="w-5 h-5 transition-transform group-hover:translate-y-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </Link>
-            </Button>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-muted-foreground pt-8">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>No bank connection required</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>100% private & secure</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>Free forever</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Floating Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-3xl animate-float" />
@@ -108,10 +42,10 @@ export function Hero() {
           </div>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl leading-tight">
-            <span className="block mb-2">Take control of your</span>
+            <span className="block mb-2">Budget monthly,</span>
             <span className="relative block">
               <span className="bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent animate-pulse">
-                finances
+                track daily
               </span>
               <svg
                 className="absolute -bottom-3 left-0 h-4 w-full text-primary/40 animate-pulse"
@@ -130,31 +64,53 @@ export function Hero() {
           </h1>
 
           <p className="mx-auto mt-8 max-w-2xl text-xl leading-8 text-muted-foreground/90">
-            Simple and secure personal finance tracker. Record expenses, 
-            manage budgets, and monitor your personal finances with ease.
+            Take control of your finances with intelligent budgeting, real-time tracking, 
+            and insights across all your accounts.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
             <Button
+              asChild
               size="lg"
               className="group relative rounded-2xl px-10 py-5 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105"
             >
-              <span className="relative z-10">Get started for free</span>
-              <svg className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-              <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Link href="/auth/sign-up" className="flex items-center gap-2">
+                <span className="relative z-10">Start Free Trial</span>
+                <svg className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Link>
             </Button>
             <Button
+              asChild
               variant="outline"
               size="lg"
               className="group rounded-2xl px-10 py-5 text-lg font-semibold border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 backdrop-blur-sm transition-all duration-300 transform hover:scale-105"
             >
-              <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2" />
-              </svg>
-              View demo
+              <Link href="#features" className="flex items-center gap-2">
+                <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                Learn More
+              </Link>
             </Button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-muted-foreground pt-8">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>No bank connection required</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>100% private & secure</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Free forever</span>
+            </div>
           </div>
         </div>
 
