@@ -13,34 +13,66 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-background">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="text-xl font-bold">
-          Monli
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="h-8 w-8 rounded-lg bg-gradient-primary shadow-sm group-hover:shadow-colored transition-shadow duration-300" />
+          <span className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            Monli
+          </span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="#features" className="text-sm font-medium">
+
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link
+            href="#features"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group"
+          >
             Features
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
           </Link>
-          <Link href="#pricing" className="text-sm font-medium">
+          <Link
+            href="#pricing"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group"
+          >
             Pricing
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
           </Link>
-          <Link href="#faq" className="text-sm font-medium">
-            FAQ
+          <Link
+            href="#about"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group"
+          >
+            About
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
           </Link>
         </nav>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-            <Sun className="h-5 w-5 dark:hidden" />
-            <Moon className="h-5 w-5 hidden dark:block" />
+
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="h-9 w-9 rounded-full hover:bg-primary/10 transition-all duration-200"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          <Link href="/auth/sign-in" className="text-sm font-medium">
-            Sign in
-          </Link>
-          <Button asChild>
-            <Link href="/auth/sign-up">Get Started</Link>
-          </Button>
+
+          <div className="hidden sm:flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              asChild
+              className="rounded-full hover:bg-primary/10 transition-all duration-200"
+            >
+              <Link href="/auth/sign-in">Sign in</Link>
+            </Button>
+            <Button
+              asChild
+              className="rounded-full bg-gradient-primary hover:shadow-colored transition-all duration-200"
+            >
+              <Link href="/auth/sign-up">Sign up</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </header>

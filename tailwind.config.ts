@@ -78,10 +78,48 @@ const config: Config = {
             height: '0',
           },
         },
+        'fade-in': {
+          from: {
+            opacity: '0',
+            transform: 'translateY(10px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        'slide-up': {
+          from: {
+            opacity: '0',
+            transform: 'translateY(20px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        'pulse-soft': {
+          '0%, 100%': {
+            opacity: '0.8',
+          },
+          '50%': {
+            opacity: '1',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.5s ease-out',
+        'slide-up': 'slide-up 0.5s ease-out',
+        'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-secondary': 'var(--gradient-secondary)',
+      },
+      boxShadow: {
+        'colored': 'var(--shadow-colored)',
       },
     },
   },
