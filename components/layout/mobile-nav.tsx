@@ -5,16 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, Receipt, Plus, PieChart, Settings } from "lucide-react";
-import TransactionForm, {
-  TransactionFormValues,
-} from "@/components/transactions/transaction-form";
-
-interface Transaction extends TransactionFormValues {
-  id: string;
-  userId: string;
-  // 'date' opsional jika form kamu tidak memakainya lagi
-  date?: string;
-}
+import TransactionForm from "@/components/transactions/transaction-form";
+import type { Transaction } from "@/types";
 
 const links = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -31,17 +23,18 @@ export function MobileNav() {
 
   const handleAddTransaction = () => {
     const now = new Date();
-    const actualDate = now.toISOString().slice(0, 10); // YYYY-MM-DD
-    const budgetMonth = actualDate.slice(0, 7); // YYYY-MM
+    const dateString = now.toISOString().slice(0, 10); // YYYY-MM-DD
+    const budgetMonth = dateString.slice(0, 7); // YYYY-MM
 
     const newTransaction: Transaction = {
       id: "new-id",
       userId: "user-id",
       date: now.toISOString(),
       budgetMonth,
-      actualDate,
+      actualDate: dateString,
       type: "expense",
       amount: 0,
+      note: "",
       tags: [],
     };
 
@@ -110,8 +103,10 @@ export function MobileNav() {
         <TransactionForm
           open={formOpen}
           transaction={transaction}
+          accounts={[]}
+          categories={[]}
           onOpenChange={(open) => setFormOpen(open)}
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
             // TODO: call your create transaction API here
             console.log("Transaction Submitted:", values);
             setFormOpen(false);
