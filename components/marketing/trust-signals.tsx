@@ -3,26 +3,26 @@ import { Wallet, Shield, Server, Moon } from 'lucide-react';
 const items = [
   { 
     icon: Wallet, 
-    text: 'Bank & e-wallet friendly',
-    description: 'Connect with all your favorite payment methods',
+    text: 'Manual Input',
+    description: 'Input transaksi secara manual - tidak terhubung ke rekening bank',
     color: 'from-blue-500 to-cyan-500'
   },
   { 
     icon: Shield, 
-    text: 'Secure & Private',
-    description: 'Your financial data is protected with bank-level security',
+    text: 'Data Pribadi Aman',
+    description: 'Data keuangan Anda tersimpan aman dan tidak dibagikan ke pihak lain',
     color: 'from-green-500 to-emerald-500'
   },
   { 
     icon: Server, 
-    text: 'Always Available',
-    description: 'Access your finances anytime, anywhere, on any device',
+    text: 'Akses Kapan Saja',
+    description: 'Pantau keuangan pribadi Anda dari perangkat apa pun',
     color: 'from-purple-500 to-violet-500'
   },
   { 
     icon: Moon, 
-    text: 'Beautiful Design',
-    description: 'Clean, modern interface that works day or night',
+    text: 'Desain Sederhana',
+    description: 'Interface yang bersih dan mudah digunakan',
     color: 'from-gray-600 to-gray-800'
   },
 ];

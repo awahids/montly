@@ -27,8 +27,8 @@ export function CTABand() {
           </h2>
           
           <p className="mx-auto mb-10 max-w-2xl text-xl text-muted-foreground">
-            Join thousands of users who have already transformed their financial lives. 
-            Start your journey to financial freedom today.
+            Bergabung dengan ribuan pengguna yang sudah mengelola keuangan pribadi mereka lebih baik. 
+            Mulai perjalanan finansial Anda hari ini.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -64,9 +64,9 @@ export function CTABand() {
           
           {/* Trust indicators */}
           <div className="mt-12 flex items-center justify-center gap-8 opacity-60">
-            <div className="text-sm">💳 Secure & Safe</div>
-            <div className="text-sm">🔒 Privacy First</div>
-            <div className="text-sm">⚡ Easy to Use</div>
+            <div className="text-sm">✋ No Bank Connection</div>
+            <div className="text-sm">🔒 Your Data Only</div>
+            <div className="text-sm">📝 Manual Tracking</div>
           </div>
         </div>
       </div>
