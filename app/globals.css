@@ -86,17 +86,18 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
+
   /* Enhanced card styles */
   .card-enhanced {
-    @apply bg-card border border-border/50 rounded-xl shadow-sm backdrop-blur-sm;
-    background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--card)) 100%);
+    @apply bg-card border border-border/40 rounded-2xl backdrop-blur-lg;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card) / 0.95) 100%);
     box-shadow: 
-      0 1px 3px 0 rgb(0 0 0 / 0.1),
-      0 1px 2px -1px rgb(0 0 0 / 0.1),
-      inset 0 1px 0 0 rgb(255 255 255 / 0.1);
+      0 4px 20px -4px rgb(0 0 0 / 0.08),
+      0 2px 8px -2px rgb(0 0 0 / 0.04),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+    border: 1px solid hsl(var(--border) / 0.6);
   }
-  
+
 
 /* Custom animations and improvements */
 @keyframes float {
@@ -180,66 +181,68 @@
 }
 
   .dark .card-enhanced {
-    box-shadow: 
-      0 1px 3px 0 rgb(0 0 0 / 0.3),
-      0 1px 2px -1px rgb(0 0 0 / 0.3),
-      inset 0 1px 0 0 rgb(255 255 255 / 0.05);
-  }
-  
+  background: linear-gradient(135deg, hsl(var(--card) / 0.98) 0%, hsl(var(--card) / 0.95) 100%);
+  box-shadow: 
+    0 4px 20px -4px rgb(0 0 0 / 0.4),
+    0 2px 8px -2px rgb(0 0 0 / 0.2),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.08);
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
   /* Gradient backgrounds */
   .bg-gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .bg-gradient-secondary {
     background: var(--gradient-secondary);
   }
-  
+
   /* Enhanced shadows */
   .shadow-colored {
     box-shadow: var(--shadow-colored);
   }
-  
+
   /* Smooth transitions */
   .transition-all-smooth {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   /* Glass effect */
   .glass-effect {
     @apply backdrop-blur-md bg-white/10 border border-white/20;
   }
-  
+
   .dark .glass-effect {
     @apply bg-black/10 border-white/10;
   }
-  
+
   /* Mobile optimizations */
   @media (max-width: 640px) {
     .mobile-safe-area {
       padding-bottom: env(safe-area-inset-bottom);
     }
-    
+
     .mobile-touch-target {
       min-height: 44px;
       min-width: 44px;
     }
-    
+
     .mobile-padding {
       padding-left: max(16px, env(safe-area-inset-left));
       padding-right: max(16px, env(safe-area-inset-right));
     }
-    
+
     /* Improved form inputs for mobile */
     input, textarea, select {
       font-size: 16px; /* Prevents zoom on iOS */
     }
-    
+
     /* Better button sizing for touch */
     button {
       min-height: 44px;
     }
-    
+
     /* Improved card spacing on mobile */
     .card-mobile {
       margin: 8px;
@@ -254,20 +257,20 @@
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground)) transparent;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: hsl(var(--muted-foreground));
     border-radius: 3px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--foreground));
   }

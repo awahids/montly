@@ -49,12 +49,12 @@ export function TrustSignals() {
               
               <div className="relative">
                 <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r ${color} shadow-lg group-hover:scale-110 transition-transform duration-300 mb-4`}>
-                  <Icon className="h-7 w-7 text-white" />
+                  <Icon className="h-8 w-8 text-white drop-shadow-sm" />
                 </div>
-                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors mb-2">
+                <h4 className="font-bold text-lg text-foreground group-hover:text-primary transition-all duration-300 mb-3">
                   {text}
                 </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-muted-foreground/90 transition-colors">
                   {description}
                 </p>
               </div>
