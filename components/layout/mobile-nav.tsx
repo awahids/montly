@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -7,16 +8,14 @@ import {
   Home, 
   CreditCard, 
   PieChart, 
-  TrendingUp,
-  Settings,
-  Wallet
+  Plus,
+  Settings
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Transactions', href: '/transactions', icon: CreditCard },
   { name: 'Budgets', href: '/budgets', icon: PieChart },
-  { name: 'Reports', href: '/reports', icon: TrendingUp },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
