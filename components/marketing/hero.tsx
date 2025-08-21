@@ -12,7 +12,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.2),transparent_60%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.15),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.05),transparent_50%)]" />
-      
+
       {/* Animated Grid Pattern - Hidden on mobile for performance */}
       <div className="absolute inset-0 opacity-30 hidden sm:block">
         <div 
@@ -45,24 +45,30 @@ export function Hero() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            <Button 
-              size="lg" 
-              className="btn-primary-enhanced w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-semibold shadow-colored hover:shadow-lg transition-all-smooth"
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-8 animate-slide-up">
+            <Button
               asChild
+              size="lg"
+              className="button-gradient text-primary-foreground px-10 py-7 text-lg font-semibold rounded-2xl hover:shadow-2xl transition-all duration-300 relative z-10 group"
             >
-              <Link href="/auth/sign-up">
-                Start Free Today
+              <Link href="/auth/sign-up" className="flex items-center gap-2">
+                Start Free Trial
+                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Link>
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-medium border-2 hover:bg-muted/50 transition-all-smooth"
+            <Button
               asChild
+              variant="outline"
+              size="lg"
+              className="glass-morphism px-10 py-7 text-lg font-semibold rounded-2xl border-2 hover:bg-primary/10 transition-all duration-300 interactive-element group"
             >
-              <Link href="#demo">
-                Watch Demo
+              <Link href="#features" className="flex items-center gap-2">
+                Learn More
+                <svg className="w-5 h-5 transition-transform group-hover:translate-y-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
               </Link>
             </Button>
           </div>
@@ -122,12 +128,12 @@ export function Hero() {
               </svg>
             </span>
           </h1>
-          
+
           <p className="mx-auto mt-8 max-w-2xl text-xl leading-8 text-muted-foreground/90">
             Simple and secure personal finance tracker. Record expenses, 
             manage budgets, and monitor your personal finances with ease.
           </p>
-          
+
           <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
             <Button
               size="lg"
@@ -145,7 +151,7 @@ export function Hero() {
               className="group rounded-2xl px-10 py-5 text-lg font-semibold border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 backdrop-blur-sm transition-all duration-300 transform hover:scale-105"
             >
               <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2" />
               </svg>
               View demo
             </Button>

@@ -47,7 +47,7 @@ export function Features() {
       {/* Enhanced Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-muted/10 to-transparent" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.1),transparent_70%)]" />
-      
+
       {/* Floating background elements */}
       <div className="absolute top-10 left-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl animate-pulse" />
       <div className="absolute bottom-10 right-10 w-48 h-48 bg-primary/3 rounded-full blur-3xl animate-pulse delay-1000" />
@@ -67,56 +67,39 @@ export function Features() {
           </p>
         </div>
 
-        <div className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Refactored Feature Grid */}
+        <div className="grid gap-10 md:gap-12 md:grid-cols-2 lg:grid-cols-2 mt-20">
           {features.map((feature, index) => (
-            <div
-              key={feature.title}
-              className="group relative overflow-hidden rounded-3xl border border-border/50 bg-card/50 p-8 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/30 backdrop-blur-sm transform hover:scale-[1.02]"
-              style={{ animationDelay: `${index * 150}ms` }}
+            <div 
+              key={feature.title} 
+              className={`group relative animate-fade-in`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* Enhanced gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-              <div className="relative">
-                <div className="flex items-start gap-6 mb-8">
-                  <div className={`relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r ${feature.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <feature.icon className="h-8 w-8 text-white" />
-                    <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors duration-300 mb-3">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed text-lg">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="overflow-hidden rounded-2xl border border-border/50 shadow-md group-hover:shadow-xl transition-all duration-300">
-                    <div className="relative">
-                      <Image
-                        src={feature.image}
-                        alt={feature.title}
-                        width={600}
-                        height={400}
-                        className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="feature-card overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+                <div className="aspect-video relative overflow-hidden rounded-xl mb-6">
+                  <div className={`absolute inset-0 ${feature.bgPattern} ${feature.darkBgPattern} opacity-80`} />
+                  <Image
+                    src={feature.image}
+                    alt={feature.title}
+                    width={600}
+                    height={400}
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                  <div className="absolute top-4 right-4">
+                    <div className={`p-3 rounded-xl bg-gradient-to-r ${feature.color} text-white shadow-lg animate-float`}>
+                      <feature.icon className="w-6 h-6" />
                     </div>
                   </div>
-
-                  {/* Enhanced feature index */}
-                  <div className="absolute -top-4 -right-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-primary to-primary/80 text-lg font-bold text-primary-foreground shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    {index + 1}
-                  </div>
                 </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-4 left-4 w-2 h-2 bg-primary/30 rounded-full animate-pulse" />
-                <div className="absolute bottom-4 right-4 w-1 h-1 bg-primary/50 rounded-full animate-pulse delay-500" />
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
