@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Home, Receipt, Plus, PieChart, Settings } from "lucide-react";
 import TransactionForm from "@/components/transactions/transaction-form";
 import type { Transaction } from "@/types";
+import { useAppStore } from "@/lib/store";
 
 const links = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -20,6 +21,7 @@ export function MobileNav() {
   const pathname = usePathname();
   const [formOpen, setFormOpen] = useState(false);
   const [transaction, setTransaction] = useState<Transaction | undefined>();
+  const { accounts, categories } = useAppStore();
 
   const handleAddTransaction = () => {
     const now = new Date();
@@ -103,8 +105,8 @@ export function MobileNav() {
         <TransactionForm
           open={formOpen}
           transaction={transaction}
-          accounts={[]}
-          categories={[]}
+          accounts={accounts}
+          categories={categories}
           onOpenChange={(open) => setFormOpen(open)}
           onSubmit={async (values) => {
             // TODO: call your create transaction API here
