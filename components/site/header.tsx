@@ -26,29 +26,42 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
           <Link
             href="#features"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2 px-2"
           >
             Features
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-200 group-hover:w-full"></span>
           </Link>
           <Link
             href="#how-it-works"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2 px-2"
           >
             How it Works
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-200 group-hover:w-full"></span>
           </Link>
           <Link
             href="#pricing"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200 relative group py-2 px-2"
           >
             Pricing
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-200 group-hover:w-full"></span>
           </Link>
         </nav>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button
+            type="button"
+            className="mobile-touch-target flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            aria-label="Open menu"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        </div>
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-3">
