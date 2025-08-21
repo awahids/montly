@@ -35,7 +35,7 @@ const jsonLd = [
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Monli",
-    url: "https://monli.app",
+    url: "https://monli.fun",
     sameAs: ["https://twitter.com/monli", "https://github.com/monliapp"],
   },
   {

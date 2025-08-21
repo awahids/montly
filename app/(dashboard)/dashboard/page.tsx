@@ -305,7 +305,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
             Overview of your financial health
           </p>
         </div>
-        <Button className="hidden md:flex" onClick={() => setFormOpen(true)}>
+        <Button className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary text-white shadow-lg" onClick={() => setFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> New Transaction
         </Button>
       </div>

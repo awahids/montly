@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   }
 
   if (!data.session) {
-    return NextResponse.json({ error: 'No session' }, { status: 500 });
+    return NextResponse.json({ error: "No session" }, { status: 500 });
   }
 
   return NextResponse.json({ user: data.user, session: data.session });
