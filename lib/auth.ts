@@ -9,21 +9,28 @@ export async function register(
   email: string,
   password: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
+  try {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    },
-  });
+      body: JSON.stringify({ name, email, password }),
+    });
 
-  if (error) {
-    return { ok: false, error: error.message };
+    const result = await res.json();
+
+    if (!result.ok) {
+      return { ok: false, error: result.error || "Registration failed" };
+    }
+
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Registration failed",
+    };
   }
-
-  return { ok: true };
 }
 
 export async function signIn(email: string, password: string) {
