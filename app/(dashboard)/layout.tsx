@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from "react";
@@ -30,12 +31,12 @@ export default function DashboardLayout({
   }, [user, setUser, router]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen w-full bg-background">
       {/* Mobile Layout */}
       <div className="md:hidden">
         <Header />
         <main className="mobile-safe-area p-4 pb-20">
-          <div className="w-full space-y-4 animate-fade-in">
+          <div className="w-full space-y-4">
             {children}
           </div>
         </main>
@@ -47,13 +48,14 @@ export default function DashboardLayout({
         <Sidebar />
         <div className="flex flex-col">
           <Header />
-          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 animate-fade-in overflow-auto">
+          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
             <div className="w-full max-w-none space-y-6">
               {children}
             </div>
           </main>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
