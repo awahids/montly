@@ -1,25 +1,29 @@
-import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
-import { getUser } from '@/lib/auth/server';
-import { budgetSchema } from '@/lib/validation';
-import { z } from 'zod';
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/auth/server";
+import { budgetSchema } from "@/lib/validation";
+import { z } from "zod";
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
+  const supabase = createClient();
   const { searchParams } = new URL(req.url);
-  const year = searchParams.get('year') || new Date().getFullYear().toString();
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const pageSize = parseInt(searchParams.get('pageSize') || '12', 10);
+  const year = searchParams.get("year") || new Date().getFullYear().toString();
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const pageSize = parseInt(searchParams.get("pageSize") || "12", 10);
   const offset = (page - 1) * pageSize;
 
   try {
     const user = await getUser();
-    const { data: budgets, error, count } = await supabase
-      .from('budgets')
-      .select('id, month, total_amount', { count: 'exact' })
-      .eq('user_id', user.id)
-      .like('month', `${year}-%`)
-      .order('month', { ascending: true })
+    const {
+      data: budgets,
+      error,
+      count,
+    } = await supabase
+      .from("budgets")
+      .select("id, month, total_amount", { count: "exact" })
+      .eq("user_id", user.id)
+      .like("month", `${year}-%`)
+      .order("month", { ascending: true })
       .range(offset, offset + pageSize - 1);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
@@ -28,11 +32,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ data: [], total: count || 0 });
     }
     const { data: tx, error: txError } = await supabase
-      .from('transactions')
-      .select('amount, budget_month')
-      .eq('user_id', user.id)
-      .eq('type', 'expense')
-      .like('budget_month', `${year}-%`);
+      .from("transactions")
+      .select("amount, budget_month")
+      .eq("user_id", user.id)
+      .eq("type", "expense")
+      .like("budget_month", `${year}-%`);
     if (txError) {
       return NextResponse.json({ error: txError.message }, { status: 400 });
     }
@@ -41,7 +45,7 @@ export async function GET(req: Request) {
       const monthKey = t.budget_month;
       actualByMonth[monthKey] = (actualByMonth[monthKey] || 0) + t.amount;
     }
-    const result = budgets.map(b => ({
+    const result = budgets.map((b) => ({
       id: b.id,
       month: b.month,
       planned: b.total_amount,
@@ -54,7 +58,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = createServerClient();
+  const supabase = createClient();
   let body: z.infer<typeof budgetSchema>;
   try {
     body = budgetSchema.parse(await req.json());
@@ -64,30 +68,33 @@ export async function POST(req: Request) {
   try {
     const user = await getUser();
     const { data: budget, error } = await supabase
-      .from('budgets')
+      .from("budgets")
       .upsert(
         {
           user_id: user.id,
           month: body.month,
           total_amount: body.totalAmount,
         },
-        { onConflict: 'user_id, month' }
+        { onConflict: "user_id, month" },
       )
-      .select('id, month, total_amount')
+      .select("id, month, total_amount")
       .single();
     if (error || !budget) {
-      return NextResponse.json({ error: error?.message || 'Insert failed' }, { status: 400 });
+      return NextResponse.json(
+        { error: error?.message || "Insert failed" },
+        { status: 400 },
+      );
     }
     if (body.items.length) {
-      const upserts = body.items.map(i => ({
+      const upserts = body.items.map((i) => ({
         budget_id: budget.id,
         category_id: i.categoryId,
         amount: i.amount,
         rollover: i.rollover ?? false,
       }));
       const { error: itemError } = await supabase
-        .from('budget_items')
-        .upsert(upserts, { onConflict: 'budget_id, category_id' });
+        .from("budget_items")
+        .upsert(upserts, { onConflict: "budget_id, category_id" });
       if (itemError) {
         return NextResponse.json({ error: itemError.message }, { status: 400 });
       }

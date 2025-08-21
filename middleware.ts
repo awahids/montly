@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -9,8 +9,11 @@ export async function middleware(request: NextRequest) {
   });
 
   // Check if environment variables are available
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.error('Missing Supabase environment variables in middleware');
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    console.error("Missing Supabase environment variables in middleware");
     return response;
   }
 
@@ -42,7 +45,7 @@ export async function middleware(request: NextRequest) {
         remove(name: string, options: any) {
           request.cookies.set({
             name,
-            value: '',
+            value: "",
             ...options,
           });
           response = NextResponse.next({
@@ -52,12 +55,12 @@ export async function middleware(request: NextRequest) {
           });
           response.cookies.set({
             name,
-            value: '',
+            value: "",
             ...options,
           });
         },
       },
-    }
+    },
   );
 
   // Refresh session if expired - required for Server Components
@@ -68,26 +71,31 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser();
     user = authUser;
   } catch (error) {
-    console.error('Auth error in middleware:', error);
+    console.error("Auth error in middleware:", error);
     // Continue without user - will be handled by route protection below
   }
 
   // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard') ||
-      request.nextUrl.pathname.startsWith('/accounts') ||
-      request.nextUrl.pathname.startsWith('/budgets') ||
-      request.nextUrl.pathname.startsWith('/transactions') ||
-      request.nextUrl.pathname.startsWith('/reports') ||
-      request.nextUrl.pathname.startsWith('/settings')) {
+  if (
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/accounts") ||
+    request.nextUrl.pathname.startsWith("/budgets") ||
+    request.nextUrl.pathname.startsWith("/transactions") ||
+    request.nextUrl.pathname.startsWith("/reports") ||
+    request.nextUrl.pathname.startsWith("/settings")
+  ) {
     if (!user) {
-      return NextResponse.redirect(new URL('/auth/sign-in', request.url));
+      return NextResponse.redirect(new URL("/auth/sign-in", request.url));
     }
   }
 
   // Redirect authenticated users away from auth pages
-  if ((request.nextUrl.pathname.startsWith('/auth/sign-in') ||
-       request.nextUrl.pathname.startsWith('/auth/sign-up')) && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  if (
+    (request.nextUrl.pathname.startsWith("/auth/sign-in") ||
+      request.nextUrl.pathname.startsWith("/auth/sign-up")) &&
+    user
+  ) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return response;
@@ -102,6 +110,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

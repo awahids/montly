@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { z } from 'zod';
-import { createServerClient } from '@/lib/supabase/server';
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: (e as Error).message }, { status: 400 });
   }
 
-  const supabase = createServerClient();
+  const supabase = createClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email: body.email,
     password: body.password,
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   }
 
   if (!data.session) {
-    return NextResponse.json({ error: 'No session' }, { status: 500 });
+    return NextResponse.json({ error: "No session" }, { status: 500 });
   }
 
   return NextResponse.json({ user: data.user, session: data.session });

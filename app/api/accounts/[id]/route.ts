@@ -1,17 +1,17 @@
-import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
-import { getUser } from '@/lib/auth/server';
-import { accountSchema } from '@/lib/validation';
-import { z } from 'zod';
-import { getAccountBalances } from '@/lib/balances';
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/auth/server";
+import { accountSchema } from "@/lib/validation";
+import { z } from "zod";
+import { getAccountBalances } from "@/lib/balances";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
-  const supabase = createServerClient();
+  const supabase = createClient();
   let body: Partial<z.infer<typeof accountSchema>>;
   try {
     body = accountSchema.partial().parse(await req.json());
@@ -29,16 +29,16 @@ export async function PATCH(
     if (body.archived !== undefined) updates.archived = body.archived;
 
     const { data, error } = await supabase
-      .from('accounts')
+      .from("accounts")
       .update(updates)
-      .eq('id', params.id)
-      .eq('user_id', user.id)
-      .select('*')
+      .eq("id", params.id)
+      .eq("user_id", user.id)
+      .select("*")
       .single();
     if (error || !data) {
       return NextResponse.json(
-        { error: error?.message || 'Not found' },
-        { status: 404 }
+        { error: error?.message || "Not found" },
+        { status: 404 },
       );
     }
 
@@ -61,16 +61,16 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
-  const supabase = createServerClient();
+  const supabase = createClient();
   try {
     const user = await getUser();
     const { error } = await supabase
-      .from('accounts')
+      .from("accounts")
       .update({ archived: true })
-      .eq('id', params.id)
-      .eq('user_id', user.id);
+      .eq("id", params.id)
+      .eq("user_id", user.id);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

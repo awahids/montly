@@ -1,18 +1,17 @@
+"use client";
 
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { useTheme } from 'next-themes';
-import { Sun, Moon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -51,7 +50,7 @@ export function Header() {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        {/* <div className="md:hidden">
           <button
             type="button"
             className="mobile-touch-target flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -61,7 +60,7 @@ export function Header() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
-        </div>
+        </div> */}
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-3">
@@ -79,15 +78,14 @@ export function Header() {
           <Button
             variant="ghost"
             asChild
-            className="rounded-full hover:bg-primary/10 transition-all duration-200"
+            className="rounded-2xl hover:bg-primary/10 transition-all duration-300 hover:scale-105"
           >
             <Link href="/auth/sign-in">Sign in</Link>
           </Button>
-          <Button
-            asChild
-            className="rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-md hover:shadow-lg transition-all duration-200"
-          >
-            <Link href="/auth/sign-up">Get Started</Link>
+          <Button asChild className="button-modern relative z-10">
+            <Link href="/auth/sign-up">
+              <span className="relative z-10">Get Started</span>
+            </Link>
           </Button>
         </div>
 
@@ -103,7 +101,7 @@ export function Header() {
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          
+
           <Button
             variant="ghost"
             size="icon"
@@ -111,9 +109,15 @@ export function Header() {
             className="h-9 w-9 rounded-full hover:bg-primary/10 transition-all duration-200"
           >
             <div className="relative w-4 h-4">
-              <span className={`absolute block h-0.5 w-4 bg-current transform transition duration-300 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
-              <span className={`absolute block h-0.5 w-4 bg-current transform transition duration-300 ease-in-out mt-1.5 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`absolute block h-0.5 w-4 bg-current transform transition duration-300 ease-in-out mt-3 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+              <span
+                className={`absolute block h-0.5 w-4 bg-current transform transition duration-300 ease-in-out ${isMobileMenuOpen ? "rotate-45 translate-y-1.5" : ""}`}
+              />
+              <span
+                className={`absolute block h-0.5 w-4 bg-current transform transition duration-300 ease-in-out mt-1.5 ${isMobileMenuOpen ? "opacity-0" : ""}`}
+              />
+              <span
+                className={`absolute block h-0.5 w-4 bg-current transform transition duration-300 ease-in-out mt-3 ${isMobileMenuOpen ? "-rotate-45 -translate-y-1.5" : ""}`}
+              />
             </div>
             <span className="sr-only">Menu</span>
           </Button>
@@ -147,14 +151,17 @@ export function Header() {
                 Pricing
               </Link>
             </nav>
-            
+
             <div className="flex flex-col space-y-3 pt-4 border-t border-border/40">
               <Button
                 variant="ghost"
                 asChild
                 className="justify-start h-auto p-2 hover:bg-primary/10 transition-all duration-200"
               >
-                <Link href="/auth/sign-in" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/auth/sign-in"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Sign in
                 </Link>
               </Button>
@@ -162,7 +169,10 @@ export function Header() {
                 asChild
                 className="justify-start h-auto p-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
-                <Link href="/auth/sign-up" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/auth/sign-up"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Get Started
                 </Link>
               </Button>

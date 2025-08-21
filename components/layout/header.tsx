@@ -3,6 +3,7 @@
 import { useAppStore } from '@/lib/store';
 import { signOut } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,15 +15,12 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogOut, User, Moon, Sun, Laptop } from 'lucide-react';
+import { OfflineIndicator } from '@/components/ui/offline-indicator';
+import { Moon, Sun, Laptop, User, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
-import Link from 'next/link'; // Import Link
+import { MobileSidebar } from './sidebar';
 
-// Placeholder for UserNav component, assuming it's defined elsewhere or will be provided
-// For this example, I'll create a basic UserNav to make the Header compile.
-// In a real scenario, this would likely be a separate import or component.
 function UserNav() {
   const { user } = useAppStore();
   const { setTheme } = useTheme();
@@ -101,15 +99,19 @@ function UserNav() {
   );
 }
 
-
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center px-4 md:px-6">
-        <div className="md:hidden flex items-center">
-          <span className="font-bold text-lg">Finance App</span>
+      <div className="flex h-16 sm:h-14 items-center justify-between px-4 md:px-6">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <MobileSidebar />
+          <div className="flex items-center">
+            <span className="font-bold text-xl sm:text-lg text-primary">Monli</span>
+            <span className="hidden sm:block ml-2 text-sm text-muted-foreground">Finance</span>
+          </div>
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <OfflineIndicator />
           <UserNav />
         </div>
       </div>

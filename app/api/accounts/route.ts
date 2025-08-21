@@ -1,32 +1,32 @@
-import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
-import { getUser } from '@/lib/auth/server';
-import { accountSchema } from '@/lib/validation';
-import { z } from 'zod';
-import { getAccountBalances } from '@/lib/balances';
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/auth/server";
+import { accountSchema } from "@/lib/validation";
+import { z } from "zod";
+import { getAccountBalances } from "@/lib/balances";
 
 export async function GET(req: Request) {
-  const supabase = createServerClient();
+  const supabase = createClient();
   try {
     const user = await getUser();
     const { searchParams } = new URL(req.url);
-    const includeArchived = searchParams.get('includeArchived') === 'true';
-    const page = parseInt(searchParams.get('page') ?? '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') ?? '20', 10);
+    const includeArchived = searchParams.get("includeArchived") === "true";
+    const page = parseInt(searchParams.get("page") ?? "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") ?? "20", 10);
     const fromIdx = (page - 1) * pageSize;
     const toIdx = fromIdx + pageSize - 1;
 
     let query = supabase
-      .from('accounts')
-      .select('*', { count: 'exact' })
-      .eq('user_id', user.id);
+      .from("accounts")
+      .select("*", { count: "exact" })
+      .eq("user_id", user.id);
 
     if (!includeArchived) {
-      query = query.eq('archived', false);
+      query = query.eq("archived", false);
     }
 
     const { data, error, count } = await query
-      .order('created_at', { ascending: false })
+      .order("created_at", { ascending: false })
       .range(fromIdx, toIdx);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     const balances = await getAccountBalances(
       supabase,
       user.id,
-      data?.map((a) => a.id) ?? []
+      data?.map((a) => a.id) ?? [],
     );
 
     const rows = (data ?? []).map((acc) => ({
@@ -56,7 +56,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = createServerClient();
+  const supabase = createClient();
   let body: z.infer<typeof accountSchema>;
   try {
     body = accountSchema.parse(await req.json());
@@ -66,21 +66,21 @@ export async function POST(req: Request) {
   try {
     const user = await getUser();
     const { data, error } = await supabase
-      .from('accounts')
+      .from("accounts")
       .insert({
         user_id: user.id,
         name: body.name,
         type: body.type,
-        currency: body.currency ?? 'IDR',
+        currency: body.currency ?? "IDR",
         opening_balance: body.openingBalance ?? 0,
         archived: body.archived ?? false,
       })
-      .select('*')
+      .select("*")
       .single();
     if (error || !data) {
       return NextResponse.json(
-        { error: error?.message || 'Failed to create account' },
-        { status: 400 }
+        { error: error?.message || "Failed to create account" },
+        { status: 400 },
       );
     }
 

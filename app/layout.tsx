@@ -1,72 +1,75 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from '@/components/theme-provider';
-import { cn } from '@/lib/utils';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'monli - Atur, lacak, dan wujudkan tujuan finansialmu dengan mudah',
+  title: "monli - Atur, lacak, dan wujudkan tujuan finansialmu dengan mudah",
   description:
-    'monli adalah aplikasi pengelola keuangan pribadi yang membantu kamu mencatat pengeluaran, memonitor pemasukan, menyusun anggaran, dan memantau tabungan dalam satu tempat. Cerdas, mudah digunakan, dan dilengkapi grafik interaktif agar kamu bisa melihat gambaran keuangan secara utuh dan membuat keputusan finansial yang tepat.',
+    "monli adalah aplikasi pengelola keuangan pribadi yang membantu kamu mencatat pengeluaran, memonitor pemasukan, menyusun anggaran, dan memantau tabungan dalam satu tempat. Cerdas, mudah digunakan, dan dilengkapi grafik interaktif agar kamu bisa melihat gambaran keuangan secara utuh dan membuat keputusan finansial yang tepat.",
   keywords: [
-    'aplikasi keuangan',
-    'aplikasi pengelola keuangan',
-    'aplikasi pencatat pengeluaran',
-    'aplikasi pengatur pengeluaran',
-    'budgeting app',
-    'pencatat keuangan harian',
-    'aplikasi anggaran keluarga',
-    'catatan keuangan pribadi',
-    'aplikasi tabungan',
-    'aplikasi manajemen keuangan',
-    'aplikasi keuangan android',
-    'aplikasi keuangan iOS',
-    'monitor keuangan bulanan',
-    'mengelola uang',
-    'financial planner',
-    'aplikasi keuangan gratis',
-    'aplikasi keuangan terbaik',
-    'catat pemasukan dan pengeluaran',
-    'analisis keuangan pribadi',
-    'aplikasi kontrol keuangan',
-  ].join(', '),
+    "aplikasi keuangan",
+    "aplikasi pengelola keuangan",
+    "aplikasi pencatat pengeluaran",
+    "aplikasi pengatur pengeluaran",
+    "budgeting app",
+    "pencatat keuangan harian",
+    "aplikasi anggaran keluarga",
+    "catatan keuangan pribadi",
+    "aplikasi tabungan",
+    "aplikasi manajemen keuangan",
+    "aplikasi keuangan android",
+    "aplikasi keuangan iOS",
+    "monitor keuangan bulanan",
+    "mengelola uang",
+    "financial planner",
+    "aplikasi keuangan gratis",
+    "aplikasi keuangan terbaik",
+    "catat pemasukan dan pengeluaran",
+    "analisis keuangan pribadi",
+    "aplikasi kontrol keuangan",
+  ].join(", "),
   openGraph: {
-    title: 'monli - Atur, lacak, dan wujudkan tujuan finansialmu dengan mudah',
+    title: "monli - Atur, lacak, dan wujudkan tujuan finansialmu dengan mudah",
     description:
-      'monli adalah aplikasi pengelola keuangan yang dirancang untuk membantu pengguna mengatur dan memonitor kondisi finansial mereka secara efektif. Dengan antarmuka yang simpel namun kaya fitur, monli memudahkan proses pencatatan pemasukan maupun pengeluaran, sekaligus menyediakan laporan dan grafik analitis yang tajam untuk memahami kebiasaan belanja. Pengguna dapat menyusun anggaran, mengatur rencana tabungan, serta meninjau perkembangan keuangan secara real-time. monli cocok bagi individu maupun keluarga yang ingin meningkatkan literasi finansial dan meraih tujuan keuangan secara sistematis.',
-    url: 'https://monli.app',
-    type: 'website',
+      "monli adalah aplikasi pengelola keuangan yang dirancang untuk membantu pengguna mengatur dan memonitor kondisi finansial mereka secara efektif. Dengan antarmuka yang simpel namun kaya fitur, monli memudahkan proses pencatatan pemasukan maupun pengeluaran, sekaligus menyediakan laporan dan grafik analitis yang tajam untuk memahami kebiasaan belanja. Pengguna dapat menyusun anggaran, mengatur rencana tabungan, serta meninjau perkembangan keuangan secara real-time. monli cocok bagi individu maupun keluarga yang ingin meningkatkan literasi finansial dan meraih tujuan keuangan secara sistematis.",
+    url: "https://monli.fun",
+    type: "website",
     images: [
       {
-        url: '/monli-og-image.png',
+        url: "/monli-og-image.png",
         width: 1200,
         height: 630,
-        alt: 'monli - Aplikasi Pengelola Keuangan',
+        alt: "monli - Aplikasi Pengelola Keuangan",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'monli - Atur, lacak, dan wujudkan tujuan finansialmu dengan mudah',
+    card: "summary_large_image",
+    title: "monli - Atur, lacak, dan wujudkan tujuan finansialmu dengan mudah",
     description:
-      'monli adalah aplikasi pengelola keuangan pribadi yang membantu kamu mencatat pengeluaran, memonitor pemasukan, menyusun anggaran, dan memantau tabungan dalam satu tempat.',
-    images: ['/monli-og-image.png'],
+      "monli adalah aplikasi pengelola keuangan pribadi yang membantu kamu mencatat pengeluaran, memonitor pemasukan, menyusun anggaran, dan memantau tabungan dalam satu tempat.",
+    images: ["/monli-og-image.png"],
   },
-  applicationName: 'monli',
-  generator: 'Next.js',
-  authors: [{ name: 'monli Team' }],
-  creator: 'monli Team',
+  applicationName: "monli",
+  generator: "Next.js",
+  authors: [{ name: "monli Team" }],
+  creator: "monli Team",
   viewport: {
-    width: 'device-width',
+    width: "device-width",
     initialScale: 1,
     maximumScale: 5,
     userScalable: true,
-    viewportFit: 'cover',
+    viewportFit: "cover",
   },
-  robots: 'index, follow',
+  robots: "index, follow",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  ),
 };
 
 export default function RootLayout({
@@ -101,7 +104,7 @@ export default function RootLayout({
           content="monli adalah aplikasi pengelola keuangan yang dirancang untuk membantu pengguna mengatur dan memonitor kondisi finansial mereka secara efektif. Dengan antarmuka yang simpel namun kaya fitur, monli memudahkan proses pencatatan pemasukan maupun pengeluaran, sekaligus menyediakan laporan dan grafik analitis yang tajam untuk memahami kebiasaan belanja. Pengguna dapat menyusun anggaran, mengatur rencana tabungan, serta meninjau perkembangan keuangan secara real-time. monli cocok bagi individu maupun keluarga yang ingin meningkatkan literasi finansial dan meraih tujuan keuangan secara sistematis."
         />
         <meta property="og:image" content="/monli-og-image.png" />
-        <meta property="og:url" content="https://monli.app" />
+        <meta property="og:url" content="https://monli.fun" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
@@ -114,7 +117,7 @@ export default function RootLayout({
         />
         <meta name="twitter:image" content="/monli-og-image.png" />
       </head>
-      <body className={cn('bg-background text-foreground', inter.className)}>
+      <body className={cn("bg-background text-foreground", inter.className)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster />

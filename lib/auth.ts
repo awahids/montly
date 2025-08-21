@@ -1,14 +1,13 @@
-
-import { createClient } from '@/lib/supabase/client';
-import { User } from '@/types';
-import { useAppStore } from './store';
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@/types";
+import { useAppStore } from "./store";
 
 export const supabase = createClient();
 
 export async function register(
   name: string,
   email: string,
-  password: string
+  password: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const { error } = await supabase.auth.signUp({
     email,
@@ -38,12 +37,12 @@ export async function signIn(email: string, password: string) {
   }
 
   if (!data.session) {
-    throw new Error('No session created');
+    throw new Error("No session created");
   }
 
   // Wait a bit for session to be properly set
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
   const user = await getCurrentUser();
   if (user) {
     useAppStore.getState().setUser(user);
@@ -54,21 +53,24 @@ export async function signIn(email: string, password: string) {
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
 
-  document.cookie = 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
-  document.cookie = 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure';
+  document.cookie = "sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure";
+  document.cookie =
+    "sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure";
   useAppStore.getState().setUser(null);
   if (error) throw error;
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return null;
 
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
     .single();
 
   if (!profile) return null;

@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { useAppStore } from "@/lib/store";
 import { getCurrentUser } from "@/lib/auth";
+import { OfflineBanner } from "@/components/ui/offline-banner";
 
 export default function DashboardLayout({
   children,
@@ -35,6 +36,7 @@ export default function DashboardLayout({
       <div className="md:hidden">
         <Header />
         <main className="p-4 pb-20 space-y-4">
+          <OfflineBanner />
           {children}
         </main>
         <MobileNav />
@@ -46,6 +48,7 @@ export default function DashboardLayout({
         <div className="flex-1 md:ml-64">
           <Header />
           <main className="p-6 space-y-6">
+            <OfflineBanner />
             {children}
           </main>
         </div>
