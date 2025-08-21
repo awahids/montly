@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { User, Account, Category, Transaction, Budget } from '@/types';
 
+// Check if we're in browser environment
+const isBrowser = typeof window !== 'undefined';
+
 interface AppState {
   user: User | null;
   accounts: Account[];
@@ -8,6 +11,7 @@ interface AppState {
   transactions: Transaction[];
   budgets: Budget[];
   loading: boolean;
+  isOfflineMode: boolean;
   
   // Actions
   setUser: (user: User | null) => void;
@@ -16,6 +20,7 @@ interface AppState {
   setTransactions: (transactions: Transaction[]) => void;
   setBudgets: (budgets: Budget[]) => void;
   setLoading: (loading: boolean) => void;
+  setOfflineMode: (isOffline: boolean) => void;
   
   // Computed
   getCurrentBalance: (accountId: string) => number;
@@ -30,6 +35,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   transactions: [],
   budgets: [],
   loading: false,
+  isOfflineMode: isBrowser ? !navigator.onLine : false,
 
   setUser: (user) => set({ user }),
   setAccounts: (accounts) => set({ accounts }),
@@ -37,6 +43,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setTransactions: (transactions) => set({ transactions }),
   setBudgets: (budgets) => set({ budgets }),
   setLoading: (loading) => set({ loading }),
+  setOfflineMode: (isOffline) => set({ isOfflineMode: isOffline }),
 
   getCurrentBalance: (accountId: string) => {
     const { accounts, transactions } = get();
