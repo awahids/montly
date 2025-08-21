@@ -1,7 +1,6 @@
-
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import type { Database } from '@/types/database';
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import type { Database } from "@/types/database";
 
 export function createClient() {
   const cookieStore = cookies();
@@ -10,18 +9,14 @@ export function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase environment variables');
+    throw new Error("Missing Supabase environment variables");
   }
 
-  return createServerClient<Database>(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
+  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      get(name: string) {
+        return cookieStore.get(name)?.value;
       },
-    }
-  );
+    },
+  });
 }

@@ -1,0 +1,910 @@
+main-app.js?v=1755777369839:1565 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+mobile-nav.tsx:28 Warning: Each child in a list should have a unique "key" prop.
+
+Check the render method of `MobileNav`. See https://reactjs.org/link/warning-keys for more information.
+    at LinkComponent (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/link.js:105:19)
+    at MobileNav (webpack-internal:///(app-pages-browser)/./components/layout/mobile-nav.tsx:46:82)
+    at div
+    at div
+    at DashboardLayout (webpack-internal:///(app-pages-browser)/./app/(dashboard)/layout.tsx:27:11)
+    at InnerLayoutRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js:240:11)
+    at RedirectErrorBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/redirect-boundary.js:72:9)
+    at RedirectBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/redirect-boundary.js:80:11)
+    at NotFoundErrorBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/not-found-boundary.js:54:9)
+    at NotFoundBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/not-found-boundary.js:62:11)
+    at LoadingBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js:337:11)
+    at ErrorBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/error-boundary.js:110:11)
+    at InnerScrollAndFocusHandler (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js:151:9)
+    at ScrollAndFocusHandler (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js:226:11)
+    at RenderFromTemplateContext (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/render-from-template-context.js:15:44)
+    at OuterLayoutRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js:347:11)
+    at O (webpack-internal:///(app-pages-browser)/./node_modules/next-themes/dist/index.mjs:7:429)
+    at z (webpack-internal:///(app-pages-browser)/./node_modules/next-themes/dist/index.mjs:7:310)
+    at ThemeProvider (webpack-internal:///(app-pages-browser)/./components/theme-provider.tsx:13:11)
+    at body
+    at html
+    at RedirectErrorBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/redirect-boundary.js:72:9)
+    at RedirectBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/redirect-boundary.js:80:11)
+    at NotFoundErrorBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/not-found-boundary.js:54:9)
+    at NotFoundBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/not-found-boundary.js:62:11)
+    at DevRootNotFoundBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/dev-root-not-found-boundary.js:32:11)
+    at ReactDevOverlay (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/internal/ReactDevOverlay.js:66:9)
+    at HotReload (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/hot-reloader-client.js:287:11)
+    at Router (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/app-router.js:157:11)
+    at ErrorBoundaryHandler (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/error-boundary.js:82:9)
+    at ErrorBoundary (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/error-boundary.js:110:11)
+    at AppRouter (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/app-router.js:440:13)
+    at ServerRoot (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/app-index.js:123:11)
+    at RSCComponent
+    at Root (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/app-index.js:139:11)
+window.console.error @ app-index.js:32
+console.error @ hydration-error-info.js:41
+printWarning @ react-jsx-dev-runtime.development.js:89
+error @ react-jsx-dev-runtime.development.js:63
+validateExplicitKey @ react-jsx-dev-runtime.development.js:1099
+validateChildKeys @ react-jsx-dev-runtime.development.js:1126
+jsxWithValidation @ react-jsx-dev-runtime.development.js:1302
+MobileNav @ mobile-nav.tsx:28
+renderWithHooks @ react-dom.development.js:10707
+mountIndeterminateComponent @ react-dom.development.js:15745
+beginWork$1 @ react-dom.development.js:17329
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopConcurrent @ react-dom.development.js:24539
+renderRootConcurrent @ react-dom.development.js:24495
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+hot-reloader-client.js:192 ./components/ui/offline-indicator.tsx
+Attempted import error: 'Sync' is not exported from '__barrel_optimize__?names=Wifi,WifiOff,Sync,AlertCircle!=!lucide-react' (imported as 'Sync').
+processMessage @ hot-reloader-client.js:192
+handler @ hot-reloader-client.js:354
+Show 2 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performSyncWorkOnRoot @ react-dom.development.js:23701
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:9975
+flushSyncWorkOnAllRoots @ react-dom.development.js:9933
+processRootScheduleInMicrotask @ react-dom.development.js:10077
+eval @ react-dom.development.js:10248
+Show 18 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11800
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
+LogUtils.js:20 The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn @ LogUtils.js:20
+eval @ ResponsiveContainer.js:121
+updateMemo @ react-dom.development.js:11803
+useMemo @ react-dom.development.js:12519
+useMemo @ react.development.js:1785
+eval @ ResponsiveContainer.js:94
+renderWithHooks @ react-dom.development.js:10707
+updateForwardRef @ react-dom.development.js:14692
+beginWork$1 @ react-dom.development.js:17392
+beginWork @ react-dom.development.js:25702
+performUnitOfWork @ react-dom.development.js:24553
+workLoopSync @ react-dom.development.js:24269
+renderRootSync @ react-dom.development.js:24224
+performConcurrentWorkOnRoot @ react-dom.development.js:23359
+workLoop @ scheduler.development.js:261
+flushWork @ scheduler.development.js:230
+performWorkUntilDeadline @ scheduler.development.js:534
+Show 17 more frames
+Show less
