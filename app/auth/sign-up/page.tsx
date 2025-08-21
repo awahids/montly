@@ -62,9 +62,12 @@ export default function SignUpPage() {
       }
       
       toast({
-        title: 'Check your email',
-        description: "We've sent you a verification link.",
+        title: 'Registration successful!',
+        description: "Please check your email to verify your account, then sign in.",
       });
+
+      // Redirect to sign-in page after successful registration
+      window.location.href = '/auth/sign-in';
     } catch (e) {
       console.error('Sign up error:', e);
       toast({
@@ -199,7 +202,7 @@ export default function SignUpPage() {
 
             <Button 
               type="submit" 
-              className="w-full h-11 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" 
+              className="w-full h-11 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:scale-100" 
               disabled={loading}
             >
               {loading ? (
