@@ -21,7 +21,7 @@ export function Hero() {
 
       <div className="relative mx-auto max-w-7xl px-4 text-center">
         <div className="mx-auto max-w-4xl">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-tight">
             Take control of your{' '}
             <span className="relative">
               <span className="bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
@@ -46,7 +46,7 @@ export function Hero() {
             Simple, powerful budgeting that actually works. Track expenses, manage
             budgets, and reach your financial goals with ease.
           </p>
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
             <Button
               size="lg"
               className="rounded-full px-8 py-4 text-lg font-semibold bg-gradient-primary hover:shadow-colored transition-all-smooth"
@@ -70,7 +70,7 @@ export function Hero() {
         </div>
 
         {/* Feature highlights */}
-        <div className="mt-20 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-3 sm:grid-cols-3 px-4 sm:px-0">
           <div className="flex items-center justify-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

@@ -64,14 +64,14 @@ export function MobileNav() {
 
   const linkClass = (active: boolean) =>
     cn(
-      'flex flex-col items-center justify-center gap-1 text-xs leading-none py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-      active ? 'text-foreground font-medium' : 'text-muted-foreground'
+      'flex flex-col items-center justify-center gap-1 text-xs leading-none py-3 px-2 min-h-[60px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 transition-all-smooth',
+      active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground/80'
     );
 
   return (
     <>
       <nav
-        className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:hidden pb-[env(safe-area-inset-bottom)]"
+        className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:hidden pb-[env(safe-area-inset-bottom)]"
         role="tablist"
         aria-label="Primary"
       >

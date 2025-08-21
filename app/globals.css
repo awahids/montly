@@ -131,6 +131,39 @@
   .dark .glass-effect {
     @apply bg-black/10 border-white/10;
   }
+  
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .mobile-safe-area {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .mobile-touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .mobile-padding {
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+    
+    /* Improved form inputs for mobile */
+    input, textarea, select {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Better button sizing for touch */
+    button {
+      min-height: 44px;
+    }
+    
+    /* Improved card spacing on mobile */
+    .card-mobile {
+      margin: 8px;
+      border-radius: 12px;
+    }
+  }
 }
 
 /* Custom scrollbar */

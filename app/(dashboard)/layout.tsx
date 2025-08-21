@@ -35,8 +35,8 @@ export default function DashboardLayout({
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
-          <main className="flex-1 p-6 pb-[calc(64px+env(safe-area-inset-bottom))] sm:pb-6">
-            {children}
+          <main className="flex-1 overflow-auto bg-muted/30 lg:ml-64 pb-20 sm:pb-6">
+            <div className="p-4 sm:p-6 mobile-padding">{children}</div>
           </main>
         </div>
       </div>

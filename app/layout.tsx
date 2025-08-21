@@ -59,7 +59,13 @@ export const metadata: Metadata = {
   generator: 'Next.js',
   authors: [{ name: 'monli Team' }],
   creator: 'monli Team',
-  viewport: 'width=device-width, initial-scale=1',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: 'cover',
+  },
   robots: 'index, follow',
 };
 
