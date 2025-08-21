@@ -12,9 +12,11 @@ import {
   BarChart3, 
   Settings, 
   Menu,
-  X
+  X,
+  Package2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SidebarNav } from './sidebar-nav'; // Assuming SidebarNav is in a separate file
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -53,7 +55,7 @@ export function Sidebar() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">FinanceApp</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Personal Finance Manager</p>
         </div>
-        
+
         <nav className="mt-8 px-4">
           <ul className="space-y-2">
             {navigation.map((item) => {
@@ -87,6 +89,31 @@ export function Sidebar() {
           onClick={() => setIsMobileOpen(false)}
         />
       )}
+    </>
+  );
+}
+
+// Placeholder for SidebarNav, assuming it's defined elsewhere
+function SidebarNav() {
+  const pathname = usePathname();
+  return (
+    <>
+      {navigation.map((item) => {
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all hover:text-primary",
+              isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+            )}
+          >
+            <item.icon className="h-5 w-5" />
+            <span>{item.name}</span>
+          </Link>
+        );
+      })}
     </>
   );
 }

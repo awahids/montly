@@ -30,18 +30,16 @@ export default function DashboardLayout({
   }, [user, setUser, router]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <main className="flex-1 p-6 pb-[calc(64px+env(safe-area-inset-bottom))] sm:pb-6">
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] bg-gradient-to-br from-background via-background to-muted/20">
+      <Sidebar />
+      <div className="flex flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 animate-fade-in">
+          <div className="w-full max-w-none space-y-6">
             {children}
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
-      <MobileNav />
-      <Toaster />
     </div>
   );
 }
