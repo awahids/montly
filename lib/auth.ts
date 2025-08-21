@@ -1,4 +1,3 @@
-
 import { createBrowserClient } from '@/lib/supabase/client';
 import { User } from '@/types';
 import { useAppStore } from './store';
@@ -9,7 +8,7 @@ export async function register(
   password: string
 ): Promise<{ ok: boolean; error?: string }> {
   const supabase = createBrowserClient();
-  
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -29,7 +28,7 @@ export async function register(
 
 export async function signIn(email: string, password: string) {
   const supabase = createBrowserClient();
-  
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -45,7 +44,7 @@ export async function signIn(email: string, password: string) {
 
   // Wait a bit for session to be properly set
   await new Promise(resolve => setTimeout(resolve, 100));
-  
+
   const user = await getCurrentUser();
   if (user) {
     useAppStore.getState().setUser(user);
