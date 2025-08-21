@@ -16,7 +16,6 @@ import {
   Package2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SidebarNav } from './sidebar-nav'; // Assuming SidebarNav is in a separate file
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -93,27 +92,3 @@ export function Sidebar() {
   );
 }
 
-// Placeholder for SidebarNav, assuming it's defined elsewhere
-function SidebarNav() {
-  const pathname = usePathname();
-  return (
-    <>
-      {navigation.map((item) => {
-        const isActive = pathname === item.href;
-        return (
-          <Link
-            key={item.name}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all hover:text-primary",
-              isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
-            )}
-          >
-            <item.icon className="h-5 w-5" />
-            <span>{item.name}</span>
-          </Link>
-        );
-      })}
-    </>
-  );
-}
