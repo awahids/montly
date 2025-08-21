@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/button';
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden py-20 sm:py-32">
+    <section className="relative overflow-hidden py-12 sm:py-20 lg:py-32">
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/8 to-transparent" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.2),transparent_60%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.15),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.05),transparent_50%)]" />
       
-      {/* Animated Grid Pattern */}
-      <div className="absolute inset-0 opacity-30">
+      {/* Animated Grid Pattern - Hidden on mobile for performance */}
+      <div className="absolute inset-0 opacity-30 hidden sm:block">
         <div 
           className="absolute inset-0 animate-pulse" 
           style={{
@@ -23,6 +23,62 @@ export function Hero() {
             animation: 'float 6s ease-in-out infinite'
           }} 
         />
+      </div>
+
+      <div className="responsive-container relative z-10">
+        <div className="flex flex-col items-center text-center space-y-8 lg:space-y-12">
+          {/* Main Heading */}
+          <div className="space-y-4 max-w-4xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground">
+              <span className="block">Budget monthly,</span>
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                track daily
+              </span>
+            </h1>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Manage money across banks & e-wallets, set monthly budgets, and track daily transactions with Monli.
+            </p>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
+            <Button 
+              size="lg" 
+              className="btn-primary-enhanced w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-semibold shadow-colored hover:shadow-lg transition-all-smooth"
+              asChild
+            >
+              <Link href="/auth/sign-up">
+                Start Free Today
+              </Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-medium border-2 hover:bg-muted/50 transition-all-smooth"
+              asChild
+            >
+              <Link href="#demo">
+                Watch Demo
+              </Link>
+            </Button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-muted-foreground pt-8">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>No bank connection required</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>100% private & secure</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Free forever</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Floating Elements */}

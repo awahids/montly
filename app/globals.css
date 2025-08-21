@@ -217,36 +217,160 @@
     @apply bg-black/10 border-white/10;
   }
 
-  /* Mobile optimizations */
+  /* Enhanced Mobile optimizations */
   @media (max-width: 640px) {
     .mobile-safe-area {
       padding-bottom: env(safe-area-inset-bottom);
+      padding-top: env(safe-area-inset-top);
     }
 
     .mobile-touch-target {
-      min-height: 44px;
-      min-width: 44px;
+      min-height: 48px;
+      min-width: 48px;
     }
 
     .mobile-padding {
-      padding-left: max(16px, env(safe-area-inset-left));
-      padding-right: max(16px, env(safe-area-inset-right));
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
+
+    .mobile-container {
+      padding-left: 16px;
+      padding-right: 16px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 100%;
     }
 
     /* Improved form inputs for mobile */
     input, textarea, select {
       font-size: 16px; /* Prevents zoom on iOS */
+      padding: 12px 16px;
+      min-height: 48px;
     }
 
     /* Better button sizing for touch */
     button {
-      min-height: 44px;
+      min-height: 48px;
+      padding: 12px 20px;
+      font-size: 16px;
     }
 
     /* Improved card spacing on mobile */
     .card-mobile {
-      margin: 8px;
-      border-radius: 12px;
+      margin: 12px 16px;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    /* Responsive text sizing */
+    h1 {
+      font-size: 2rem !important;
+      line-height: 1.2 !important;
+    }
+
+    h2 {
+      font-size: 1.75rem !important;
+      line-height: 1.3 !important;
+    }
+
+    h3 {
+      font-size: 1.5rem !important;
+      line-height: 1.4 !important;
+    }
+
+    /* Better spacing for mobile */
+    .section-mobile {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .tablet-container {
+      padding-left: 24px;
+      padding-right: 24px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 100%;
+    }
+
+    .tablet-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+  }
+
+  /* Container utilities */
+  .responsive-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-container {
+      max-width: 640px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .responsive-container {
+      max-width: 768px;
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-container {
+      max-width: 1024px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .responsive-container {
+      max-width: 1280px;
+    }
+  }
+
+  /* Responsive grid utilities */
+  .responsive-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-grid {
+      gap: 20px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-grid {
+      gap: 24px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Responsive flexbox utilities */
+  .responsive-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-flex {
+      flex-direction: row;
+      gap: 24px;
     }
   }
 }

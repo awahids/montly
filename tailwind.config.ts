@@ -152,6 +152,22 @@ const config: Config = {
       boxShadow: {
         'colored': 'var(--shadow-colored)',
       },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+      },
+      fontSize: {
+        'xxs': ['0.625rem', { lineHeight: '0.75rem' }],
+      },
+      screens: {
+        'xs': '475px',
+        '3xl': '1600px',
+      },
+      maxWidth: {
+        '8xl': '88rem',
+        '9xl': '96rem',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

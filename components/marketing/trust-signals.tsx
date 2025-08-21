@@ -31,36 +31,37 @@ export function TrustSignals() {
   return (
     <section className="py-16 relative">
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
-      
+
       <div className="relative mx-auto max-w-6xl px-4">
         <div className="text-center mb-12">
           <h3 className="text-2xl font-bold text-foreground mb-4">Trusted by users worldwide</h3>
           <p className="text-muted-foreground">Built with security, privacy, and user experience in mind</p>
         </div>
-        
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div className="responsive-grid">
           {items.map(({ icon: Icon, text, description, color }, index) => (
-            <div 
-              key={text} 
-              className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 p-6 text-center backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 transform hover:scale-105"
-              style={{ animationDelay: `${index * 100}ms` }}
+            <div
+              key={index}
+              className="group relative card-enhanced p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              <div className="relative">
-                <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r ${color} shadow-lg group-hover:scale-110 transition-transform duration-300 mb-4`}>
-                  <Icon className="h-8 w-8 text-white drop-shadow-sm" />
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div 
+                  className={`flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                >
+                <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-sm" />
                 </div>
-                <h4 className="font-bold text-lg text-foreground group-hover:text-primary transition-all duration-300 mb-3">
-                  {text}
-                </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-muted-foreground/90 transition-colors">
-                  {description}
-                </p>
+                <div className="space-y-2">
+                  <h4 className="font-bold text-base sm:text-lg text-foreground group-hover:text-primary transition-all duration-300">
+                    {text}
+                  </h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-muted-foreground/90 transition-colors">
+                    {description}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
-        </div>
+</div>
       </div>
     </section>
   );

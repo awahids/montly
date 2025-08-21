@@ -3,6 +3,47 @@ import { Button } from '@/components/ui/button';
 
 export function CTABand() {
   return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="responsive-container">
+        <div className="card-enhanced p-8 sm:p-12 lg:p-16 text-center bg-gradient-primary">
+          <div className="space-y-6 lg:space-y-8 max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-foreground">
+              Ready to take control of your finances?
+            </h2>
+            <p className="text-base sm:text-lg text-primary-foreground/90 max-w-2xl mx-auto leading-relaxed">
+              Join thousands of users who have already simplified their financial management with Monli.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-4">
+              <Button 
+                size="lg" 
+                variant="secondary"
+                className="w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all-smooth"
+                asChild
+              >
+                <Link href="/auth/sign-up">
+                  Get Started Free
+                </Link>
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="w-full sm:w-auto min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-medium border-2 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 transition-all-smooth"
+                asChild
+              >
+                <Link href="#features">
+                  Learn More
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CTABand() {
+  return (
     <section className="relative overflow-hidden px-4 py-24">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10" />
