@@ -4,25 +4,25 @@ const items = [
   { 
     icon: Wallet, 
     text: 'Bank & e-wallet friendly',
-    description: 'Works with all major financial institutions',
+    description: 'Connect with all your favorite payment methods',
     color: 'from-blue-500 to-cyan-500'
   },
   { 
     icon: Shield, 
-    text: 'Privacy-first',
-    description: 'Your data stays secure and private',
+    text: 'Secure & Private',
+    description: 'Your financial data is protected with bank-level security',
     color: 'from-green-500 to-emerald-500'
   },
   { 
     icon: Server, 
-    text: 'RLS on Supabase',
-    description: 'Enterprise-grade security infrastructure',
+    text: 'Always Available',
+    description: 'Access your finances anytime, anywhere, on any device',
     color: 'from-purple-500 to-violet-500'
   },
   { 
     icon: Moon, 
-    text: 'Dark mode',
-    description: 'Beautiful interface, day or night',
+    text: 'Beautiful Design',
+    description: 'Clean, modern interface that works day or night',
     color: 'from-gray-600 to-gray-800'
   },
 ];

@@ -64,9 +64,9 @@ export function CTABand() {
           
           {/* Trust indicators */}
           <div className="mt-12 flex items-center justify-center gap-8 opacity-60">
-            <div className="text-sm">💳 Bank-grade security</div>
-            <div className="text-sm">🔒 Privacy protected</div>
-            <div className="text-sm">⚡ Lightning fast</div>
+            <div className="text-sm">💳 Secure & Safe</div>
+            <div className="text-sm">🔒 Privacy First</div>
+            <div className="text-sm">⚡ Easy to Use</div>
           </div>
         </div>
       </div>
