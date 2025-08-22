@@ -48,42 +48,7 @@ export function useOffline() {
     initOffline();
   }, [setTransactions, setAccounts, setCategories, setBudgets]);
 
-  // Monitor online/offline status
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      syncPendingChanges();
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-    };
-
-    // Set initial state
-    setIsOnline(navigator.onLine);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [syncPendingChanges]);
-
-  // Save data to offline storage whenever state changes
-  useEffect(() => {
-    if (isInitialized && !isOnline) {
-      offlineStorage.saveOfflineData({
-        transactions,
-        accounts,
-        categories,
-        budgets,
-        lastSync: new Date().toISOString(),
-      });
-    }
-  }, [transactions, accounts, categories, budgets, isOnline, isInitialized]);
-
+  // Sync any pending offline changes when back online
   const syncPendingChanges = useCallback(async () => {
     if (!isOnline) return;
 
@@ -139,6 +104,42 @@ export function useOffline() {
       });
     }
   }, [isOnline, toast, setPendingSyncCount]);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncPendingChanges();
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    // Set initial state
+    setIsOnline(navigator.onLine);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [syncPendingChanges]);
+
+  // Save data to offline storage whenever state changes
+  useEffect(() => {
+    if (isInitialized && !isOnline) {
+      offlineStorage.saveOfflineData({
+        transactions,
+        accounts,
+        categories,
+        budgets,
+        lastSync: new Date().toISOString(),
+      });
+    }
+  }, [transactions, accounts, categories, budgets, isOnline, isInitialized]);
 
   const addOfflineChange = async (
     action: 'create' | 'update' | 'delete',
