@@ -4,24 +4,14 @@
 import { useOffline } from '@/hooks/use-offline';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
 
 export function OfflineIndicator() {
   const { isOnline, pendingSyncCount, syncPendingChanges } = useOffline();
 
-  if (isOnline && pendingSyncCount === 0) {
-    return (
-      <Badge variant="outline" className="gap-2 text-green-600 border-green-200">
-        <Wifi className="h-3 w-3" />
-        Online
-      </Badge>
-    );
-  }
-
   if (!isOnline) {
     return (
-      <Badge variant="destructive" className="gap-2">
+      <Badge variant="outline" className="gap-2 text-amber-600 border-amber-200">
         <WifiOff className="h-3 w-3" />
         Offline
       </Badge>

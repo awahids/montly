@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { offlineStorage } from '@/lib/offline-storage';
 import { useAppStore } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
@@ -52,20 +52,11 @@ export function useOffline() {
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
-      toast({
-        title: 'Back online',
-        description: 'Your data will be synced automatically.',
-      });
       syncPendingChanges();
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      toast({
-        title: 'You are offline',
-        description: 'Your changes will be saved locally and synced when you reconnect.',
-        variant: 'destructive',
-      });
     };
 
     // Set initial state
@@ -78,7 +69,7 @@ export function useOffline() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [toast]);
+  }, [syncPendingChanges]);
 
   // Save data to offline storage whenever state changes
   useEffect(() => {
@@ -93,7 +84,7 @@ export function useOffline() {
     }
   }, [transactions, accounts, categories, budgets, isOnline, isInitialized]);
 
-  const syncPendingChanges = async () => {
+  const syncPendingChanges = useCallback(async () => {
     if (!isOnline) return;
 
     try {
@@ -109,7 +100,7 @@ export function useOffline() {
       for (const item of pendingItems) {
         try {
           const endpoint = `/api/${item.table}${item.action === 'update' || item.action === 'delete' ? `/${item.data.id}` : ''}`;
-          
+
           let method = 'POST';
           if (item.action === 'update') method = 'PATCH';
           if (item.action === 'delete') method = 'DELETE';
@@ -147,7 +138,7 @@ export function useOffline() {
         variant: 'destructive',
       });
     }
-  };
+  }, [isOnline, toast, setPendingSyncCount]);
 
   const addOfflineChange = async (
     action: 'create' | 'update' | 'delete',
