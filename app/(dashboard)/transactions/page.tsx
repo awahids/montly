@@ -51,6 +51,7 @@ import TransactionForm, {
   TransactionFormValues,
 } from '@/components/transactions/transaction-form';
 import { formatDate } from '@/lib/date';
+import { useOffline } from '@/hooks/use-offline';
 
 const toCamel = (str: string) =>
   str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -95,6 +96,7 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | undefined>();
+  const { isOnline, addOfflineChange } = useOffline();
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const [total, setTotal] = useState(0);
@@ -202,15 +204,40 @@ export default function TransactionsPage() {
       actualDate: formatDate(values.actualDate),
       date: formatDate(values.actualDate),
       type: values.type,
-      accountId: values.accountId,
-      fromAccountId: values.fromAccountId,
-      toAccountId: values.toAccountId,
-      categoryId: values.categoryId,
+      accountId: values.accountId || undefined,
+      fromAccountId: values.fromAccountId || undefined,
+      toAccountId: values.toAccountId || undefined,
+      categoryId: values.categoryId || undefined,
       amount: values.amount,
-      note: values.note,
+      note: values.note || '',
       tags: values.tags || [],
     };
     const isEditing = Boolean(editing);
+
+    if (!isOnline) {
+      if (isEditing) {
+        const updated = transactions.map((tx) =>
+          tx.id === editing!.id ? { ...tx, ...payload } : tx
+        );
+        setTransactions(updated);
+        await addOfflineChange('update', 'transactions', {
+          id: editing!.id,
+          ...payload,
+        });
+      } else {
+        const tempTx: Transaction = {
+          id: `offline-${Date.now()}`,
+          userId: user.id,
+          ...payload,
+        };
+        setTransactions([tempTx, ...transactions]);
+        await addOfflineChange('create', 'transactions', payload);
+      }
+      toast.success(isEditing ? 'Transaction updated offline' : 'Transaction added offline');
+      setFormOpen(false);
+      setEditing(undefined);
+      return;
+    }
 
     let res: Response;
     if (isEditing) {

@@ -29,6 +29,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { formatDate } from '@/lib/date';
+import { useOffline } from '@/hooks/use-offline';
 
 const toCamel = (str: string) =>
   str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -69,25 +70,41 @@ export default function DashboardPage() {
   });
   const [categorySpends, setCategorySpends] = useState<CategorySpend[]>([]);
   const [formOpen, setFormOpen] = useState(false);
+  const { isOnline, addOfflineChange } = useOffline();
 
   const handleSave = async (values: TransactionFormValues) => {
+    const payload = {
+      budgetMonth: values.budgetMonth,
+      actualDate: formatDate(values.actualDate),
+      date: formatDate(values.actualDate),
+      type: values.type,
+      accountId: values.accountId || undefined,
+      fromAccountId: values.fromAccountId || undefined,
+      toAccountId: values.toAccountId || undefined,
+      categoryId: values.categoryId || undefined,
+      amount: values.amount,
+      note: values.note || '',
+      tags: values.tags,
+    };
+
+    if (!isOnline) {
+      const tempTx: Transaction = {
+        id: `offline-${Date.now()}`,
+        userId: user?.id || '',
+        ...payload,
+      };
+      setTransactions([tempTx, ...transactions]);
+      await addOfflineChange('create', 'transactions', payload);
+      toast.success('Transaction saved offline');
+      setFormOpen(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          budgetMonth: values.budgetMonth,
-          actualDate: formatDate(values.actualDate),
-          date: formatDate(values.actualDate),
-          type: values.type,
-          accountId: values.accountId,
-          fromAccountId: values.fromAccountId,
-          toAccountId: values.toAccountId,
-          categoryId: values.categoryId,
-          amount: values.amount,
-          note: values.note,
-          tags: values.tags,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
