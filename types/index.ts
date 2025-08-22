@@ -66,11 +66,9 @@ export interface Transaction {
 
 export interface DashboardKPIs {
   totalBalance: number;
-  monthlyBudget: number;
-  monthlyActual: number;
-  mtdSpend: number;
-  dailyAverage: number;
-  remainingAllowance: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  savings: number;
 }
 
 export interface CategorySpend {
