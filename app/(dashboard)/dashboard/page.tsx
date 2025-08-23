@@ -377,8 +377,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6 relative">
-      <div className="flex items-center justify-between">
+    <div className="relative space-y-6 p-4 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">
             Good Morning{user?.name ? `, ${user.name}` : ''}
@@ -388,12 +388,20 @@ export default function DashboardPage() {
           </p>
         </div>
         <Button
-          className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary text-white shadow-lg"
+          className="hidden sm:inline-flex"
           onClick={() => setFormOpen(true)}
         >
           <Plus className="mr-2 h-4 w-4" /> New Transaction
         </Button>
       </div>
+
+      <Button
+        className="sm:hidden fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary text-white shadow-lg"
+        onClick={() => setFormOpen(true)}
+        aria-label="New Transaction"
+      >
+        <Plus className="h-5 w-5" />
+      </Button>
 
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
