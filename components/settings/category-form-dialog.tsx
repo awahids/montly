@@ -45,8 +45,11 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent aria-label={initialData ? 'Edit Category' : 'Add Category'}>
-        <DialogHeader>
+      <DialogContent
+        aria-label={initialData ? 'Edit Category' : 'Add Category'}
+        className="sm:max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6"
+      >
+        <DialogHeader className="px-4 pt-4 sm:px-0 sm:pt-0">
           <DialogTitle>{initialData ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -55,7 +58,7 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
               await onSubmit(v);
               onOpenChange(false);
             })}
-            className="space-y-4"
+            className="space-y-4 px-4 pb-24 sm:px-0 sm:pb-0"
           >
               <FormField
                 control={form.control}
@@ -117,7 +120,10 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
                 </FormItem>
               )}
             />
-            <DialogFooter className="justify-end space-x-2">
+            <DialogFooter
+              className="sticky bottom-0 justify-end gap-2 border-t bg-background px-4 py-4"
+              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+            >
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

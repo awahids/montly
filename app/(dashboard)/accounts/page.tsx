@@ -274,19 +274,21 @@ export default function AccountsPage() {
         <Plus className="h-6 w-6" />
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6">
+          <DialogHeader className="px-4 pt-4 sm:px-0 sm:pt-0">
             <DialogTitle>
               {editingAccount ? 'Edit Account' : 'Add Account'}
             </DialogTitle>
           </DialogHeader>
-          <AccountForm
-            account={editingAccount || undefined}
-            onSuccess={() => {
-              setDialogOpen(false);
-              fetchAccounts();
-            }}
-          />
+          <div className="px-4 sm:px-0">
+            <AccountForm
+              account={editingAccount || undefined}
+              onSuccess={() => {
+                setDialogOpen(false);
+                fetchAccounts();
+              }}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -123,11 +123,11 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6">
+        <DialogHeader className="px-4 pt-4 sm:px-0 sm:pt-0">
           <DialogTitle>Add Budget</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 px-4 pb-24 sm:px-0 sm:pb-0">
           <div className="space-y-2">
             <label className="text-sm font-medium">Month</label>
             <Input
@@ -176,7 +176,10 @@ export function BudgetFormDialog({ open, onOpenChange }: BudgetFormDialogProps) 
             Add Item
           </Button>
         </div>
-        <DialogFooter>
+        <DialogFooter
+          className="sticky bottom-0 border-t bg-background px-4 py-4"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
           <Button
             onClick={handleSubmit}
             disabled={submitting || !month || !total || total < 1}

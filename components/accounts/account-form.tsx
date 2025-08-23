@@ -118,7 +118,10 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 pb-24"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -202,9 +205,14 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          {account ? 'Update' : 'Create'} Account
-        </Button>
+        <div
+          className="sticky bottom-0 border-t bg-background pt-4"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
+          <Button type="submit" className="w-full">
+            {account ? 'Update' : 'Create'} Account
+          </Button>
+        </div>
       </form>
     </Form>
   );
