@@ -12,7 +12,13 @@ import {
   Budget,
   Category,
 } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { DashboardCharts } from '@/components/dashboard/dashboard-charts';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -27,6 +33,8 @@ import {
   TrendingDown,
   DollarSign,
   Plus,
+  ArrowUpRight,
+  ArrowDownRight,
 } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import { useOffline } from '@/hooks/use-offline';
@@ -63,6 +71,12 @@ export default function DashboardPage() {
     setLoading,
   } = useAppStore();
   const [kpis, setKpis] = useState<DashboardKPIs>({
+    totalBalance: 0,
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    savings: 0,
+  });
+  const [prevKpis, setPrevKpis] = useState<DashboardKPIs>({
     totalBalance: 0,
     monthlyIncome: 0,
     monthlyExpenses: 0,
@@ -191,18 +205,34 @@ export default function DashboardPage() {
 
     // Calculate KPIs
     const currentMonth = new Date().toISOString().slice(0, 7);
+    const prevMonthDate = new Date();
+    prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+    const prevMonth = prevMonthDate.toISOString().slice(0, 7);
 
     // Total balance
     let totalBalance = 0;
+    let prevTotalBalance = 0;
+    const prevMonthEnd = new Date();
+    prevMonthEnd.setDate(0);
+    const prevMonthEndStr = formatDate(prevMonthEnd);
+
     accounts.forEach(account => {
-      const accountTransactions = transactions.filter(t =>
-        t.accountId === account.id ||
-        t.fromAccountId === account.id ||
-        t.toAccountId === account.id
+      const accountTransactions = transactions.filter(
+        t =>
+          (t.accountId === account.id ||
+            t.fromAccountId === account.id ||
+            t.toAccountId === account.id) &&
+          t.actualDate <= prevMonthEndStr
+      );
+      const currentTransactions = transactions.filter(
+        t =>
+          t.accountId === account.id ||
+          t.fromAccountId === account.id ||
+          t.toAccountId === account.id
       );
 
       let balance = account.openingBalance;
-      accountTransactions.forEach(t => {
+      currentTransactions.forEach(t => {
         if (t.type === 'income' && t.accountId === account.id) {
           balance += t.amount;
         } else if (t.type === 'expense' && t.accountId === account.id) {
@@ -216,6 +246,22 @@ export default function DashboardPage() {
         }
       });
       totalBalance += balance;
+
+      let prevBalance = account.openingBalance;
+      accountTransactions.forEach(t => {
+        if (t.type === 'income' && t.accountId === account.id) {
+          prevBalance += t.amount;
+        } else if (t.type === 'expense' && t.accountId === account.id) {
+          prevBalance -= t.amount;
+        } else if (t.type === 'transfer') {
+          if (t.fromAccountId === account.id) {
+            prevBalance -= t.amount;
+          } else if (t.toAccountId === account.id) {
+            prevBalance += t.amount;
+          }
+        }
+      });
+      prevTotalBalance += prevBalance;
     });
 
     // Monthly budget and actual
@@ -231,11 +277,25 @@ export default function DashboardPage() {
 
     const savings = monthlyIncome - monthlyExpenses;
 
+    const prevMonthlyIncome = transactions
+      .filter(t => t.type === 'income' && t.budgetMonth === prevMonth)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const prevMonthlyExpenses = transactions
+      .filter(t => t.type === 'expense' && t.budgetMonth === prevMonth)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const prevSavings = prevMonthlyIncome - prevMonthlyExpenses;
+
     setKpis({
       totalBalance,
       monthlyIncome,
       monthlyExpenses,
       savings,
+    });
+    setPrevKpis({
+      totalBalance: prevTotalBalance,
+      monthlyIncome: prevMonthlyIncome,
+      monthlyExpenses: prevMonthlyExpenses,
+      savings: prevSavings,
     });
 
     // Category spending from transactions
@@ -290,21 +350,29 @@ export default function DashboardPage() {
       title: 'Total Balance',
       value: formatIDR(kpis.totalBalance),
       icon: Wallet,
+      delta: kpis.totalBalance - prevKpis.totalBalance,
+      prev: prevKpis.totalBalance,
     },
     {
       title: 'Monthly Income',
       value: formatIDR(kpis.monthlyIncome),
       icon: TrendingUp,
+      delta: kpis.monthlyIncome - prevKpis.monthlyIncome,
+      prev: prevKpis.monthlyIncome,
     },
     {
       title: 'Monthly Expenses',
       value: formatIDR(kpis.monthlyExpenses),
       icon: TrendingDown,
+      delta: kpis.monthlyExpenses - prevKpis.monthlyExpenses,
+      prev: prevKpis.monthlyExpenses,
     },
     {
       title: 'Savings',
       value: formatIDR(kpis.savings),
       icon: DollarSign,
+      delta: kpis.savings - prevKpis.savings,
+      prev: prevKpis.savings,
     },
   ];
 
@@ -329,19 +397,43 @@ export default function DashboardPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {summaryCards.map((card, index) => (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              <card.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {summaryCards.map((card, index) => {
+          const deltaPct = card.prev
+            ? ((card.delta / card.prev) * 100).toFixed(2)
+            : '0.00';
+          const positive = card.delta >= 0;
+          return (
+            <Card key={index}>
+              <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                <div className="space-y-1">
+                  <CardTitle className="text-sm font-medium">
+                    {card.title}
+                  </CardTitle>
+                  <CardDescription>This Month</CardDescription>
+                </div>
+                <card.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{card.value}</div>
+                <p className="flex items-center text-xs mt-1">
+                  {positive ? (
+                    <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
+                  ) : (
+                    <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
+                  )}
+                  <span
+                    className={positive ? 'text-green-500' : 'text-red-500'}
+                  >
+                    {deltaPct}%
+                  </span>
+                  <span className="ml-1 text-muted-foreground">
+                    vs last month
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Charts */}
