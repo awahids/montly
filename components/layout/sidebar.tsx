@@ -67,6 +67,15 @@ export function Sidebar() {
             );
           })}
         </nav>
+
+        <div className="mt-auto p-3">
+          <div className="rounded-lg border bg-muted/50 p-4 text-center">
+            <p className="text-sm font-medium">Upgrade Pro</p>
+            <Button asChild size="sm" className="mt-2 w-full">
+              <Link href="/upgrade">Upgrade</Link>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -143,6 +152,17 @@ export function MobileSidebar() {
                 <BarChart3 className="mr-4 h-5 w-5 flex-shrink-0" />
                 Reports
               </Link>
+            </div>
+
+            <div className="mt-6 border-t border-border p-4">
+              <div className="rounded-lg bg-muted/50 p-4 text-center">
+                <p className="text-sm font-medium">Upgrade Pro</p>
+                <Button asChild size="sm" className="mt-2 w-full">
+                  <Link href="/upgrade" onClick={() => setOpen(false)}>
+                    Upgrade
+                  </Link>
+                </Button>
+              </div>
             </div>
           </nav>
         </div>
