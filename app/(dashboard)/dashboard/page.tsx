@@ -25,11 +25,11 @@ import {
   Wallet,
   TrendingUp,
   TrendingDown,
-  Calendar,
   DollarSign,
   Plus,
 } from 'lucide-react';
 import { formatDate } from '@/lib/date';
+import { useOffline } from '@/hooks/use-offline';
 
 const toCamel = (str: string) =>
   str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -64,33 +64,47 @@ export default function DashboardPage() {
   } = useAppStore();
   const [kpis, setKpis] = useState<DashboardKPIs>({
     totalBalance: 0,
-    monthlyBudget: 0,
-    monthlyActual: 0,
-    mtdSpend: 0,
-    dailyAverage: 0,
-    remainingAllowance: 0,
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    savings: 0,
   });
   const [categorySpends, setCategorySpends] = useState<CategorySpend[]>([]);
   const [formOpen, setFormOpen] = useState(false);
+  const { isOnline, addOfflineChange } = useOffline();
 
   const handleSave = async (values: TransactionFormValues) => {
+    const payload = {
+      budgetMonth: values.budgetMonth,
+      actualDate: formatDate(values.actualDate),
+      date: formatDate(values.actualDate),
+      type: values.type,
+      accountId: values.accountId || undefined,
+      fromAccountId: values.fromAccountId || undefined,
+      toAccountId: values.toAccountId || undefined,
+      categoryId: values.categoryId || undefined,
+      amount: values.amount,
+      note: values.note || '',
+      tags: values.tags,
+    };
+
+    if (!isOnline) {
+      const tempTx: Transaction = {
+        id: `offline-${Date.now()}`,
+        userId: user?.id || '',
+        ...payload,
+      };
+      setTransactions([tempTx, ...transactions]);
+      await addOfflineChange('create', 'transactions', payload);
+      toast.success('Transaction saved offline');
+      setFormOpen(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          budgetMonth: values.budgetMonth,
-          actualDate: formatDate(values.actualDate),
-          date: formatDate(values.actualDate),
-          type: values.type,
-          accountId: values.accountId,
-          fromAccountId: values.fromAccountId,
-          toAccountId: values.toAccountId,
-          categoryId: values.categoryId,
-          amount: values.amount,
-          note: values.note,
-          tags: values.tags,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create transaction');
@@ -104,8 +118,8 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (!user) return;
-    
+    if (!user || !isOnline) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -115,17 +129,17 @@ export default function DashboardPage() {
           .select('*')
           .eq('user_id', user.id)
           .eq('archived', false);
-        
+
         // Fetch categories
         const { data: categoriesData } = await supabase
           .from('categories')
           .select('*')
           .eq('user_id', user.id);
-        
+
         // Fetch transactions (last 3 months)
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-        
+
         const { data: transactionsData } = await supabase
           .from('transactions')
           .select(`
@@ -162,15 +176,21 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [user, setAccounts, setTransactions, setBudgets, setCategories, setLoading]);
+  }, [
+    user,
+    isOnline,
+    setAccounts,
+    setTransactions,
+    setBudgets,
+    setCategories,
+    setLoading,
+  ]);
 
   useEffect(() => {
     if (!accounts.length || !transactions.length) return;
 
     // Calculate KPIs
     const currentMonth = new Date().toISOString().slice(0, 7);
-    const today = new Date().getDate();
-    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
 
     // Total balance
     let totalBalance = 0;
@@ -200,28 +220,22 @@ export default function DashboardPage() {
 
     // Monthly budget and actual
     const currentBudgets = budgets.filter(b => b.month === currentMonth);
-    const monthlyBudget = currentBudgets.reduce((sum, b) => sum + b.totalAmount, 0);
-    
-    const monthlyActual = transactions
+
+    const monthlyIncome = transactions
+      .filter(t => t.type === 'income' && t.budgetMonth === currentMonth)
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const monthlyExpenses = transactions
       .filter(t => t.type === 'expense' && t.budgetMonth === currentMonth)
       .reduce((sum, t) => sum + t.amount, 0);
 
-    // MTD spend (same as monthly actual for current month)
-    const mtdSpend = monthlyActual;
-
-    // Daily average and remaining allowance
-    const dailyAverage = today > 0 ? mtdSpend / today : 0;
-    const remainingBudget = monthlyBudget - monthlyActual;
-    const remainingDays = daysInMonth - today;
-    const remainingAllowance = remainingDays > 0 ? remainingBudget / remainingDays : 0;
+    const savings = monthlyIncome - monthlyExpenses;
 
     setKpis({
       totalBalance,
-      monthlyBudget,
-      monthlyActual,
-      mtdSpend,
-      dailyAverage,
-      remainingAllowance,
+      monthlyIncome,
+      monthlyExpenses,
+      savings,
     });
 
     // Category spending from transactions
@@ -271,36 +285,26 @@ export default function DashboardPage() {
     return <LoadingSpinner />;
   }
 
-  const kpiCards = [
+  const summaryCards = [
     {
       title: 'Total Balance',
       value: formatIDR(kpis.totalBalance),
       icon: Wallet,
-      trend: kpis.totalBalance >= 0 ? 'positive' : 'negative',
     },
     {
-      title: 'Monthly Budget vs Actual',
-      value: `${formatIDR(kpis.monthlyActual)} / ${formatIDR(kpis.monthlyBudget)}`,
+      title: 'Monthly Income',
+      value: formatIDR(kpis.monthlyIncome),
       icon: TrendingUp,
-      trend: kpis.monthlyActual <= kpis.monthlyBudget ? 'positive' : 'negative',
     },
     {
-      title: 'MTD Spending',
-      value: formatIDR(kpis.mtdSpend),
+      title: 'Monthly Expenses',
+      value: formatIDR(kpis.monthlyExpenses),
       icon: TrendingDown,
-      trend: 'neutral',
     },
     {
-      title: 'Daily Average',
-      value: formatIDR(kpis.dailyAverage),
-      icon: Calendar,
-      trend: 'neutral',
-    },
-    {
-      title: 'Remaining Daily Allowance',
-      value: formatIDR(kpis.remainingAllowance),
+      title: 'Savings',
+      value: formatIDR(kpis.savings),
       icon: DollarSign,
-      trend: kpis.remainingAllowance >= 0 ? 'positive' : 'negative',
     },
   ];
 
@@ -308,31 +312,30 @@ export default function DashboardPage() {
     <div className="space-y-6 relative">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Good Morning{user?.name ? `, ${user.name}` : ''}
+          </h2>
           <p className="text-muted-foreground">
-            Overview of your financial health
+            Here is your financial overview
           </p>
         </div>
-        <Button className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary text-white shadow-lg" onClick={() => setFormOpen(true)}>
+        <Button
+          className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary text-white shadow-lg"
+          onClick={() => setFormOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" /> New Transaction
         </Button>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {kpiCards.map((card, index) => (
+      {/* Summary Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {summaryCards.map((card, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {card.title}
               </CardTitle>
-              <card.icon className={`h-4 w-4 ${
-                card.trend === 'positive' 
-                  ? 'text-green-600' 
-                  : card.trend === 'negative'
-                  ? 'text-red-600'
-                  : 'text-gray-600'
-              }`} />
+              <card.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{card.value}</div>

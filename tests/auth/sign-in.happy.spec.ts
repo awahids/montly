@@ -13,7 +13,7 @@ import { loginUI } from '../utils/helpers';
   const userId = created.user!.id;
 
   await loginUI(page, email, password);
-  await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /good/i })).toBeVisible();
 
   // visiting sign-in when logged in should redirect
   await page.goto('/auth/sign-in');

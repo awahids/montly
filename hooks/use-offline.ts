@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { offlineStorage } from '@/lib/offline-storage';
 import { useAppStore } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
@@ -48,52 +48,8 @@ export function useOffline() {
     initOffline();
   }, [setTransactions, setAccounts, setCategories, setBudgets]);
 
-  // Monitor online/offline status
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      toast({
-        title: 'Back online',
-        description: 'Your data will be synced automatically.',
-      });
-      syncPendingChanges();
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      toast({
-        title: 'You are offline',
-        description: 'Your changes will be saved locally and synced when you reconnect.',
-        variant: 'destructive',
-      });
-    };
-
-    // Set initial state
-    setIsOnline(navigator.onLine);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [toast]);
-
-  // Save data to offline storage whenever state changes
-  useEffect(() => {
-    if (isInitialized && !isOnline) {
-      offlineStorage.saveOfflineData({
-        transactions,
-        accounts,
-        categories,
-        budgets,
-        lastSync: new Date().toISOString(),
-      });
-    }
-  }, [transactions, accounts, categories, budgets, isOnline, isInitialized]);
-
-  const syncPendingChanges = async () => {
+  // Sync any pending offline changes when back online
+  const syncPendingChanges = useCallback(async () => {
     if (!isOnline) return;
 
     try {
@@ -109,7 +65,7 @@ export function useOffline() {
       for (const item of pendingItems) {
         try {
           const endpoint = `/api/${item.table}${item.action === 'update' || item.action === 'delete' ? `/${item.data.id}` : ''}`;
-          
+
           let method = 'POST';
           if (item.action === 'update') method = 'PATCH';
           if (item.action === 'delete') method = 'DELETE';
@@ -147,7 +103,43 @@ export function useOffline() {
         variant: 'destructive',
       });
     }
-  };
+  }, [isOnline, toast, setPendingSyncCount]);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncPendingChanges();
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    // Set initial state
+    setIsOnline(navigator.onLine);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [syncPendingChanges]);
+
+  // Persist the latest data locally so it can be restored after a refresh
+  useEffect(() => {
+    if (isInitialized) {
+      offlineStorage.saveOfflineData({
+        transactions,
+        accounts,
+        categories,
+        budgets,
+        lastSync: new Date().toISOString(),
+      });
+    }
+  }, [transactions, accounts, categories, budgets, isInitialized]);
 
   const addOfflineChange = async (
     action: 'create' | 'update' | 'delete',

@@ -24,23 +24,7 @@ export function MobileNav() {
   const { accounts, categories } = useAppStore();
 
   const handleAddTransaction = () => {
-    const now = new Date();
-    const dateString = now.toISOString().slice(0, 10); // YYYY-MM-DD
-    const budgetMonth = dateString.slice(0, 7); // YYYY-MM
-
-    const newTransaction: Transaction = {
-      id: "new-id",
-      userId: "user-id",
-      date: now.toISOString(),
-      budgetMonth,
-      actualDate: dateString,
-      type: "expense",
-      amount: 0,
-      note: "",
-      tags: [],
-    };
-
-    setTransaction(newTransaction);
+    setTransaction(undefined);
     setFormOpen(true);
   };
 

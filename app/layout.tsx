@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -82,6 +83,9 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#4F46E5" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <meta name="apple-mobile-web-app-title" content="monli" />
         <meta
           name="google-site-verification"
@@ -122,6 +126,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
