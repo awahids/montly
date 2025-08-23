@@ -118,8 +118,8 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (!user) return;
-    
+    if (!user || !isOnline) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -129,17 +129,17 @@ export default function DashboardPage() {
           .select('*')
           .eq('user_id', user.id)
           .eq('archived', false);
-        
+
         // Fetch categories
         const { data: categoriesData } = await supabase
           .from('categories')
           .select('*')
           .eq('user_id', user.id);
-        
+
         // Fetch transactions (last 3 months)
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-        
+
         const { data: transactionsData } = await supabase
           .from('transactions')
           .select(`
@@ -176,7 +176,15 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [user, setAccounts, setTransactions, setBudgets, setCategories, setLoading]);
+  }, [
+    user,
+    isOnline,
+    setAccounts,
+    setTransactions,
+    setBudgets,
+    setCategories,
+    setLoading,
+  ]);
 
   useEffect(() => {
     if (!accounts.length || !transactions.length) return;

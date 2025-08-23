@@ -128,9 +128,9 @@ export function useOffline() {
     };
   }, [syncPendingChanges]);
 
-  // Save data to offline storage whenever state changes
+  // Persist the latest data locally so it can be restored after a refresh
   useEffect(() => {
-    if (isInitialized && !isOnline) {
+    if (isInitialized) {
       offlineStorage.saveOfflineData({
         transactions,
         accounts,
@@ -139,7 +139,7 @@ export function useOffline() {
         lastSync: new Date().toISOString(),
       });
     }
-  }, [transactions, accounts, categories, budgets, isOnline, isInitialized]);
+  }, [transactions, accounts, categories, budgets, isInitialized]);
 
   const addOfflineChange = async (
     action: 'create' | 'update' | 'delete',

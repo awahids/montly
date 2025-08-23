@@ -114,7 +114,7 @@ export default function TransactionsPage() {
   }, [transactions, groupBy]);
 
   const fetchTransactions = useCallback(async () => {
-    if (!user) return;
+    if (!user || !isOnline) return;
     const params = new URLSearchParams({
       page: String(page),
       pageSize: String(pageSize),
@@ -148,6 +148,7 @@ export default function TransactionsPage() {
     setTotal(data.total);
   }, [
     user,
+    isOnline,
     page,
     pageSize,
     dateRange.from,
@@ -161,7 +162,7 @@ export default function TransactionsPage() {
   ]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isOnline) return;
 
     const fetchData = async () => {
       try {
@@ -190,6 +191,7 @@ export default function TransactionsPage() {
     fetchData();
   }, [
     user,
+    isOnline,
     accounts.length,
     categories.length,
     setAccounts,
