@@ -10,13 +10,24 @@ export async function GET() {
     const user = await getUser();
     const { data: profile } = await supabase
       .from('profiles')
-      .select('plan')
+      .select('plan, live_price_used_at')
       .eq('id', user.id)
       .single();
     if (profile?.plan !== 'PRO') {
       return NextResponse.json(
         { error: 'Forbidden (PRO required)' },
         { status: 403 }
+      );
+    }
+
+    const usedAt = profile?.live_price_used_at
+      ? new Date(profile.live_price_used_at)
+      : null;
+    const now = new Date();
+    if (usedAt && usedAt.getUTCFullYear() === now.getUTCFullYear()) {
+      return NextResponse.json(
+        { error: 'Annual live price quota reached' },
+        { status: 429 }
       );
     }
 
@@ -53,6 +64,11 @@ export async function GET() {
     const idrPerGram = idrPerOunce / OUNCE_TO_GRAM;
     const tsJakarta = new Date((data.timestamp ?? Date.now() / 1000) * 1000)
       .toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+    await supabase
+      .from('profiles')
+      .update({ live_price_used_at: now.toISOString() })
+      .eq('id', user.id);
 
     return NextResponse.json(
       {

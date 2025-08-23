@@ -9,10 +9,17 @@ export default async function ZakatPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('plan')
+    .select('plan, live_price_used_at')
     .eq('id', auth.user.id)
     .single();
   const plan = profile?.plan === 'PRO' ? 'PRO' : 'FREE';
 
-  return <ZakatCalculator plan={plan} />;
+  const usedAt = profile?.live_price_used_at
+    ? new Date(profile.live_price_used_at)
+    : null;
+  const now = new Date();
+  const canUseLivePrice =
+    plan === 'PRO' && (!usedAt || usedAt.getUTCFullYear() !== now.getUTCFullYear());
+
+  return <ZakatCalculator plan={plan} canUseLivePrice={canUseLivePrice} />;
 }

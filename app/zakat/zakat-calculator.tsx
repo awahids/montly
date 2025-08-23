@@ -19,12 +19,19 @@ import { MoreVertical } from 'lucide-react';
 
 type Plan = 'FREE' | 'PRO';
 
-export default function ZakatCalculator({ plan }: { plan: Plan }) {
+export default function ZakatCalculator({
+  plan,
+  canUseLivePrice: initialCanUseLivePrice,
+}: {
+  plan: Plan;
+  canUseLivePrice: boolean;
+}) {
   const [idrPerGram, setIdrPerGram] = useState<number>(0);
   const [ts, setTs] = useState<string | null>(null);
   const [standard, setStandard] = useState<'gold' | 'silver'>('gold');
   const [assets, setAssets] = useState({ cash: 0, metals: 0, receivables: 0, inventory: 0 });
   const [liabs, setLiabs] = useState({ shortTerm: 0 });
+  const [canUseLive, setCanUseLive] = useState(initialCanUseLivePrice);
   const grams = standard === 'gold' ? GOLD_NISAB_GRAMS : SILVER_NISAB_GRAMS;
 
   const nisab = calcNisab(idrPerGram, grams);
@@ -37,13 +44,19 @@ export default function ZakatCalculator({ plan }: { plan: Plan }) {
   async function useLivePrice() {
     try {
       const r = await fetch('/api/metal/gold', { cache: 'no-store' });
+      if (r.status === 429) {
+        alert('Kuota harga live 1x per tahun telah digunakan. Silakan input manual.');
+        setCanUseLive(false);
+        return;
+      }
       if (!r.ok) {
-        alert(plan === 'PRO' ? 'Failed to fetch live price, please try again.' : 'Live price is for PRO users.');
+        alert('Failed to fetch live price, please try again.');
         return;
       }
       const d = await r.json();
       setIdrPerGram(d.idrPerGram);
       setTs(d.tsJakarta ?? null);
+      setCanUseLive(false);
     } catch {
       alert('Network error. Please input price manually.');
     }
@@ -84,12 +97,18 @@ export default function ZakatCalculator({ plan }: { plan: Plan }) {
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">Harga emas per gram (IDR)</label>
           {plan === 'PRO' ? (
-            <button
-              onClick={useLivePrice}
-              className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground"
-            >
-              Gunakan harga live
-            </button>
+            canUseLive ? (
+              <button
+                onClick={useLivePrice}
+                className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground"
+              >
+                Gunakan harga live
+              </button>
+            ) : (
+              <span className="text-xs text-muted-foreground">
+                Kuota harga live telah digunakan tahun ini
+              </span>
+            )
           ) : (
             <span className="text-xs text-muted-foreground">Live price tersedia untuk PRO</span>
           )}
