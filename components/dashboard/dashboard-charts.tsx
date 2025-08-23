@@ -1,31 +1,29 @@
-'use client';
+"use client";
 // @ts-nocheck
 
-import { useMemo, useState } from 'react';
+import { useMemo } from "react";
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-} from 'recharts';
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Transaction, CategorySpend } from "@/types";
+import { formatIDR } from "@/lib/currency";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Transaction, CategorySpend } from '@/types';
-import { formatIDR } from '@/lib/currency';
-import { format, subMonths } from 'date-fns';
+  format,
+  eachDayOfInterval,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 
 interface Props {
   transactions: Transaction[];
@@ -33,93 +31,91 @@ interface Props {
 }
 
 export function DashboardCharts({ transactions, categorySpends }: Props) {
-  const monthlyData = useMemo(() => {
-    const months = Array.from({ length: 6 }).map((_, i) =>
-      subMonths(new Date(), 5 - i)
-    );
-    return months.map(date => {
-      const month = date.toISOString().slice(0, 7);
-      const income = transactions
-        .filter(t => t.type === 'income' && t.budgetMonth === month)
+  const dailyExpenses = useMemo(() => {
+    const now = new Date();
+    const days = eachDayOfInterval({
+      start: startOfMonth(now),
+      end: endOfMonth(now),
+    });
+
+    return days.map(day => {
+      const key = format(day, "yyyy-MM-dd");
+      const amount = transactions
+        .filter(t => t.type === "expense" && t.date === key)
         .reduce((sum, t) => sum + t.amount, 0);
-      const expenses = transactions
-        .filter(t => t.type === 'expense' && t.budgetMonth === month)
-        .reduce((sum, t) => sum + t.amount, 0);
-      const savings = income - expenses;
+
       return {
-        month: format(date, 'MMM'),
-        income,
-        expenses,
-        savings,
+        date: format(day, "MMM dd"),
+        amount,
       };
     });
   }, [transactions]);
 
-  const radarData = useMemo(
+  const pieData = useMemo(
     () =>
       categorySpends.map(c => ({
         name: c.categoryName,
         value: c.amount,
+        color: c.color,
       })),
     [categorySpends]
-  );
-
-  const [metric, setMetric] = useState<'income' | 'expenses' | 'savings'>(
-    'income'
   );
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="lg:col-span-1">
         <CardHeader>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-            <CardTitle>Earning Reports</CardTitle>
-            <Tabs
-              value={metric}
-              onValueChange={v => setMetric(v as any)}
-              className="w-full sm:w-auto"
-            >
-              <TabsList>
-                <TabsTrigger value="income">Income</TabsTrigger>
-                <TabsTrigger value="expenses">Expenses</TabsTrigger>
-                <TabsTrigger value="savings">Savings</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+          <CardTitle>Daily Expenses (Current Month)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData}>
+              <AreaChart data={dailyExpenses}>
+                <defs>
+                  <linearGradient id="fillExpenses" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="hsl(var(--chart-1))"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="hsl(var(--chart-1))"
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="hsl(var(--border))"
                 />
                 <XAxis
-                  dataKey="month"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  dataKey="date"
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  axisLine={{ stroke: "hsl(var(--border))" }}
                 />
                 <YAxis
                   tickFormatter={value => formatIDR(value)}
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  axisLine={{ stroke: "hsl(var(--border))" }}
                 />
                 <Tooltip
                   formatter={(value: number) => formatIDR(value)}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: "hsl(var(--foreground))" }}
                   contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    color: 'hsl(var(--foreground))',
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    color: "hsl(var(--foreground))",
                   }}
                 />
-                <Bar
-                  dataKey={metric}
-                  fill="hsl(var(--chart-1))"
-                  radius={[4, 4, 0, 0]}
+                <Area
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="hsl(var(--chart-1))"
+                  fillOpacity={1}
+                  fill="url(#fillExpenses)"
                 />
-              </BarChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
@@ -127,28 +123,37 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
 
       <Card className="lg:col-span-1">
         <CardHeader>
-          <CardTitle>Spending by Category</CardTitle>
+          <CardTitle>Expense by Category</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="hsl(var(--border))" />
-                <PolarAngleAxis
-                  dataKey="name"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              <PieChart>
+                <Tooltip
+                  formatter={(value: number) => formatIDR(value)}
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    color: "hsl(var(--foreground))",
+                  }}
                 />
-                <PolarRadiusAxis
-                  tickFormatter={value => formatIDR(value)}
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                />
-                <Radar
+                <Pie
+                  data={pieData}
                   dataKey="value"
-                  stroke="hsl(var(--chart-1))"
-                  fill="hsl(var(--chart-1))"
-                  fillOpacity={0.6}
-                />
-              </RadarChart>
+                  nameKey="name"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={2}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color || "hsl(var(--chart-1))"}
+                    />
+                  ))}
+                </Pie>
+                <Legend iconType="circle" />
+              </PieChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
