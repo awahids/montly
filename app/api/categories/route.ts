@@ -3,11 +3,13 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { categorySchema } from '@/lib/validation';
 import { z } from 'zod';
+import { ensureDefaultCategories } from '@/lib/categories';
 
 export async function GET() {
   const supabase = createServerClient();
   try {
     const user = await getUser();
+    await ensureDefaultCategories(supabase, user.id);
     const { data, error } = await supabase
       .from('categories')
       .select('*')

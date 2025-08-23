@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { IconPicker } from './icon-picker';
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;
 
@@ -44,8 +45,11 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent aria-label={initialData ? 'Edit Category' : 'Add Category'}>
-        <DialogHeader>
+      <DialogContent
+        aria-label={initialData ? 'Edit Category' : 'Add Category'}
+        className="sm:max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6"
+      >
+        <DialogHeader className="px-4 pt-4 sm:px-0 sm:pt-0">
           <DialogTitle>{initialData ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -54,21 +58,21 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
               await onSubmit(v);
               onOpenChange(false);
             })}
-            className="space-y-4"
+            className="space-y-4 px-4 pb-24 sm:px-0 sm:pb-0"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             <FormField
               control={form.control}
               name="type"
@@ -110,13 +114,16 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <IconPicker value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <DialogFooter className="justify-end space-x-2">
+            <DialogFooter
+              className="sticky bottom-0 justify-end gap-2 border-t bg-background px-4 py-4"
+              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+            >
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

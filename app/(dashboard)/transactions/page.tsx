@@ -475,7 +475,7 @@ export default function TransactionsPage() {
             {groupedTransactions.map(([month, txs]) => (
               <Fragment key={month}>
                 <TableRow>
-                  <TableCell colSpan={6} className="font-medium">
+                  <TableCell colSpan={7} className="font-medium">
                     {format(parseISO(`${month}-01`), 'MMM yyyy')}
                   </TableCell>
                 </TableRow>
@@ -514,6 +514,15 @@ export default function TransactionsPage() {
                           t.fromAccount?.name ||
                           t.toAccount?.name ||
                           '-'}
+                      </TableCell>
+                      <TableCell>
+                        {t.category ? (
+                          <Badge variant="secondary" className="text-xs">
+                            {t.category.name}
+                          </Badge>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell
                         className={cn('text-right font-medium', color)}
@@ -592,6 +601,14 @@ export default function TransactionsPage() {
                       <p className="text-xs text-muted-foreground">
                         {format(parseISO(t.actualDate), 'MMM dd, yyyy')}
                       </p>
+                      {t.category && (
+                        <Badge
+                          variant="secondary"
+                          className="mt-1 text-xs"
+                        >
+                          {t.category.name}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">

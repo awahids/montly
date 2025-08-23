@@ -479,7 +479,10 @@ export function TransactionForm({
               )}
             />
 
-            <DialogFooter className="sticky bottom-0 bg-background pt-4 flex justify-between">
+            <DialogFooter
+              className="sticky bottom-0 flex justify-between gap-2 border-t bg-background px-4 py-4"
+              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+            >
               {transaction && onDelete && (
                 <Button
                   type="button"

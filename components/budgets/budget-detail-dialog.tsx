@@ -247,7 +247,7 @@ export function BudgetDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl w-[95vw] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-3xl w-full h-full sm:h-auto p-0 overflow-hidden">
         {loading || !budget ? (
           <div className="flex h-[60dvh] items-center justify-center">
             <LoadingSpinner />
