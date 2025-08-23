@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { IconPicker } from './icon-picker';
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;
 
@@ -56,19 +57,19 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
             })}
             className="space-y-4"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             <FormField
               control={form.control}
               name="type"
@@ -110,7 +111,7 @@ export function CategoryFormDialog({ open, onOpenChange, initialData, onSubmit }
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <IconPicker value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
