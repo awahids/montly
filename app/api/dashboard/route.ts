@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { startOfMonth, TIMEZONE } from '@/lib/date';
 import type { Database } from '@/types/database';
+import { ensureDefaultCategories } from '@/lib/categories';
 
 export const revalidate = 60;
 
@@ -10,6 +11,7 @@ export async function GET(req: Request) {
   const supabase = createServerClient();
   try {
     const user = await getUser();
+    await ensureDefaultCategories(supabase, user.id);
     const { searchParams } = new URL(req.url);
     const month = searchParams.get('month');
     if (!month) {

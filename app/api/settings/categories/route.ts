@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/server';
 import { categorySchema } from '@/lib/validation';
 import { z } from 'zod';
+import { ensureDefaultCategories } from '@/lib/categories';
 
 const querySchema = z.object({
   type: z.enum(['expense', 'income', 'all']).optional(),
@@ -19,6 +20,7 @@ export async function GET(req: Request) {
   }
   try {
     const user = await getUser();
+    await ensureDefaultCategories(supabase, user.id);
     let query = supabase
       .from('categories')
       .select('id, name, type, color, icon')
