@@ -7,6 +7,7 @@ export interface Database {
           email: string;
           name: string;
           default_currency: string;
+          plan: 'FREE' | 'PRO';
           created_at: string;
           updated_at: string;
         };
@@ -15,6 +16,7 @@ export interface Database {
           email: string;
           name: string;
           default_currency?: string;
+          plan?: 'FREE' | 'PRO';
           created_at?: string;
           updated_at?: string;
         };
@@ -23,6 +25,7 @@ export interface Database {
           email?: string;
           name?: string;
           default_currency?: string;
+          plan?: 'FREE' | 'PRO';
           updated_at?: string;
         };
       };

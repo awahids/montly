@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "node scripts/seed-user.mjs",
+    "test": "tsx --test",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -78,6 +79,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "tsx": "^4.7.0"
   }
 }
