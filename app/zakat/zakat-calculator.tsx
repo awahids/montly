@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   GOLD_NISAB_GRAMS,
   SILVER_NISAB_GRAMS,
@@ -8,6 +9,13 @@ import {
   calcZakat,
   toIDR,
 } from '@/lib/zakat';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { MoreVertical } from 'lucide-react';
 
 type Plan = 'FREE' | 'PRO';
 
@@ -41,13 +49,34 @@ export default function ZakatCalculator({ plan }: { plan: Plan }) {
     }
   }
 
+  function resetAll() {
+    setIdrPerGram(0);
+    setTs(null);
+    setStandard('gold');
+    setAssets({ cash: 0, metals: 0, receivables: 0, inventory: 0 });
+    setLiabs({ shortTerm: 0 });
+  }
+
   return (
     <main className="mx-auto max-w-xl p-4 space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">Kalkulator Zakat Maal</h1>
-        <p className="text-sm text-muted-foreground">
-          Hitung nisab & zakat 2,5% secara cepat. (Halaman ini memerlukan login)
-        </p>
+      <header className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Kalkulator Zakat Maal</h1>
+          <p className="text-sm text-muted-foreground">
+            Hitung nisab & zakat 2,5% secara cepat. (Halaman ini memerlukan login)
+          </p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="rounded-md p-2 hover:bg-muted">
+            <MoreVertical className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={resetAll}>Reset</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/">Beranda</Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       {/* Price */}
