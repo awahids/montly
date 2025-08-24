@@ -27,6 +27,8 @@ export async function PATCH(
     if (body.openingBalance !== undefined)
       updates.opening_balance = body.openingBalance;
     if (body.archived !== undefined) updates.archived = body.archived;
+    if (body.accountNumber !== undefined)
+      updates.account_number = body.accountNumber;
 
     const { data, error } = await supabase
       .from("accounts")
@@ -52,6 +54,7 @@ export async function PATCH(
       currency: data.currency,
       openingBalance: data.opening_balance,
       archived: data.archived,
+      accountNumber: data.account_number ?? undefined,
       currentBalance: balances[data.id] ?? data.opening_balance,
     });
   } catch (e) {

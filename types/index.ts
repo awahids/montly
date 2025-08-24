@@ -14,6 +14,7 @@ export interface Account {
   openingBalance: number;
   archived: boolean;
   currentBalance?: number;
+  accountNumber?: string;
 }
 
 export interface Category {

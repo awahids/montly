@@ -41,6 +41,7 @@ export interface Database {
           currency: string;
           opening_balance: number;
           archived: boolean;
+          account_number: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -52,6 +53,7 @@ export interface Database {
           currency?: string;
           opening_balance?: number;
           archived?: boolean;
+          account_number?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -61,6 +63,7 @@ export interface Database {
           currency?: string;
           opening_balance?: number;
           archived?: boolean;
+          account_number?: string | null;
           updated_at?: string;
         };
       };
