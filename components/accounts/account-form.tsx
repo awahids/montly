@@ -32,6 +32,7 @@ const accountSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.enum(['bank', 'ewallet', 'cash']),
   currency: z.string().min(1, 'Currency is required'),
+  accountNumber: z.string().optional(),
   openingBalance: z.number(),
   archived: z.boolean().optional(),
 });
@@ -53,6 +54,7 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
       name: account?.name ?? '',
       type: account?.type ?? 'bank',
       currency: account?.currency ?? 'IDR',
+      accountNumber: account?.accountNumber ?? '',
       openingBalance: account?.openingBalance ?? 0,
       archived: account?.archived ?? false,
     },
@@ -70,6 +72,7 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
             currency: values.currency,
             opening_balance: values.openingBalance,
             archived: values.archived,
+            account_number: values.accountNumber || null,
           })
           .eq('id', account.id);
         if (error) throw error;
@@ -89,6 +92,7 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
             currency: values.currency,
             opening_balance: values.openingBalance,
             archived: values.archived,
+            account_number: values.accountNumber || null,
           })
           .select()
           .single();
@@ -101,6 +105,7 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
           currency: data.currency,
           openingBalance: data.opening_balance,
           archived: data.archived,
+          accountNumber: data.account_number ?? undefined,
         };
         setAccounts([...accounts, newAccount]);
         toast.success('Account created');
@@ -163,6 +168,19 @@ export function AccountForm({ account, onSuccess }: AccountFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Currency</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="accountNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Account Number (optional)</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
