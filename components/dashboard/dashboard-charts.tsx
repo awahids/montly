@@ -28,9 +28,10 @@ import {
 interface Props {
   transactions: Transaction[];
   categorySpends: CategorySpend[];
+  hideAmounts?: boolean;
 }
 
-export function DashboardCharts({ transactions, categorySpends }: Props) {
+export function DashboardCharts({ transactions, categorySpends, hideAmounts = false }: Props) {
   const dailyExpenses = useMemo(() => {
     const now = new Date();
     const days = eachDayOfInterval({
@@ -95,12 +96,14 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
                   axisLine={{ stroke: "hsl(var(--border))" }}
                 />
                 <YAxis
-                  tickFormatter={value => formatIDR(value)}
+                  tickFormatter={value => (hideAmounts ? "" : formatIDR(value))}
                   tick={{ fill: "hsl(var(--muted-foreground))" }}
                   axisLine={{ stroke: "hsl(var(--border))" }}
                 />
                 <Tooltip
-                  formatter={(value: number) => formatIDR(value)}
+                  formatter={(value: number) =>
+                    hideAmounts ? "••••" : formatIDR(value)
+                  }
                   labelStyle={{ color: "hsl(var(--foreground))" }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
@@ -130,7 +133,9 @@ export function DashboardCharts({ transactions, categorySpends }: Props) {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Tooltip
-                  formatter={(value: number) => formatIDR(value)}
+                  formatter={(value: number) =>
+                    hideAmounts ? "••••" : formatIDR(value)
+                  }
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",

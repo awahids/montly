@@ -35,6 +35,8 @@ import {
   Plus,
   ArrowUpRight,
   ArrowDownRight,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import { useOffline } from '@/hooks/use-offline';
@@ -84,6 +86,7 @@ export default function DashboardPage() {
   });
   const [categorySpends, setCategorySpends] = useState<CategorySpend[]>([]);
   const [formOpen, setFormOpen] = useState(false);
+  const [hideAmounts, setHideAmounts] = useState(false);
   const { isOnline, addOfflineChange } = useOffline();
 
   const handleSave = async (values: TransactionFormValues) => {
@@ -348,28 +351,28 @@ export default function DashboardPage() {
   const summaryCards = [
     {
       title: 'Total Balance',
-      value: formatIDR(kpis.totalBalance),
+      value: kpis.totalBalance,
       icon: Wallet,
       delta: kpis.totalBalance - prevKpis.totalBalance,
       prev: prevKpis.totalBalance,
     },
     {
       title: 'Monthly Income',
-      value: formatIDR(kpis.monthlyIncome),
+      value: kpis.monthlyIncome,
       icon: TrendingUp,
       delta: kpis.monthlyIncome - prevKpis.monthlyIncome,
       prev: prevKpis.monthlyIncome,
     },
     {
       title: 'Monthly Expenses',
-      value: formatIDR(kpis.monthlyExpenses),
+      value: kpis.monthlyExpenses,
       icon: TrendingDown,
       delta: kpis.monthlyExpenses - prevKpis.monthlyExpenses,
       prev: prevKpis.monthlyExpenses,
     },
     {
       title: 'Savings',
-      value: formatIDR(kpis.savings),
+      value: kpis.savings,
       icon: DollarSign,
       delta: kpis.savings - prevKpis.savings,
       prev: prevKpis.savings,
@@ -387,12 +390,25 @@ export default function DashboardPage() {
             Here is your financial overview
           </p>
         </div>
-        <Button
-          className="hidden sm:inline-flex"
-          onClick={() => setFormOpen(true)}
-        >
-          <Plus className="mr-2 h-4 w-4" /> New Transaction
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            className="hidden sm:inline-flex"
+            onClick={() => setFormOpen(true)}
+          >
+            <Plus className="mr-2 h-4 w-4" /> New Transaction
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setHideAmounts(prev => !prev)}
+          >
+            {hideAmounts ? (
+              <Eye className="h-4 w-4" />
+            ) : (
+              <EyeOff className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Tombol add transaction di mobile view dihilangkan karena sudah ada di mobile nav */}
@@ -416,7 +432,9 @@ export default function DashboardPage() {
                 <card.icon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{card.value}</div>
+                <div className="text-3xl font-bold">
+                  {hideAmounts ? '••••' : formatIDR(card.value)}
+                </div>
                 <p className="flex items-center text-xs mt-1">
                   {positive ? (
                     <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
@@ -426,7 +444,7 @@ export default function DashboardPage() {
                   <span
                     className={positive ? 'text-green-500' : 'text-red-500'}
                   >
-                    {deltaPct}%
+                    {hideAmounts ? '--' : `${deltaPct}%`}
                   </span>
                   <span className="ml-1 text-muted-foreground">
                     vs last month
@@ -442,6 +460,7 @@ export default function DashboardPage() {
       <DashboardCharts
         transactions={transactions}
         categorySpends={categorySpends}
+        hideAmounts={hideAmounts}
       />
 
       {/* Recent Transactions */}
@@ -449,6 +468,7 @@ export default function DashboardPage() {
         transactions={transactions}
         accounts={accounts}
         categories={categories}
+        hideAmounts={hideAmounts}
       />
 
       <TransactionForm

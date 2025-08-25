@@ -32,12 +32,14 @@ interface Props {
   transactions: Transaction[];
   accounts: Account[];
   categories: Category[];
+  hideAmounts?: boolean;
 }
 
 export function RecentTransactions({
   transactions,
   accounts,
   categories,
+  hideAmounts = false,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -288,8 +290,11 @@ export function RecentTransactions({
                             : 'text-blue-600'
                         }`}
                       >
-                        {transaction.type === 'expense' ? '-' : ''}
-                        {formatIDR(transaction.amount)}
+                        {hideAmounts
+                          ? '••••'
+                          : `${
+                              transaction.type === 'expense' ? '-' : ''
+                            }${formatIDR(transaction.amount)}`}
                       </p>
                     </div>
                   </m.div>
