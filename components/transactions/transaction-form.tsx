@@ -201,7 +201,7 @@ export function TransactionForm({
       <DialogContent
         id={id}
         ref={contentRef}
-        className="sm:max-w-md w-full h-[90vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6 rounded-t-xl sm:rounded-xl fixed bottom-0 left-0 right-0 sm:relative"
+        className="fixed top-auto bottom-0 left-0 right-0 w-full h-[90vh] overflow-y-auto p-0 rounded-t-xl sm:inset-auto sm:h-auto sm:max-h-[90vh] sm:max-w-md sm:rounded-xl sm:p-6"
       >
         <DialogHeader className="px-4 sm:px-0 pt-4 sm:pt-0">
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
