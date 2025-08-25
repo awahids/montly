@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -194,12 +194,14 @@ export function TransactionForm({
   };
 
   const currentType = form.watch('type');
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         id={id}
-        className="sm:max-w-md w-full h-[90vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6 rounded-t-xl sm:rounded-xl fixed bottom-0 left-0 right-0 sm:relative"
+        ref={contentRef}
+        className="fixed top-auto bottom-0 left-0 right-0 w-full h-[90vh] overflow-y-auto p-0 rounded-t-xl sm:inset-auto sm:h-auto sm:max-h-[90vh] sm:max-w-md sm:rounded-xl sm:p-6"
       >
         <DialogHeader className="px-4 sm:px-0 pt-4 sm:pt-0">
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
@@ -302,7 +304,7 @@ export function TransactionForm({
                           <SelectValue placeholder="Select account" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent container={contentRef.current}>
                         {accounts.map((a) => (
                           <SelectItem key={a.id} value={a.id}>
                             {a.name}
@@ -328,7 +330,7 @@ export function TransactionForm({
                             <SelectValue placeholder="Select account" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                          <SelectContent container={contentRef.current}>
                           {accounts.map((a) => (
                             <SelectItem key={a.id} value={a.id}>
                               {a.name}
@@ -352,7 +354,7 @@ export function TransactionForm({
                             <SelectValue placeholder="Select account" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                          <SelectContent container={contentRef.current}>
                           {accounts.map((a) => (
                             <SelectItem key={a.id} value={a.id}>
                               {a.name}
@@ -380,7 +382,7 @@ export function TransactionForm({
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent container={contentRef.current}>
                         {categories
                           .filter((c) => c.type === currentType)
                           .map((c) => (
