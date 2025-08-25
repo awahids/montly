@@ -44,7 +44,7 @@ export function Sidebar() {
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
       <div className="flex flex-col flex-grow pt-5 bg-card border-r border-border overflow-y-auto">
         <div className="px-3 py-4">
-          <h2 className="text-xl font-bold text-foreground">FinanceApp</h2>
+          <h2 className="text-xl font-bold text-foreground">Monli App</h2>
           <p className="text-sm text-muted-foreground mt-1">
             Personal Finance Manager
           </p>
@@ -103,7 +103,7 @@ export function MobileSidebar() {
       <SheetContent side="left" className="w-64 p-0">
         <div className="flex flex-col h-full">
           <div className="px-3 py-4 border-b">
-            <h2 className="text-xl font-bold text-foreground">FinanceApp</h2>
+            <h2 className="text-xl font-bold text-foreground">Monli App</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Personal Finance Manager
             </p>

@@ -39,8 +39,8 @@ export function MobileNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/40 bg-card/95 backdrop-blur-md sm:hidden shadow-lg">
-        <div className="safe-area-bottom flex items-center justify-around px-4 py-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/40 bg-card/95 backdrop-blur-md sm:hidden shadow-lg">
+        <div className="safe-area-bottom flex items-center justify-around px-2 py-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
           {navWithPlus.map((item, idx) => {
             if (item === "PLUS") {
               return (
@@ -49,11 +49,11 @@ export function MobileNav() {
                   onClick={handleAddTransaction}
                   aria-label="Add transaction"
                   className={cn(
-                    "relative -mt-6 flex h-12 w-12 items-center justify-center rounded-full",
-                    "bg-gradient-to-tr from-primary to-primary/70 shadow-xl transition-transform duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/40",
+                    "relative -mt-6 flex h-14 w-14 items-center justify-center rounded-full",
+                    "bg-gradient-to-tr from-primary to-primary/70 shadow-xl transition-transform duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40",
                   )}
                 >
-                  <Plus className="h-6 w-6 text-white" />
+                  <Plus className="h-7 w-7 text-white" />
                   <span className="sr-only">Add transaction</span>
                 </button>
               );
@@ -70,15 +70,14 @@ export function MobileNav() {
                 href={item.href}
                 aria-label={item.label}
                 className={cn(
-                  "flex min-w-[64px] flex-col items-center justify-center rounded-lg p-3 transition-transform duration-200",
+                  "flex min-w-[70px] flex-col items-center justify-center rounded-lg p-3 transition-transform duration-200 touch-manipulation",
                   isActive
                     ? "scale-110 bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted/30 hover:text-primary active:scale-95",
                 )}
               >
-                <Icon className="mb-1 h-5 w-5 flex-shrink-0" />
-                {/* Optional label (mobile icon-only) */}
-                {/* <span className="text-xs">{item.label}</span> */}
+                <Icon className="mb-1 h-6 w-6 flex-shrink-0" />
+                <span className="text-xs font-medium mt-1">{item.label}</span>
               </Link>
             );
           })}

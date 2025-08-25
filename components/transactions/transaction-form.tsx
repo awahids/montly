@@ -199,15 +199,15 @@ export function TransactionForm({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         id={id}
-        className="sm:max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6"
+        className="sm:max-w-md w-full h-[90vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 sm:p-6 rounded-t-xl sm:rounded-xl fixed bottom-0 left-0 right-0 sm:relative"
       >
-        <DialogHeader>
+        <DialogHeader className="px-4 sm:px-0 pt-4 sm:pt-0">
           <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4 pb-24"
+            className="space-y-4 pb-24 px-4 sm:px-0"
           >
             <FormField
               control={form.control}
@@ -480,8 +480,8 @@ export function TransactionForm({
             />
 
             <DialogFooter
-              className="sticky bottom-0 flex justify-between gap-2 border-t bg-background px-4 py-4"
-              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+              className="fixed sm:sticky bottom-0 left-0 right-0 flex justify-between gap-2 border-t bg-background px-4 py-4 z-10"
+              style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
             >
               {transaction && onDelete && (
                 <Button
