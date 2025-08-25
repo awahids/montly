@@ -15,12 +15,7 @@ import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/currency';
 import { Account } from '@/types';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -62,6 +57,9 @@ const typeIcons = {
   ewallet: Smartphone,
   cash: Wallet2,
 };
+
+const formatAccountNumber = (num: string) =>
+  num.replace(/(\d{4})(?=\d)/g, '$1 ');
 
 export default function AccountsPage() {
   const {
@@ -157,80 +155,84 @@ export default function AccountsPage() {
           return (
             <Card
               key={account.id}
-              className="bg-muted/50 hover:shadow-md transition-shadow"
+              className="relative h-44 overflow-hidden rounded-xl text-white shadow hover:shadow-lg transition-transform hover:scale-105"
             >
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center space-x-2">
-                  <Icon className="h-5 w-5" />
-                  <span>{account.name}</span>
-                  {account.archived && (
-                    <Badge variant="secondary">Archived</Badge>
-                  )}
-                </CardTitle>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditingAccount(account);
-                        setDialogOpen(true);
-                      }}
-                    >
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        handleArchive(account.id, !account.archived)
-                      }
-                    >
-                      {account.archived ? 'Unarchive' : 'Archive'}
-                    </DropdownMenuItem>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <DropdownMenuItem className="text-destructive">
-                          Delete
-                        </DropdownMenuItem>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Delete account?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(account.id)}
-                          >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/70" />
+              <div className="relative z-10 flex h-full flex-col justify-between p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Icon className="h-5 w-5" />
+                    <span className="font-medium">{account.name}</span>
+                    {account.archived && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-white/20 text-white"
+                      >
+                        Archived
+                      </Badge>
+                    )}
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-white hover:bg-white/20"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setEditingAccount(account);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleArchive(account.id, !account.archived)
+                        }
+                      >
+                        {account.archived ? 'Unarchive' : 'Archive'}
+                      </DropdownMenuItem>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem className="text-destructive">
                             Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatCurrency(balance, account.currency)}
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Delete account?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(account.id)}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {account.currency}
-                </p>
                 {account.accountNumber && (
-                  <div className="mt-2 flex items-center text-sm text-muted-foreground">
-                    <span>{account.accountNumber}</span>
+                  <div className="mt-4 flex items-center font-mono text-lg tracking-widest">
+                    <span>{formatAccountNumber(account.accountNumber)}</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="ml-2 h-6 w-6"
+                      className="ml-2 h-6 w-6 text-white hover:bg-white/20"
                       onClick={() => {
                         navigator.clipboard.writeText(account.accountNumber!);
                         toast.success('Account number copied');
@@ -240,7 +242,13 @@ export default function AccountsPage() {
                     </Button>
                   </div>
                 )}
-              </CardContent>
+                <div className="mt-auto">
+                  <p className="text-xs uppercase">{account.currency}</p>
+                  <div className="text-2xl font-bold">
+                    {formatCurrency(balance, account.currency)}
+                  </div>
+                </div>
+              </div>
             </Card>
           );
         })}
