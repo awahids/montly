@@ -6,6 +6,7 @@ export const accountSchema = z.object({
   currency: z.string().default('IDR'),
   openingBalance: z.number().nonnegative().default(0),
   archived: z.boolean().default(false),
+  accountNumber: z.string().optional(),
 });
 
 export const categorySchema = z.object({

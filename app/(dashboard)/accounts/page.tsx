@@ -7,6 +7,7 @@ import {
   Wallet2,
   MoreHorizontal,
   Plus,
+  Copy,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -223,6 +224,22 @@ export default function AccountsPage() {
                 <p className="text-sm text-muted-foreground">
                   {account.currency}
                 </p>
+                {account.accountNumber && (
+                  <div className="mt-2 flex items-center text-sm text-muted-foreground">
+                    <span>{account.accountNumber}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2 h-6 w-6"
+                      onClick={() => {
+                        navigator.clipboard.writeText(account.accountNumber!);
+                        toast.success('Account number copied');
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );

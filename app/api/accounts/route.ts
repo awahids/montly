@@ -46,6 +46,7 @@ export async function GET(req: Request) {
       currency: acc.currency,
       openingBalance: acc.opening_balance,
       archived: acc.archived,
+      accountNumber: acc.account_number ?? undefined,
       currentBalance: balances[acc.id] ?? acc.opening_balance,
     }));
 
@@ -74,6 +75,7 @@ export async function POST(req: Request) {
         currency: body.currency ?? "IDR",
         opening_balance: body.openingBalance ?? 0,
         archived: body.archived ?? false,
+        account_number: body.accountNumber ?? null,
       })
       .select("*")
       .single();
@@ -94,6 +96,7 @@ export async function POST(req: Request) {
       currency: data.currency,
       openingBalance: data.opening_balance,
       archived: data.archived,
+      accountNumber: data.account_number ?? undefined,
       currentBalance: balances[data.id] ?? data.opening_balance,
     });
   } catch (e) {
