@@ -395,13 +395,7 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      <Button
-        className="sm:hidden fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary text-white shadow-lg"
-        onClick={() => setFormOpen(true)}
-        aria-label="New Transaction"
-      >
-        <Plus className="h-5 w-5" />
-      </Button>
+      {/* Tombol add transaction di mobile view dihilangkan karena sudah ada di mobile nav */}
 
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

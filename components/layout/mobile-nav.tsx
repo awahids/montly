@@ -8,6 +8,8 @@ import { Home, Receipt, Plus, PieChart, Settings } from "lucide-react";
 import TransactionForm from "@/components/transactions/transaction-form";
 import type { Transaction } from "@/types";
 import { useAppStore } from "@/lib/store";
+import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 
 const links = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -22,6 +24,8 @@ export function MobileNav() {
   const [formOpen, setFormOpen] = useState(false);
   const [transaction, setTransaction] = useState<Transaction | undefined>();
   const { accounts, categories } = useAppStore();
+  const { theme } = useTheme();
+  const isDarkTheme = theme === "dark";
 
   const handleAddTransaction = () => {
     setTransaction(undefined);
@@ -39,23 +43,32 @@ export function MobileNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/40 bg-card/95 backdrop-blur-md sm:hidden shadow-lg">
-        <div className="safe-area-bottom flex items-center justify-around px-2 py-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
+      <nav className={cn(
+        "fixed bottom-0 left-0 right-0 z-40 border-t border-border/40 backdrop-blur-md sm:hidden",
+        isDarkTheme
+          ? "bg-card/90 shadow-lg shadow-black/10"
+          : "bg-card/95 shadow-lg"
+      )}
+      >
+
+        <div className="safe-area-bottom flex items-center justify-around px-2 py-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.2rem)' }}>
           {navWithPlus.map((item, idx) => {
             if (item === "PLUS") {
               return (
-                <button
-                  key={`plus-${idx}`}
-                  onClick={handleAddTransaction}
-                  aria-label="Add transaction"
-                  className={cn(
-                    "relative -mt-6 flex h-14 w-14 items-center justify-center rounded-full",
-                    "bg-gradient-to-tr from-primary to-primary/70 shadow-xl transition-transform duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40",
-                  )}
-                >
-                  <Plus className="h-7 w-7 text-white" />
-                  <span className="sr-only">Add transaction</span>
-                </button>
+                <div className="relative -mt-4 z-10" key={`plus-${idx}`}>
+                  <motion.button
+                    onClick={handleAddTransaction}
+                    aria-label="Add transaction"
+                    whileTap={{ scale: 0.95 }}
+                    className={cn(
+                      "relative flex h-16 w-16 items-center justify-center rounded-full",
+                      "bg-gradient-to-tr from-primary to-primary/80 shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/40",
+                    )}
+                  >
+                    <Plus className="h-8 w-8 text-white" />
+                    <span className="sr-only">Add transaction</span>
+                  </motion.button>
+                </div>
               );
             }
 
@@ -65,20 +78,31 @@ export function MobileNav() {
               (pathname?.startsWith(item.href) && item.href !== "/");
 
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-label={item.label}
-                className={cn(
-                  "flex min-w-[70px] flex-col items-center justify-center rounded-lg p-3 transition-transform duration-200 touch-manipulation",
-                  isActive
-                    ? "scale-110 bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted/30 hover:text-primary active:scale-95",
+              <div key={item.href} className="relative">
+                {isActive && (
+                  <motion.div
+                    className={cn(
+                      "absolute inset-0 rounded-xl",
+                      isDarkTheme ? "bg-primary/15" : "bg-primary/10"
+                    )}
+                    layoutId="activeNavBackground"
+                  />
                 )}
-              >
-                <Icon className="mb-1 h-6 w-6 flex-shrink-0" />
-                <span className="text-xs font-medium mt-1">{item.label}</span>
-              </Link>
+                <Link
+                  href={item.href}
+                  aria-label={item.label}
+                  className={cn(
+                    "relative flex min-w-[70px] flex-col items-center justify-center rounded-xl p-2 transition-colors duration-200 touch-manipulation overflow-hidden",
+                    isActive
+                      ? "text-primary font-medium"
+                      : "text-muted-foreground hover:text-primary active:scale-95",
+                  )}
+                >
+
+                  <Icon className={cn("mb-1 h-6 w-6 flex-shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />
+                  {/* <span className={cn("text-xs mt-1", isActive ? "font-medium" : "")}>{item.label}</span> */}
+                </Link>
+              </div>
             );
           })}
         </div>
